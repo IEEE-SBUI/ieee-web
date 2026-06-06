@@ -1,0 +1,27 @@
+{
+  "path": "/*",
+  "resourceSizes": [
+    { 
+      "resourceType": "document", 
+      "budget": 150000 
+    },
+    { 
+      "resourceType": "script", 
+      "budget": 500000 
+    },
+    { 
+      "resourceType": "image", 
+      "budget": 1000000 
+    },
+    { 
+      "resourceType": "total", 
+      "budget": 2500000 
+    }
+  ],
+  "resourceCounts": [
+    { 
+      "resourceType": "third-party", 
+      "budget": 10 
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  deployments: read
+  statuses: read
+
+jobs:
+  lighthouse:
+    name: Lighthouse Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Wait for Vercel preview deployment to be ready
+      - name: Wait for Vercel Preview
+        id: vercel_preview
+        uses: vercel/wait-for-deployment-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Run Lighthouse Audit against the live Vercel preview URL
+      - name: Run Lighthouse Audit
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            ${{ steps.vercel_preview.outputs.deployment-url }}
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          budgetPath: ./lighthouse-budgets.json
