@@ -1,6 +1,6 @@
 # IEEE Student Chapter Website
 
-Welcome to the official repository for the IEEE Student Chapter Website! This is a modern web platform designed for high performance, maintainability, and seamless content publishing.
+Welcome to the official repository for the IEEE Student Chapter Website!
 
 ---
 
