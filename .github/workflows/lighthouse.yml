@@ -9,6 +9,9 @@ permissions:
   deployments: read
   statuses: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   lighthouse:
     name: Lighthouse Audit

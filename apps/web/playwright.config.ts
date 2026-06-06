@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = process.env.PORT || 3000;
-const baseURL = `http://localhost:${PORT}`;
+const baseURL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
   // where the tests are located
@@ -58,7 +58,7 @@ export default defineConfig({
 
   // before running tests, start the dev server automatically
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run build -w ieee-website-2026 && npm run start -w ieee-website-2026',
 
     // wait for this URL before starting tests
     url: baseURL,
@@ -70,6 +70,6 @@ export default defineConfig({
     cwd: '../../',
 
     // give the server time to start up
-    timeout: 120 * 1000,
+    timeout: 180 * 1000,
   },
 });
