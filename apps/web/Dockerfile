@@ -9,8 +9,12 @@ COPY package*.json ./
 COPY apps/web/package*.json ./apps/web/
 COPY apps/studio-ieee-sbui-website/package*.json ./apps/studio-ieee-sbui-website/
 
-# Clean install all dependencies (hoisted to root node_modules)
-RUN npm ci
+# Configure npm to be resilient against network timeouts, then install dependencies
+RUN npm config set fetch-retry-maxtimeout 600000 && \
+    npm config set fetch-retry-mintimeout 20000 && \
+    npm config set fetch-retries 10 && \
+    npm config set fetch-timeout 600000 && \
+    npm ci
 
 # Copy the rest of the workspace
 COPY . .

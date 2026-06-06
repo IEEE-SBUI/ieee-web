@@ -61,3 +61,8 @@ next-env.d.ts
 !.vscode/extensions.json
 !.vscode/settings.json
 Thumbs.db
+
+# Playwright test results and reports
+apps/web/test-results/
+apps/web/playwright-report/
+playwright/.cache/
