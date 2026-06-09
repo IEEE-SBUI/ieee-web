@@ -1,7 +1,7 @@
 import {defineField, defineType} from 'sanity'
 
 /**
- * Author — reusable author profile.
+ * Author: reusable author profile.
  *
  * Create author entries once, then reference them from articles.
  * This keeps author information consistent across the site and

@@ -10,7 +10,7 @@ import {defineField, defineType} from 'sanity'
  *   author = author (reference -> author doc)
  *   summary (1 sentence) = summary (text)
  *   body paragraphs = body (blockContent / Portable Text)
- *   categories/tags  = categories (array of references → category)
+ *   categories/tags = categories (array of references -> category)
  *   (auto) = slug (auto-generated from title)
  */
 export const article = defineType({
