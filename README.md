@@ -9,7 +9,7 @@ Welcome to the official repository for the IEEE Student Chapter Website!
 This project is structured as a **Monorepo** using **npm workspaces**. It contains two main applications:
 
 1. **`apps/web` (Next.js 16):**  This is the frontend application that is publicly accessible. Besides displaying static content, it also fetches articles dynamically from the CMS.
-2. **`apps/studio-ieee-sbui-website` (Sanity Studio):** The content editor dashboard. This is where the Curriculum and Journalism team (and other authorized users) create, schedule, publish content.
+2. **`apps/studio-ieee-sbui-website` (Sanity Studio):** The content editor dashboard. This is where the Curriculum and Journalism team (and other authorized users) create, schedule, and publish content. For technical details on the content model, custom schemas, and editor configuration, see the [Sanity CMS Developer Guide](file:///home/cosmo/Desktop/UI/IEEE/ieee-web/docs/sanity_cms.md).
 
 ---
 
