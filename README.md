@@ -22,29 +22,41 @@ You can run this project either directly on your host machine or containerized v
 Ensure you have **Node.js 20+** installed on your computer.
 
 1. **Clone the repository:**
+   
    Download the codebase to your local computer:
    ```bash
    git clone https://github.com/<your-org>/ieee-web.git
    cd ieee-web
    ```
 
-2. **Setup Environment Variables:**
+3. **Setup Environment Variables:**
+   
    Copy the template file to create your local config file:
    ```bash
    cp .env.local.example apps/web/.env.local
    ```
    *Note: Open `apps/web/.env.local` in your editor and configure your Sanity Project Credentials.*
 
-3. **Install Dependencies:**
+4. **Install Dependencies:**
+   
    Install all package packages for the monorepo:
    ```bash
    npm install
    ```
 
-4. **Start Development Server:**
-   Launch the development mode for both frontend and CMS:
+5. **Start Development Server:**
+   
+   Launch the development mode for both frontend and CMS concurrently:
    ```bash
    npm run dev
+   ```
+   Alternatively, launch a specific workspace individually using the `-w` (workspace) flag:
+   ```bash
+   # Start only the Next.js frontend website
+   npm run dev -w apps/web
+
+   # Start only the Sanity Studio CMS
+   npm run dev -w apps/studio-ieee-sbui-website
    ```
    - Frontend: [http://localhost:3000](http://localhost:3000)
    - Sanity Studio CMS: [http://localhost:3333](http://localhost:3333)
