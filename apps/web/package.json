@@ -14,6 +14,7 @@
   "dependencies": {
     "@sanity/image-url": "^2.1.1",
     "@tailwindcss/typography": "^0.5.19",
+    "lucide-react": "^1.18.0",
     "next": "^16.2.7",
     "next-sanity": "^13.0.11",
     "react": "19.2.7",
@@ -28,16 +29,21 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "prettier": "^3.5.3",
-    "eslint-config-prettier": "^10.1.5",
     "eslint-config-next": "^16.2.7",
+    "eslint-config-prettier": "^10.1.5",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
+    "prettier": "^3.5.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
   "lint-staged": {
-    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,md,css}": ["prettier --write"]
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
   }
 }
