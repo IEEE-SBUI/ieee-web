@@ -6,38 +6,76 @@ on:
 
 permissions:
   contents: read
-  deployments: read
-  statuses: read
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  statuses: write
 
 jobs:
   lighthouse:
-    name: Lighthouse Audit
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
-      # Optional: Wait for Vercel Preview (only if VERCEL_TOKEN is set)
-      - name: Wait for Vercel Preview
-        id: vercel_preview
-        if: ${{ secrets.VERCEL_TOKEN }}
-        uses: vercel/wait-for-deployment-action@v1
-        with:
-          token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID || '' }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID || '' }}
-          production: false
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
-      # Run Lighthouse Audit
+      - name: Wait for Vercel Preview deployment
+        id: vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          SHA="${{ github.event.pull_request.head.sha }}"
+
+          # The Lighthouse job starts at the same time as Vercel's own build
+          # (both fire on the PR event), so the deployment record may not
+          # exist yet, or may still be BUILDING. Poll instead of checking once.
+          MAX_ATTEMPTS=30
+          SLEEP_SECONDS=20
+
+          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
+            RESPONSE=$(curl -sS --fail --max-time 15 \
+              "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID}&limit=100" \
+              -H "Authorization: Bearer ${VERCEL_TOKEN}") || RESPONSE=""
+
+            if [ -n "$RESPONSE" ]; then
+              STATE=$(echo "$RESPONSE" | jq -r --arg SHA "$SHA" '
+                [.deployments[] | select(.meta.githubCommitSha == $SHA)] | .[0].state // "NOT_FOUND"
+              ')
+
+              if [ "$STATE" = "READY" ]; then
+                URL=$(echo "$RESPONSE" | jq -r --arg SHA "$SHA" '
+                  .deployments[]
+                  | select(.meta.githubCommitSha == $SHA)
+                  | select(.state == "READY")
+                  | .url
+                ' | head -n 1)
+                echo "Deployment ready: $URL"
+                echo "url=https://$URL" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+
+              if [ "$STATE" = "ERROR" ] || [ "$STATE" = "CANCELED" ]; then
+                echo "Vercel deployment for $SHA ended in state: $STATE"
+                exit 1
+              fi
+
+              echo "Attempt $attempt/$MAX_ATTEMPTS: deployment state is '$STATE', waiting..."
+            else
+              echo "Attempt $attempt/$MAX_ATTEMPTS: Vercel API request failed, retrying..."
+            fi
+
+            sleep "$SLEEP_SECONDS"
+          done
+
+          echo "Timed out waiting for a READY deployment for commit $SHA"
+          exit 1
+
       - name: Run Lighthouse Audit
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
-            ${{ steps.vercel_preview.outputs.deployment-url || 'http://localhost:3000' }}
+            ${{ steps.vercel.outputs.url }}
           uploadArtifacts: true
           temporaryPublicStorage: true
           budgetPath: ./lighthouse-budgets.json
+          configPath: ./lighthouserc.json
