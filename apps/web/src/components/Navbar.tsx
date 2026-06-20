@@ -65,6 +65,7 @@ export default function Navbar() {
               src={LOGO_IEEE_SBUI}
               alt="IEEE SBUI logo"
               fill
+              sizes="84px"
               className="object-contain"
               priority
             />
@@ -81,6 +82,7 @@ export default function Navbar() {
               src={LOGO_UI}
               alt="Universitas Indonesia logo"
               fill
+              sizes="55px"
               className="object-contain"
               priority
             />
