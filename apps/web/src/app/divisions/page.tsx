@@ -1,6 +1,7 @@
 import { client } from "@/src/sanity/client";
 import { Corridor, CORRIDOR_COLORS } from "@/src/lib/tokens";
 import DivisionCard from "@/src/features/divisions/components/DivisionCard";
+import PageHeader from "@/src/components/PageHeader";
 
 /**
  * Revalidate at most once a minute so divisions edited in Sanity appear
@@ -42,20 +43,10 @@ export default async function DivisionsPage() {
   return (
     <div>
       {/* Page header on the dark gradient strip */}
-      <section
-        className="relative overflow-hidden"
-        style={{ background: "var(--theme-dark-gradient)" }}
-      >
-        <div className="mx-auto max-w-[1440px] px-6 py-20 text-center sm:px-12 md:py-28 lg:px-[117px]">
-          <h1 className="text-gradient pb-1 text-4xl font-bold leading-tight md:text-5xl">
-            Our Divisions
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[var(--color-text-muted)]">
-            Discover the structure of our student branch and learn about the
-            different teams working together.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        title="Our Divisions"
+        description="Discover the structure of our student branch and learn about the different teams working together."
+      />
 
       {/* Corridor groups */}
       <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 md:py-24 lg:px-[117px]">

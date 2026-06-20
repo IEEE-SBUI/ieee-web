@@ -7,6 +7,7 @@ import { client, urlFor } from "@/src/sanity/client";
 import Button from "@/src/components/Button";
 import ArticleCard from "@/src/features/articles/components/ArticleCard";
 import DropdownFilter from "@/src/components/DropdownFilter";
+import PageHeader from "@/src/components/PageHeader";
 import { formatDate, calculateReadTime } from "@/src/lib/utils";
 
 interface SanityArticle {
@@ -104,16 +105,10 @@ export default function ArticlesPage() {
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
       
       {/* ── Full-Width Page Header Section ── */}
-      <header className="w-full bg-gradient-to-r from-[#0A2B23] via-[#122938] to-[#1C1A36] py-20 border-b border-[rgba(255,255,255,0.05)]">
-        <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-[117px] flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gradient mb-6 tracking-tight">
-            Articles Archive
-          </h1>
-          <p className="max-w-2xl text-sm md:text-base leading-relaxed text-[var(--color-text-muted)]">
-            Explore publications authored by members of IEEE Student Branch Universitas Indonesia.
-          </p>
-        </div>
-      </header>
+      <PageHeader
+        title="Articles Archive"
+        description="Explore publications authored by members of IEEE Student Branch Universitas Indonesia."
+      />
 
       {/* ── Page Content Container ── */}
       <div className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-[117px] py-16">

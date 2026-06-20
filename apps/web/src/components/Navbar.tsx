@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 
 /** Brand logo asset file paths. */
@@ -40,6 +40,22 @@ export default function Navbar() {
   const pathname = usePathname();
   const [teamsOpen, setTeamsOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close the Teams dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setTeamsOpen(false);
+      }
+    }
+    if (teamsOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [teamsOpen]);
 
   return (
     <nav
@@ -120,7 +136,7 @@ export default function Navbar() {
           })}
 
           {/* Teams dropdown selector */}
-          <div className="relative group/dropdown py-2">
+          <div className="relative group/dropdown py-2" ref={dropdownRef}>
             <button
               type="button"
               onClick={() => setTeamsOpen((prev) => !prev)}
@@ -158,42 +174,30 @@ export default function Navbar() {
             />
 
             {teamsOpen && (
-              <>
-                {/* 
-                  Click-away backdrop:
-                  A full-screen transparent layer. Clicking outside the dropdown 
-                  triggers the onClick, closing the open menu.
-                */}
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setTeamsOpen(false)}
-                  aria-hidden="true"
-                />
-                
-                <div
-                  className="absolute right-0 top-[calc(100%+14px)] z-20 w-[126px] max-h-[250px] overflow-y-auto overscroll-contain rounded-[10px]"
-                  style={{
-                    background: "#0c1517",
-                    border: "1px solid rgba(255,255,255,0.15)",
-                  }}
-                  onWheel={(e) => e.stopPropagation()}
-                  onTouchMove={(e) => e.stopPropagation()}
-                >
-                  {TEAMS_DROPDOWN.map(({ label, href }, index) => {
-                    const isItemActive = pathname === href;
-                    return (
-                      <div key={href}>
-                        <Link
-                          href={href}
-                          onClick={() => setTeamsOpen(false)}
-                          className={`group block px-[13px] py-[14px] font-bold text-[14px] tracking-[-0.238px] transition-colors duration-150 hover:bg-[rgba(28,225,164,0.1)] hover:text-[#1ce1a4] ${
-                            isItemActive ? "text-white" : "text-white/75"
-                          }`}
-                        >
-                          <span className="inline-block transition-transform duration-300 ease-out group-hover:translate-x-1">
-                            {label}
-                          </span>
-                        </Link>
+              <div
+                className="absolute right-0 top-[calc(100%+14px)] z-20 w-[126px] max-h-[250px] overflow-y-auto overscroll-contain rounded-[10px]"
+                style={{
+                  background: "#0c1517",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                }}
+                onWheel={(e) => e.stopPropagation()}
+                onTouchMove={(e) => e.stopPropagation()}
+              >
+                {TEAMS_DROPDOWN.map(({ label, href }, index) => {
+                  const isItemActive = pathname === href;
+                  return (
+                    <div key={href}>
+                      <Link
+                        href={href}
+                        onClick={() => setTeamsOpen(false)}
+                        className={`group block px-[13px] py-[14px] font-bold text-[14px] tracking-[-0.238px] transition-colors duration-150 hover:bg-[rgba(28,225,164,0.1)] hover:text-[#1ce1a4] ${
+                          isItemActive ? "text-white" : "text-white/75"
+                        }`}
+                      >
+                        <span className="inline-block transition-transform duration-300 ease-out group-hover:translate-x-1">
+                          {label}
+                        </span>
+                      </Link>
                       {index < TEAMS_DROPDOWN.length - 1 && (
                         <div
                           className="mx-[13px]"
@@ -208,7 +212,6 @@ export default function Navbar() {
                   );
                 })}
               </div>
-              </>
             )}
           </div>
         </div>
