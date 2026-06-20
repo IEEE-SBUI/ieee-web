@@ -11,6 +11,9 @@
   --color-text-primary: #FFFFFF;
   --color-text-muted: #9ca3af;
 
+  /* Borders / dividers */
+  --color-border: rgba(255, 255, 255, 0.08);
+
   /* Gradients */
   --theme-brand-gradient: linear-gradient(45deg, #1CE1A4, #46BCED, #8280E5);
   --theme-radial-gradient: radial-gradient(circle, #3EB5B2 0%, #214C6D 100%);
@@ -41,3 +44,19 @@ body {
   background-clip: text;
   color: transparent;
 }
+
+/* Sleek custom scrollbar for dark category filter dropdown */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 99px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
