@@ -4,6 +4,7 @@ import { PortableText, PortableTextComponents } from "@portabletext/react";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { formatDate, calculateRichTextReadTime } from "@/src/lib/utils";
+import Image from "next/image";
 
 interface SanityArticle {
   title: string;
@@ -35,9 +36,11 @@ const components: PortableTextComponents = {
       return (
         <figure className="my-8 flex flex-col items-center gap-3">
           <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#0C1517] w-full">
-            <img
+            <Image
               src={imageUrl}
               alt={value.alt || "Article image"}
+              fill
+              unoptimized
               className="w-full h-auto object-cover max-h-[500px]"
               loading="lazy"
             />
@@ -191,17 +194,21 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             
             {/* Author Avatar (left) */}
             {authorImage?.asset?._ref ? (
-              <img
-                src={urlFor(authorImage)}
-                alt={authorName}
-                className="h-10 w-10 rounded-full object-cover border border-white/10 shrink-0"
-              />
+              <div className="relative h-10 w-10 rounded-full overflow-hidden border border-white/10 shrink-0">
+                <Image
+                  src={urlFor(authorImage)}
+                  alt={authorName}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+              </div>
             ) : (
               <div className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-sm text-[var(--color-accent-teal)] font-bold shrink-0">
                 {authorName ? authorName.substring(0, 2).toUpperCase() : "AU"}
               </div>
             )}
-
+            
             {/* Stacked Info (right) */}
             <div className="flex flex-col gap-1 text-xs text-[var(--color-text-muted)]">
               <span className="font-semibold text-white/95 text-sm leading-none">{authorName || "Unknown Author"}</span>
@@ -224,9 +231,11 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           {mainImage?.asset?._ref && (
             <figure className="mb-12">
               <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/5 bg-black">
-                <img
+                <Image
                   src={urlFor(mainImage)}
                   alt={mainImage.alt || title}
+                  fill
+                  unoptimized
                   className="w-full h-full object-contain"
                 />
               </div>
