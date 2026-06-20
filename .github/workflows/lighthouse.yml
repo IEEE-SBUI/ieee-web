@@ -10,6 +10,11 @@ permissions:
   contents: read
   statuses: write
 
+env:
+  # Static routes only — /articles/[slug] is dynamic and has no fixed URL
+  # to audit, so it's intentionally excluded here.
+  AUDIT_PATHS: "/ /about /articles /divisions /events /teams"
+
 jobs:
   lighthouse-preview:
     if: github.event_name == 'pull_request'
@@ -99,21 +104,26 @@ jobs:
 
           echo "Deployment reachable (HTTP $STATUS)."
 
-      - name: Build audit URL
+      - name: Build audit URLs
         id: audit_url
         env:
           BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           DEPLOYMENT_URL: ${{ steps.vercel.outputs.deployment_url }}
         run: |
-          echo "url=${DEPLOYMENT_URL}/?x-vercel-protection-bypass=${BYPASS_SECRET}&x-vercel-set-bypass-cookie=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "urls<<EOF"
+            for path in $AUDIT_PATHS; do
+              echo "${DEPLOYMENT_URL}${path}?x-vercel-protection-bypass=${BYPASS_SECRET}&x-vercel-set-bypass-cookie=true"
+            done
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Run Lighthouse Audit
         uses: treosh/lighthouse-ci-action@v12
         with:
-          urls: |
-            ${{ steps.audit_url.outputs.url }}
+          urls: ${{ steps.audit_url.outputs.urls }}
           uploadArtifacts: true
-          # NOT temporaryPublicStorage: the audited URL contains the bypass
+          # NOT temporaryPublicStorage: the audited URLs contain the bypass
           # token, and that storage target is a public link. Artifacts upload
           # to the GitHub Actions run instead, which is private to the repo.
           budgetPath: ./lighthouse-budgets.json
@@ -181,18 +191,23 @@ jobs:
           echo "Timed out waiting for production deployment of $SHA to become READY."
           exit 1
 
-      - name: Build audit URL
+      - name: Build audit URLs
         id: audit_url
         env:
           BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
-          echo "url=${PRODUCTION_URL}/?x-vercel-protection-bypass=${BYPASS_SECRET}&x-vercel-set-bypass-cookie=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "urls<<EOF"
+            for path in $AUDIT_PATHS; do
+              echo "${PRODUCTION_URL}${path}?x-vercel-protection-bypass=${BYPASS_SECRET}&x-vercel-set-bypass-cookie=true"
+            done
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Run Lighthouse Audit
         uses: treosh/lighthouse-ci-action@v12
         with:
-          urls: |
-            ${{ steps.audit_url.outputs.url }}
+          urls: ${{ steps.audit_url.outputs.urls }}
           uploadArtifacts: true
           budgetPath: ./lighthouse-budgets.json
           configPath: ./lighthouserc.json
