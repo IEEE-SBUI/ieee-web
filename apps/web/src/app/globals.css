@@ -11,6 +11,9 @@
   --color-text-primary: #FFFFFF;
   --color-text-muted: #9ca3af;
 
+  /* Borders / dividers */
+  --color-border: rgba(255, 255, 255, 0.08);
+
   /* Gradients */
   --theme-brand-gradient: linear-gradient(45deg, #1CE1A4, #46BCED, #8280E5);
   --theme-radial-gradient: radial-gradient(circle, #3EB5B2 0%, #214C6D 100%);
