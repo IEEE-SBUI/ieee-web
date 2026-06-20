@@ -65,7 +65,7 @@ export default function AboutPreviewSection() {
         </div>
 
         {/* Right: Universitas Indonesia campus photo. */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[rgba(255,255,255,0.08)]">
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[var(--color-border)]">
           <Image
             src="/ui-campus.jpg"
             alt="Universitas Indonesia campus"
