@@ -36,11 +36,9 @@ const components: PortableTextComponents = {
       return (
         <figure className="my-8 flex flex-col items-center gap-3">
           <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#0C1517] w-full">
-            <Image
+            <img
               src={imageUrl}
               alt={value.alt || "Article image"}
-              fill
-              unoptimized
               className="w-full h-auto object-cover max-h-[500px]"
               loading="lazy"
             />
@@ -208,7 +206,6 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                 {authorName ? authorName.substring(0, 2).toUpperCase() : "AU"}
               </div>
             )}
-            
             {/* Stacked Info (right) */}
             <div className="flex flex-col gap-1 text-xs text-[var(--color-text-muted)]">
               <span className="font-semibold text-white/95 text-sm leading-none">{authorName || "Unknown Author"}</span>
