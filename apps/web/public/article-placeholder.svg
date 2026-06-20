@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200" preserveAspectRatio="xMidYMid slice" role="img" aria-label="IEEE SBUI">
+  <defs>
+    <linearGradient id="ieee-placeholder" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0A2B23" />
+      <stop offset="50%" stop-color="#122938" />
+      <stop offset="100%" stop-color="#1C1A36" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" fill="url(#ieee-placeholder)" />
+  <circle cx="160" cy="100" r="34" fill="none" stroke="#1CE1A4" stroke-opacity="0.35" stroke-width="2" />
+  <circle cx="160" cy="100" r="6" fill="#1CE1A4" fill-opacity="0.5" />
+</svg>

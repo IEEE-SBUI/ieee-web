@@ -2,6 +2,7 @@ import HeroSection from "@/src/features/home/components/HeroSection";
 import AboutPreviewSection from "@/src/features/home/components/AboutPreviewSection";
 import CorridorOverviewSection from "@/src/features/home/components/CorridorOverviewSection";
 import MemberBenefitsSection from "@/src/features/home/components/MemberBenefitsSection";
+import FeaturedArticlesSection from "@/src/features/home/components/FeaturedArticlesSection";
 
 /**
  * Homepage (route `/`).
@@ -16,6 +17,7 @@ export default function Home() {
       <AboutPreviewSection />
       <CorridorOverviewSection />
       <MemberBenefitsSection />
+      <FeaturedArticlesSection />
     </>
   );
 }
