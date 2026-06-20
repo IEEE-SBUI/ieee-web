@@ -3,13 +3,16 @@ name: Lighthouse CI
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 permissions:
   contents: read
   statuses: write
 
 jobs:
-  lighthouse:
+  lighthouse-preview:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,6 +20,9 @@ jobs:
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Mask bypass secret in logs
+        run: echo "::add-mask::${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"
 
       - name: Wait for Vercel Preview deployment
         id: vercel
@@ -50,7 +56,7 @@ jobs:
                   | .url
                 ' | head -n 1)
                 echo "Deployment ready: $URL"
-                echo "url=https://$URL" >> "$GITHUB_OUTPUT"
+                echo "deployment_url=https://$URL" >> "$GITHUB_OUTPUT"
                 exit 0
               fi
 
@@ -70,12 +76,123 @@ jobs:
           echo "Timed out waiting for a READY deployment for commit $SHA"
           exit 1
 
+      - name: Verify deployment is reachable
+        env:
+          BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          DEPLOYMENT_URL: ${{ steps.vercel.outputs.deployment_url }}
+        run: |
+          # Confirm the bypass header actually works before handing the URL
+          # to Lighthouse — fail fast with a clear message instead of letting
+          # Lighthouse silently audit a login redirect page.
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "x-vercel-protection-bypass: ${BYPASS_SECRET}" \
+            -H "x-vercel-set-bypass-cookie: true" \
+            "$DEPLOYMENT_URL")
+
+          if [ "$STATUS" != "200" ]; then
+            echo "Deployment returned HTTP $STATUS even with bypass header set."
+            echo "Check that 'Protection Bypass for Automation' is enabled in"
+            echo "Vercel project settings and VERCEL_AUTOMATION_BYPASS_SECRET"
+            echo "matches the generated secret."
+            exit 1
+          fi
+
+          echo "Deployment reachable (HTTP $STATUS)."
+
+      - name: Build audit URL
+        id: audit_url
+        env:
+          BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          DEPLOYMENT_URL: ${{ steps.vercel.outputs.deployment_url }}
+        run: |
+          echo "url=${DEPLOYMENT_URL}/?x-vercel-protection-bypass=${BYPASS_SECRET}&x-vercel-set-bypass-cookie=true" >> "$GITHUB_OUTPUT"
+
       - name: Run Lighthouse Audit
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
-            ${{ steps.vercel.outputs.url }}
+            ${{ steps.audit_url.outputs.url }}
           uploadArtifacts: true
-          temporaryPublicStorage: true
+          # NOT temporaryPublicStorage: the audited URL contains the bypass
+          # token, and that storage target is a public link. Artifacts upload
+          # to the GitHub Actions run instead, which is private to the repo.
+          budgetPath: ./lighthouse-budgets.json
+          configPath: ./lighthouserc.json
+
+  lighthouse-production:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    env:
+      PRODUCTION_URL: https://ieee-sbui.vercel.app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mask bypass secret in logs
+        run: echo "::add-mask::${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}"
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Wait for Production deployment to update
+        id: wait
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          SHA="${{ github.sha }}"
+
+          # Vercel swaps Production atomically, so the URL returns HTTP 200
+          # the whole time — that alone doesn't prove this commit is live yet,
+          # it could still be serving the previous deployment. Poll the
+          # deployments API instead and confirm this SHA's production
+          # deployment has reached READY before auditing.
+          MAX_ATTEMPTS=20
+          SLEEP_SECONDS=15
+
+          for attempt in $(seq 1 "$MAX_ATTEMPTS"); do
+            RESPONSE=$(curl -sS --fail --max-time 15 \
+              "https://api.vercel.com/v6/deployments?projectId=${VERCEL_PROJECT_ID}&target=production&limit=10" \
+              -H "Authorization: Bearer ${VERCEL_TOKEN}") || RESPONSE=""
+
+            if [ -n "$RESPONSE" ]; then
+              STATE=$(echo "$RESPONSE" | jq -r --arg SHA "$SHA" '
+                [.deployments[] | select(.meta.githubCommitSha == $SHA)] | .[0].state // "NOT_FOUND"
+              ')
+
+              if [ "$STATE" = "READY" ]; then
+                echo "Production deployment for $SHA is READY."
+                exit 0
+              fi
+
+              if [ "$STATE" = "ERROR" ] || [ "$STATE" = "CANCELED" ]; then
+                echo "Production deployment for $SHA ended in state: $STATE"
+                exit 1
+              fi
+
+              echo "Attempt $attempt/$MAX_ATTEMPTS: deployment state is '$STATE', waiting..."
+            else
+              echo "Attempt $attempt/$MAX_ATTEMPTS: Vercel API request failed, retrying..."
+            fi
+
+            sleep "$SLEEP_SECONDS"
+          done
+
+          echo "Timed out waiting for production deployment of $SHA to become READY."
+          exit 1
+
+      - name: Build audit URL
+        id: audit_url
+        env:
+          BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          echo "url=${PRODUCTION_URL}/?x-vercel-protection-bypass=${BYPASS_SECRET}&x-vercel-set-bypass-cookie=true" >> "$GITHUB_OUTPUT"
+
+      - name: Run Lighthouse Audit
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            ${{ steps.audit_url.outputs.url }}
+          uploadArtifacts: true
           budgetPath: ./lighthouse-budgets.json
           configPath: ./lighthouserc.json
