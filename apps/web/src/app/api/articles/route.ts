@@ -7,6 +7,7 @@ interface SanityArticle {
   publishedAt: string;
   summary: string;
   mainImage: any;
+  body: any[] | null;
   authorName: string;
   categories: string[];
 }
@@ -28,6 +29,7 @@ export async function GET() {
       publishedAt,
       summary,
       mainImage,
+      body,
       "authorName": author->name,
       "categories": categories[]->title
     }`;

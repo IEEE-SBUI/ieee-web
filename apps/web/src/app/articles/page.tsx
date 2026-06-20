@@ -8,7 +8,7 @@ import Button from "@/src/components/Button";
 import ArticleCard from "@/src/features/articles/components/ArticleCard";
 import DropdownFilter from "@/src/components/DropdownFilter";
 import PageHeader from "@/src/components/PageHeader";
-import { formatDate, calculateReadTime } from "@/src/lib/utils";
+import { formatDate, calculateRichTextReadTime } from "@/src/lib/utils";
 
 interface SanityArticle {
   title: string;
@@ -16,6 +16,7 @@ interface SanityArticle {
   publishedAt: string;
   summary: string;
   mainImage: any;
+  body?: any[] | null;
   authorName: string;
   categories: string[];
 }
@@ -220,7 +221,7 @@ export default function ArticlesPage() {
                         day: "numeric",
                       })}
                       author={article.authorName}
-                      readTimeMinutes={calculateReadTime(article.summary)}
+                      readTimeMinutes={calculateRichTextReadTime(article.body)}
                     />
                   );
                 })}
