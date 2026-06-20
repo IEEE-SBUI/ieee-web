@@ -42,9 +42,17 @@ Ensure you have **Node.js 20+** installed on your computer.
    ```
 
 4. **Start Development Server:**
-   Launch the development mode for both frontend and CMS:
+   Launch the development mode for both frontend and CMS concurrently:
    ```bash
    npm run dev
+   ```
+   Alternatively, launch a specific workspace individually using the `-w` (workspace) flag:
+   ```bash
+   # Start only the Next.js frontend website
+   npm run dev -w apps/web
+
+   # Start only the Sanity Studio CMS
+   npm run dev -w apps/studio-ieee-sbui-website
    ```
    - Frontend: [http://localhost:3000](http://localhost:3000)
    - Sanity Studio CMS: [http://localhost:3333](http://localhost:3333)
