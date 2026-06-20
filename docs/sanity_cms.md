@@ -45,6 +45,27 @@ A document type to manage taxonomy terms.
 - **Title**: The name of the category (such as Events or Technology).
 - **Description**: A short explanation of the category.
 
+### Committee Member Schema (`committeeMember.ts`)
+A shared document type for every person in the organization, from the President down to staff. Divisions reference it for their leadership and staff, and the Committee page reuses it.
+- **Name**: The member's full name. This is required.
+- **Profile Photo**: A required image field with hotspot enabled. It includes a required alt text sub-field for accessibility.
+- **LinkedIn URL**: An optional link to the member's LinkedIn profile, validated as a web URL.
+
+This schema is **read-only for users who are not administrators or developers** (role-based access control), so only authorized roles can create or edit member records.
+
+### Division Schema (`division.ts`)
+A document type representing a single division, grouped under one of the three corridors. It references Committee Member documents instead of duplicating their details.
+- **Abbreviation**: The short division name (such as "WebDev" or "RnD"). This is required.
+- **Full Name**: The full division name (such as "Website Development"). This is required.
+- **Corridor**: A required dropdown with exactly three options: "Internal Operations", "Education and Development", and "Public Relations".
+- **Description**: A text area describing what the division does.
+- **Manager**: A reference to a Committee Member who manages the division.
+- **Vice Manager**: A reference to a Committee Member who serves as vice manager.
+- **Staff**: An array of references to Committee Member documents.
+- **Display Order**: A number that controls the division's order within its corridor (ascending).
+
+Like Committee Member, this schema is **read-only for non administrator/developer roles** (role-based access control).
+
 ---
 
 ## Rich Text Editor (Portable Text)
