@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 import { Corridor, CORRIDOR_COLORS } from "@/src/lib/tokens";
+import Image from "next/image";
 
 /**
  * Article category metadata used for badge display.
@@ -68,11 +69,13 @@ export default function ArticleCard({
         href={href}
         className="block relative aspect-[16/10] w-full shrink-0 overflow-hidden"
       >
-        <img
+        <Image
           src={imageUrl || "/article-placeholder.svg"}
-          alt=""
+          alt={`${title} cover image`}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
+          fill
+          unoptimized
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
       </Link>
