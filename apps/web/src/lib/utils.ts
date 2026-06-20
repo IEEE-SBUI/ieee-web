@@ -10,7 +10,7 @@
  * // "June 20, 2026"
  */
 export function formatDate(
-  dateString: string,
+  dateString?: string | null,
   options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
@@ -36,7 +36,7 @@ export function calculateReadTime(summaryText: string): number {
 
   const wordCount = summaryText.split(/\s+/).length;
 
-  // Card previews should not display a 0–1 minute read time because most
+  // Card previews should not display a 0-1 minute read time because most
   // summaries are short. We intentionally bias the estimate upward.
   return Math.max(2, Math.ceil(wordCount / 5));
 }

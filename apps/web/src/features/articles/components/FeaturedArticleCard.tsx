@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { ArticleCategory } from "./ArticleCard";
@@ -67,12 +66,11 @@ export default function FeaturedArticleCard({
     >
       {/* Cover image bleeding into the content via a fade to the card color. */}
       <Link href={href} className="relative aspect-[16/10] w-full shrink-0">
-        <Image
+        <img
           src={imageUrl}
           alt=""
-          fill
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          className="block object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
         />
         <div
           aria-hidden="true"

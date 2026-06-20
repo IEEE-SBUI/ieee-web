@@ -60,9 +60,6 @@ export default function ArticleCard({
   readTimeMinutes,
   className = "",
 }: ArticleCardProps) {
-  // Truncate title for SVG placeholder display to prevent text overflow
-  const placeholderText = title.length > 30 ? title.substring(0, 30) + "..." : title;
-
   return (
     <article
       className={`group flex h-full flex-col overflow-hidden rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#0c1517] ${className}`}
@@ -71,34 +68,12 @@ export default function ArticleCard({
         href={href}
         className="block relative aspect-[16/10] w-full shrink-0 overflow-hidden"
       >
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
-        ) : (
-          <svg
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            viewBox="0 0 1200 630"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="100%" height="100%" fill="#0c1517" />
-            <text
-              x="50%"
-              y="50%"
-              dominantBaseline="middle"
-              textAnchor="middle"
-              fill="#9CA3AF"
-              fontSize="48"
-              fontFamily="sans-serif"
-              fontWeight="bold"
-            >
-              {placeholderText}
-            </text>
-          </svg>
-        )}
+        <img
+          src={imageUrl || "/article-placeholder.svg"}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
       </Link>
 

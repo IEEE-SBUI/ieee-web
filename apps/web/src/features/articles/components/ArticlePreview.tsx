@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ArticleCategory } from "./ArticleCard";
 
@@ -21,6 +20,9 @@ interface ArticlePreviewProps {
   /** Author name shown in metadata. */
   author: string;
 
+  /** Short preview text/summary shown in the preview row. */
+  summary?: string;
+
   /** Optional additional CSS classes. */
   className?: string;
 }
@@ -29,7 +31,7 @@ interface ArticlePreviewProps {
  * Compact horizontal article preview used in sidebar-style layouts.
  *
  * Designed for dense layouts where vertical space is limited,
- * showing a thumbnail, category labels, title, and metadata.
+ * showing a thumbnail, category labels, title, summary, and metadata.
  *
  * @returns A horizontal article preview component.
  */
@@ -40,20 +42,20 @@ export default function ArticlePreview({
   title,
   date,
   author,
+  summary,
   className = "",
 }: ArticlePreviewProps) {
   return (
     <div className={`group flex flex-row gap-4 sm:gap-5 py-5 ${className}`}>
       <Link
         href={href}
-        className="relative aspect-[16/11] w-[120px] sm:w-[140px] shrink-0 overflow-hidden rounded-[8px]"
+        className="relative aspect-[16/11] w-[90px] min-[360px]:w-[110px] min-[400px]:w-[125px] sm:w-[140px] shrink-0 overflow-hidden rounded-[8px]"
       >
-        <Image
+        <img
           src={imageUrl}
           alt=""
-          fill
-          sizes="140px"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
         />
       </Link>
 
@@ -73,7 +75,13 @@ export default function ArticlePreview({
           </Link>
         </h4>
 
-        <div className="flex items-center gap-1.5 text-[12px] text-[var(--color-text-muted)]">
+        {summary && (
+          <p className="mb-1.5 line-clamp-1 text-xs text-[var(--color-text-muted)]">
+            {summary}
+          </p>
+        )}
+
+        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[12px] text-[var(--color-text-muted)]">
           <span>{date}</span>
           <span className="opacity-50">&bull;</span>
           <span>By {author}</span>
