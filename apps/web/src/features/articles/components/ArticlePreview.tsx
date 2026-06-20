@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ArticleCategory } from "./ArticleCard";
+import Image from "next/image";
 
 interface ArticlePreviewProps {
   /** Link to the full article page. */
@@ -51,11 +52,13 @@ export default function ArticlePreview({
         href={href}
         className="relative aspect-[16/11] w-[90px] min-[360px]:w-[110px] min-[400px]:w-[125px] sm:w-[140px] shrink-0 overflow-hidden rounded-[8px]"
       >
-        <img
+        <Image
           src={imageUrl}
-          alt=""
+          alt={`${title} cover image`}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
+          fill
+          unoptimized
         />
       </Link>
 
