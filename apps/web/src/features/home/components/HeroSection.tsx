@@ -16,11 +16,11 @@ import Button from "@/src/components/Button";
 export default function HeroSection() {
   return (
     <section
-      className="relative overflow-hidden"
+      className="relative overflow-hidden flex min-h-[calc(100vh-106px)] items-center"
       style={{ background: "var(--theme-dark-gradient)" }}
       aria-labelledby="hero-heading"
     >
-      <div className="mx-auto grid max-w-[1440px] items-center gap-12 px-6 py-16 sm:px-12 md:py-24 lg:grid-cols-2 lg:px-[117px]">
+      <div className="mx-auto grid w-full max-w-[1440px] items-center gap-12 px-6 py-16 sm:px-12 md:py-24 lg:grid-cols-2 lg:px-[117px]">
         {/* Left: copy + CTAs */}
         <div className="flex flex-col gap-6">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-accent-teal)]">
@@ -29,7 +29,7 @@ export default function HeroSection() {
 
           <h1
             id="hero-heading"
-            className="text-gradient text-5xl font-bold leading-tight md:text-6xl"
+            className="text-gradient text-4xl font-bold leading-tight sm:text-5xl md:text-6xl"
           >
             Instrumenting Harmony
           </h1>
@@ -51,7 +51,7 @@ export default function HeroSection() {
         </div>
 
         {/* Right: circular graphic with radial glow */}
-        <div className="relative mx-auto aspect-square w-full max-w-[460px]">
+        <div className="relative mx-auto aspect-square w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[460px]">
           {/* Soft outer glow */}
           <div
             aria-hidden="true"

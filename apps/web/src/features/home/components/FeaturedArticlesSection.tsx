@@ -1,7 +1,6 @@
 import { client } from "@/src/sanity/client";
 import { urlFor } from "@/src/sanity/imageUrl";
-import { formatDate } from "@/src/lib/formatDate";
-import { readTimeMinutes, type PortableTextBlock } from "@/src/lib/readTime";
+import { formatDate, calculateRichTextReadTime } from "@/src/lib/utils";
 import SectionHeading from "@/src/components/SectionHeading";
 import Button from "@/src/components/Button";
 import FeaturedArticleCard from "@/src/features/articles/components/FeaturedArticleCard";
@@ -19,12 +18,12 @@ interface SanityArticle {
   publishedAt?: string;
   summary?: string;
   mainImage?: SanityImageSource | null;
-  body?: PortableTextBlock[] | null;
+  body?: any[] | null;
   authorName?: string | null;
   categories?: (string | null)[] | null;
 }
 
-const ARTICLES_QUERY = `*[_type == "article"] | order(publishedAt desc)[0...4]{
+const ARTICLES_QUERY = `*[_type == "article"] | order(publishedAt desc)[0...5]{
   title, slug, publishedAt, summary, mainImage, body,
   "authorName": author->name,
   "categories": categories[]->title
@@ -78,7 +77,7 @@ export default async function FeaturedArticlesSection() {
   if (!articles || articles.length === 0) return null;
 
   const [featured, ...rest] = articles;
-  const previews = rest.slice(0, 3);
+  const previews = rest.slice(0, 4);
 
   return (
     <section
@@ -99,8 +98,8 @@ export default async function FeaturedArticlesSection() {
         </div>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-2">
-          {/* Left: latest articles list */}
-          <div>
+          {/* Left: latest articles list - placed second on mobile, first on desktop */}
+          <div className="order-2 lg:order-1">
             <h3 className="border-l-4 border-[var(--color-accent-teal)] pl-3 text-sm font-bold uppercase tracking-[0.15em] text-[var(--color-accent-teal)]">
               Latest Articles
             </h3>
@@ -115,13 +114,15 @@ export default async function FeaturedArticlesSection() {
                   title={article.title ?? "Untitled"}
                   date={formatDate(article.publishedAt)}
                   author={article.authorName ?? "IEEE SBUI"}
+                  summary={article.summary}
                 />
               ))}
             </div>
           </div>
 
-          {/* Right: featured article */}
+          {/* Right: featured article - placed first on mobile, second on desktop */}
           <FeaturedArticleCard
+            className="order-1 lg:order-2"
             href={articleHref(featured.slug)}
             imageUrl={imageUrlFor(featured.mainImage)}
             categories={toCategories(featured.categories)}
@@ -129,7 +130,7 @@ export default async function FeaturedArticlesSection() {
             excerpt={featured.summary ?? ""}
             date={formatDate(featured.publishedAt)}
             author={featured.authorName ?? "IEEE SBUI"}
-            readTimeMinutes={readTimeMinutes(featured.body)}
+            readTimeMinutes={calculateRichTextReadTime(featured.body)}
           />
         </div>
 
