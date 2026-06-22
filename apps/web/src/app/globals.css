@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: only dark;
   /* Brand Colors */
   --color-bg-primary: #080811;
   --color-bg-card: #0C1517;
@@ -43,9 +44,10 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  forced-color-adjust: none;
+  color-scheme: only dark;
 }
 
-/* Sleek custom scrollbar for dark category filter dropdown */
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
 }

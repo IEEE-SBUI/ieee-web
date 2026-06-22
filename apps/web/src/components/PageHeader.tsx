@@ -26,7 +26,7 @@ export default function PageHeader({ title, description, eyebrow }: PageHeaderPr
             {eyebrow}
           </p>
         )}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gradient mb-6 tracking-tight">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gradient md:text-gradient mb-6 tracking-tight">
           {title}
         </h1>
         <p className="max-w-2xl text-sm md:text-base leading-relaxed text-[var(--color-text-muted)]">

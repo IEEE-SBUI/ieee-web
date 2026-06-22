@@ -59,7 +59,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 h-[106px] w-full"
+      className="fixed top-0 left-0 right-0 z-50 h-[90px] w-full"
       aria-label="Main navigation"
     >
       <div
@@ -76,24 +76,24 @@ export default function Navbar() {
         
         {/* Brand Logos: Displays IEEE SBUI and UI logos separated by a thin vertical rule */}
         <div className="flex items-center gap-[13px] shrink-0">
-          <div className="relative h-[55px] w-[84px] overflow-hidden">
+          <div className="relative h-[45px] w-[84px] overflow-hidden">
             <Image
               src={LOGO_IEEE_SBUI}
               alt="IEEE SBUI logo"
               fill
-              sizes="84px"
+              sizes="64px"
               className="object-contain"
               priority
             />
           </div>
 
           <div
-            className="h-[55px] w-px shrink-0"
+            className="h-[45px] w-px shrink-0"
             style={{ background: "rgba(255,255,255,0.25)" }}
             aria-hidden="true"
           />
 
-          <div className="relative h-[55px] w-[55px] overflow-hidden">
+          <div className="relative h-[45px] w-[55px] overflow-hidden">
             <Image
               src={LOGO_UI}
               alt="Universitas Indonesia logo"
@@ -255,7 +255,7 @@ export default function Navbar() {
       {/* Mobile navigation panel */}
       {mobileOpen && (
         <div
-          className="lg:hidden absolute left-0 right-0 top-[106px] z-40 flex flex-col py-4 max-h-[calc(100vh-106px)] overflow-y-auto overscroll-contain"
+          className="lg:hidden absolute left-0 right-0 top-[90px] z-40 flex flex-col py-4 max-h-[calc(100vh-90px)] overflow-y-auto overscroll-contain"
           style={{
             background: "rgba(8, 8, 17, 0.97)",
             backdropFilter: "blur(12px)",
