@@ -10,7 +10,7 @@
   --color-accent-sky: #46BCED;
   --color-accent-indigo: #8280E5;
   --color-text-primary: #FFFFFF;
-  --color-text-muted: #9ca3af;
+  --color-text-muted: #cbd5e1;
 
   /* Borders / dividers */
   --color-border: rgba(255, 255, 255, 0.08);
@@ -38,6 +38,17 @@ body {
   color: var(--color-text-primary);
 }
 
+/* Responsive background gradient for home hero */
+.hero-bg {
+  background: radial-gradient(circle at 50% 80%, #084030 0%, #072228 50%, #050811 100%);
+}
+
+@media (min-width: 1024px) {
+  .hero-bg {
+    background: radial-gradient(circle at 80% 50%, #084030 0%, #072228 50%, #050811 100%);
+  }
+}
+
 /* Utility for gradient text */
 .text-gradient {
   background: var(--theme-brand-gradient);
@@ -60,5 +71,43 @@ body {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* Float animations for instrumental notes in hero */
+.note-float-1 {
+  animation: noteFloat1 6s ease-in-out infinite;
+}
+.note-float-2 {
+  animation: noteFloat2 8s ease-in-out infinite;
+}
+.note-float-3 {
+  animation: noteFloat3 7s ease-in-out infinite;
+}
+
+@keyframes noteFloat1 {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(4px, -15px);
+  }
+}
+
+@keyframes noteFloat2 {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-6px, -12px);
+  }
+}
+
+@keyframes noteFloat3 {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(5px, -10px);
+  }
 }
 

@@ -59,7 +59,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 h-[90px] w-full"
+      className="fixed top-0 left-0 right-0 z-50 h-[95px] w-full"
       aria-label="Main navigation"
     >
       <div
