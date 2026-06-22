@@ -18,7 +18,7 @@ export default function SectionHeading({
     <div className="mb-8">
       {/* leading-tight + pb-1 keep descenders (g, y, p, q) from clipping
           under background-clip: text. */}
-      <h2 className="text-gradient pb-1 text-3xl font-bold leading-tight md:text-4xl">
+      <h2 className="text-white md:text-gradient pb-1 text-3xl font-bold leading-tight md:text-4xl">
         {heading}
       </h2>
     </div>

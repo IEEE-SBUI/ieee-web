@@ -157,7 +157,7 @@ export default function ArticlesPage() {
                 
                 <DropdownFilter
                   label="Filter by category"
-                  title="CATEGORIES"
+                  title="Categories"
                   items={categories.map((cat) => ({
                     id: cat,
                     label: cat,
@@ -172,7 +172,7 @@ export default function ArticlesPage() {
 
                 <DropdownFilter
                   label="Filter by year"
-                  title="PUBLICATION YEAR"
+                  title="Publication Year"
                   items={yearsList.map((year) => ({
                     id: year,
                     label: year,

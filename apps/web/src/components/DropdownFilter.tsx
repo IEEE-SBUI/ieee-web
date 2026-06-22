@@ -112,7 +112,7 @@ export default function DropdownFilter({
           )}
 
           {/* Group Title */}
-          <div className="text-[10px] font-semibold text-white/40 uppercase tracking-widest mb-3">
+          <div className="text-[10px] font-semibold text-white/40 mb-3">
             {title}
           </div>
 
@@ -143,19 +143,6 @@ export default function DropdownFilter({
               })
             ) : (
               <span className="text-xs text-white/30 italic py-2">No options found</span>
-            )}
-          </div>
-
-          {/* Panel Footer */}
-          <div className="mt-4 pt-3 border-t border-white/5 text-[11px] text-white/40 flex justify-between items-center">
-            <span>{items.length} options</span>
-            {selectedItems.length > 0 && (
-              <button
-                onClick={onClear}
-                className="text-[var(--color-accent-teal)] hover:underline cursor-pointer font-semibold"
-              >
-                Clear all
-              </button>
             )}
           </div>
         </div>
