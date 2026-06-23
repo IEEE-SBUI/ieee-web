@@ -305,7 +305,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs text-white font-semibold mb-2">
-                  Full Name *
+                  Full Name <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
@@ -320,7 +320,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
               <div>
                 <label className="block text-xs text-white font-semibold mb-2">
-                  Date of Birth *
+                  Date of Birth <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="date"
@@ -334,7 +334,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
               <div className="md:col-span-2">
                 <label className="block text-xs text-white font-semibold mb-2">
-                  Email Address *
+                  Email Address <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="email"
@@ -349,7 +349,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
               <div className="md:col-span-2">
                 <label className="block text-xs text-white font-semibold mb-2">
-                  Phone Number *
+                  Phone Number <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <div className="flex w-full gap-2 relative" ref={ccDropdownRef}>
                   <div className="relative flex shrink-0">
@@ -439,7 +439,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
               <div className="md:col-span-2">
                 <label className="block text-xs text-white font-semibold mb-2">
-                  LINE ID *
+                  LINE ID <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
@@ -462,7 +462,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs text-white font-semibold mb-2">
-                  Batch Year *
+                  Batch Year <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <select
                   name="batch"
@@ -479,7 +479,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
               <div>
                 <label className="block text-xs text-white font-semibold mb-2">
-                  Origin *
+                  Origin <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-3">
                   <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
@@ -509,7 +509,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
               <div>
                 <label className="block text-xs text-white font-semibold mb-2">
-                  Faculty *
+                  Faculty <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
@@ -524,7 +524,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
               <div>
                 <label className="block text-xs text-white font-semibold mb-2">
-                  Major *
+                  Major <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
@@ -547,7 +547,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
             <div className="flex flex-col gap-6">
               <div>
                 <label className="block text-xs text-white font-semibold mb-2">
-                  Membership Type *
+                  Membership Type <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-3">
                   <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
