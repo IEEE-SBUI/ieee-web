@@ -1,16 +1,9 @@
 interface SectionHeadingProps {
-  /** Main section title displayed with gradient styling. */
+  // Section title text
   heading: string;
 }
 
-/**
- * Standard section header used across the site.
- *
- * Keeps consistent spacing and typography for page sections,
- * matching the design system from Figma.
- *
- * @returns A section heading block with label and title.
- */
+// Shared section header component used across pages.
 export default function SectionHeading({
   heading,
 }: SectionHeadingProps) {

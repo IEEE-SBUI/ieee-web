@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { label: "Divisions", href: "/divisions" },
   { label: "Articles", href: "/articles" },
   { label: "Events", href: "/events" },
+  { label: "Register", href: "/register" },
 ] as const;
 
 /** Dropdown menu links for listing historical executive committee boards. */
@@ -75,7 +76,7 @@ export default function Navbar() {
       <div className="relative flex h-full max-w-[1440px] mx-auto items-center justify-between px-6 sm:px-12 lg:px-[117px]">
         
         {/* Brand Logos: Displays IEEE SBUI and UI logos separated by a thin vertical rule */}
-        <div className="flex items-center gap-[13px] shrink-0">
+        <Link href="/" className="flex items-center gap-[13px] shrink-0 cursor-pointer">
           <div className="relative h-[45px] w-[84px] overflow-hidden">
             <Image
               src={LOGO_IEEE_SBUI}
@@ -103,7 +104,7 @@ export default function Navbar() {
               priority
             />
           </div>
-        </div>
+        </Link>
 
         {/* Desktop navigation menu links */}
         <div className="hidden lg:flex items-center gap-[35px]">

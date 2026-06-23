@@ -1,38 +1,33 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FaInstagram, FaLinkedinIn, FaYoutube } from "react-icons/fa";
+import { FiExternalLink } from "react-icons/fi";
 
-/**
- * Navigation links displayed in the footer.
- */
+// Footer nav links
 const quickLinks = [
   { label: "About Us", href: "/about" },
   { label: "Divisions", href: "/divisions" },
   { label: "Articles", href: "/articles" },
   { label: "Events", href: "/events" },
+  { label: "Membership Registration", href: "/register" },
   { label: "Our Team", href: "/team?year=2026" },
 ];
 
-/**
- * External and internal resource links displayed in the footer.
- */
+// External IEEE portal links shown under Resources
 const resourceLinks = [
-  { label: "IEEE Global", href: "https://www.ieee.org", external: true },
-  { label: "Registration", href: "#" },
+  { label: "IEEE Global Website", href: "https://www.ieee.org", external: true },
+  { label: "IEEExplore", href: "https://ieeexplore.ieee.org", external: true },
+  { label: "IEEE Spectrum", href: "https://spectrum.ieee.org", external: true },
+  { label: "IEEE Standards Association", href: "https://standards.ieee.org", external: true },
+  { label: "IEEE Jobs", href: "https://jobs.ieee.org", external: true },
+  { label: "IEEE IoT", href: "https://iot.ieee.org", external: true },
+  { label: "IEEE WIE", href: "https://wie.ieee.org", external: true },
+  { label: "IEEE Young Professionals", href: "https://yp.ieee.org", external: true },
+  { label: "IEEE Collabratec", href: "https://ieee-collabratec.ieee.org", external: true },
+  { label: "IEEE vTools", href: "https://vtools.ieee.org", external: true },
 ];
 
-/**
- * Global footer shown across the site.
- *
- * Provides chapter branding, navigation links,
- * contact information, and social media links.
- *
- * @returns The site footer component.
- */
-
-/**
- * Social media accounts displayed in the footer.
- */
+// Social media links
 const socialLinks = [
   {
     label: "Instagram",
@@ -53,7 +48,7 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-[rgba(130,128,229,0.1)] bg-[rgba(0,0,0,0.9)] backdrop-blur-sm">
+    <footer className="border-t border-[rgba(28,225,164,0.1)] bg-[var(--color-bg-primary)] backdrop-blur-sm">
       <div className="mx-auto max-w-7xl px-4 py-12 md:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           
@@ -114,34 +109,35 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: External & Internal Chapter Resources */}
+          {/* Column 3: External & Internal Chapter Resources as wrapping bubble tags */}
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-primary)]">
               Resources
             </h3>
-            <ul className="mt-4 flex flex-col gap-2.5">
+            <div className="mt-4 flex flex-wrap gap-2">
               {resourceLinks.map((link) => (
-                <li key={link.label}>
+                <div key={link.label}>
                   {link.external ? (
                     <a
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-accent-teal)]"
+                      className="group inline-flex items-center gap-1 rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] px-2.5 py-1 text-xs text-[var(--color-text-muted)] hover:text-white hover:border-[var(--color-theme-mint)] hover:bg-[rgba(28,225,164,0.05)] hover:-translate-y-0.5 transition-all duration-200 ease-out"
                     >
-                      {link.label}
+                      <span>{link.label}</span>
+                      <FiExternalLink className="h-3 w-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
                     </a>
                   ) : (
                     <Link
                       href={link.href}
-                      className="text-sm text-[var(--color-text-muted)] transition-colors hover:text-[var(--color-accent-teal)]"
+                      className="inline-flex items-center rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] px-2.5 py-1 text-xs text-[var(--color-text-muted)] hover:text-white hover:border-[var(--color-theme-mint)] hover:bg-[rgba(28,225,164,0.05)] hover:-translate-y-0.5 transition-all duration-200 ease-out"
                     >
                       {link.label}
                     </Link>
                   )}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
 
           {/* Column 4: Location & Direct Contact info */}
@@ -200,7 +196,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-[rgba(130,128,229,0.1)]">
+      <div className="border-t border-[rgba(28,225,164,0.1)]">
         <div className="mx-auto max-w-7xl px-4 py-5 md:px-8">
           <p className="text-center text-xs text-[var(--color-text-muted)]">
             &copy; 2026 IEEE Student Branch Universitas Indonesia. All rights
