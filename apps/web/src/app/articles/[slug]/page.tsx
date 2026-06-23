@@ -35,11 +35,14 @@ const components: PortableTextComponents = {
       const imageUrl = urlFor(value);
       return (
         <figure className="my-8 flex flex-col items-center gap-3">
-          <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#0C1517] w-full">
-            <img
+          <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#0C1517] w-full aspect-video">
+            <Image
               src={imageUrl}
               alt={value.alt || "Article image"}
-              className="w-full h-auto object-cover max-h-[500px]"
+              fill
+              unoptimized
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 720px"
               loading="lazy"
             />
           </div>
