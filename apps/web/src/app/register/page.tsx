@@ -1,9 +1,17 @@
+import dynamic from "next/dynamic";
 import { client } from "@/src/sanity/client";
 import { createAdminClient } from "@/src/utils/supabase/admin";
-import RegisterForm, { RegistrationSettings } from "./RegisterForm";
+import type { RegistrationSettings } from "./RegisterForm";
 
-// Force dynamic to retrieve the latest configurations and database records on request time
-export const dynamic = "force-dynamic";
+// Dynamically import the heavy client component so its JS chunk (which includes
+// ALL_COUNTRY_CODES and all form state) is split from the critical-path bundle.
+// The server still renders the full HTML (ssr: true is the default).
+const RegisterForm = dynamic(() => import("./RegisterForm"), { ssr: true });
+
+// Revalidate every 5 minutes so Next.js can serve a cached response to most
+// visitors, slashing TTFB. The page is regenerated in the background when the
+// revalidation window expires.
+export const revalidate = 300;
 
 async function getRegistrationSettings(): Promise<RegistrationSettings> {
   try {
@@ -17,7 +25,12 @@ async function getRegistrationSettings(): Promise<RegistrationSettings> {
         lineId
       }
     }`;
-    const settings = await client.fetch<RegistrationSettings | null>(query);
+    // Pass Next.js fetch options to leverage the built-in data cache.
+    const settings = await client.fetch<RegistrationSettings | null>(
+      query,
+      {},
+      { next: { revalidate: 300 } }
+    );
     return settings || {};
   } catch (error) {
     console.error(
@@ -50,7 +63,26 @@ async function getSocietiesFromSupabase() {
 }
 
 export default async function RegisterPage() {
-  const settings = await getRegistrationSettings();
-  const societies = await getSocietiesFromSupabase();
-  return <RegisterForm settings={settings} societies={societies} />;
+  // Run both fetches in parallel — saves the round-trip time of the slower one.
+  const [settings, societies] = await Promise.all([
+    getRegistrationSettings(),
+    getSocietiesFromSupabase(),
+  ]);
+  return (
+    <>
+      {/*
+        Preload the LCP image so the browser fetches it immediately on first
+        byte rather than waiting for JS hydration. RegisterForm is a Client
+        Component, so Next.js cannot inject this automatically.
+      */}
+      <link
+        rel="preload"
+        as="image"
+        href="/banner-2026.webp"
+        fetchPriority="high"
+      />
+      <RegisterForm settings={settings} societies={societies} />
+    </>
+  );
 }
+

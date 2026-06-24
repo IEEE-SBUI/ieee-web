@@ -92,9 +92,9 @@ export default function Footer() {
 
           {/* Column 2: Navigation Links */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-primary)]">
+            <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-primary)]">
               Quick Links
-            </h3>
+            </p>
             <ul className="mt-4 flex flex-col gap-2.5">
               {quickLinks.map((link) => (
                 <li key={link.href}>
@@ -111,9 +111,9 @@ export default function Footer() {
 
           {/* Column 3: External & Internal Chapter Resources as wrapping bubble tags */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-primary)]">
+            <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-primary)]">
               Resources
-            </h3>
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {resourceLinks.map((link) => (
                 <div key={link.label}>
@@ -142,9 +142,9 @@ export default function Footer() {
 
           {/* Column 4: Location & Direct Contact info */}
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-primary)]">
+            <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-text-primary)]">
               Contact
-            </h3>
+            </p>
             <div className="mt-4 flex flex-col gap-3">
               <div className="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
                 <svg

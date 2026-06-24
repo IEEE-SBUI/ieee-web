@@ -38,8 +38,15 @@ const CORRIDORS: Corridor[] = [
  * @returns The divisions page.
  */
 export default async function DivisionsPage() {
-  const divisions = (await client.fetch<Division[]>(DIVISIONS_QUERY)) ?? [];
-
+  let divisions: Division[] = [];
+  try {
+    divisions = (await client.fetch<Division[]>(DIVISIONS_QUERY)) ?? [];
+  } catch (error) {
+    // Sanity is unreachable (e.g. network issue at build time or runtime).
+    // Render the page with an empty state rather than crashing the build.
+    console.error("Failed to fetch divisions from Sanity:", error);
+  }
+  
   return (
     <div>
       {/* Page header on the dark gradient strip */}
