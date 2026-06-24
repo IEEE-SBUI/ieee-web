@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/src/utils/supabase/admin";
 import { appendToGoogleSheet } from "@/src/lib/google-sheets";
-import { IEEE_SOCIETIES } from "@/src/data/ieeeSocieties";
 
 const registerSchema = z.object({
   full_name: z.string().min(1, "Full name is required"),
@@ -32,10 +31,10 @@ export async function POST(request: Request) {
 
     const data = parsed.data;
 
-    // Connect to database
+    // Initialize Supabase Admin client
     const supabase = createAdminClient();
 
-    // Check if email already exists
+    // Check for duplicate email
     const { data: existing, error: queryError } = await supabase
       .from("registrations")
       .select("id")
@@ -57,7 +56,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Save to database
+    // Insert record into Supabase registrations table
     const { error: insertError } = await supabase
       .from("registrations")
       .insert({
@@ -76,7 +75,7 @@ export async function POST(request: Request) {
 
     if (insertError) {
       console.error("Database insert error:", insertError);
-      // Duplicate email (unique constraint violation)
+      // Check if it's a unique constraint violation (duplicate key)
       if (insertError.code === "23505") {
         return NextResponse.json(
           { error: "Email already registered" },
@@ -89,46 +88,18 @@ export async function POST(request: Request) {
       );
     }
 
-    // Format societies with prices for the Google Sheet
-    let preferredSocietiesFormatted = "N/A";
-    if (data.membership_type === "international") {
-      if (data.preferred_societies && data.preferred_societies.length > 0) {
-        try {
-          // Start with prices from our static list as defaults
-          const societyPriceMap = new Map<string, number>(
-            IEEE_SOCIETIES.map((soc) => [soc.name, soc.price])
-          );
+    // Sync to Google Sheet
+    const timestamp = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).format(new Date());
 
-          // Override with database prices if available
-          const { data: dbSocieties } = await supabase
-            .from("societies")
-            .select("name, price")
-            .eq("active", true);
-
-          if (dbSocieties) {
-            dbSocieties.forEach((soc) => {
-              societyPriceMap.set(soc.name, Number(soc.price));
-            });
-          }
-
-          let totalPrice = 0;
-          const formattedItems = data.preferred_societies.map((name) => {
-            const price = societyPriceMap.get(name) || 0;
-            totalPrice += price;
-            return `${name} ($${price})`;
-          });
-          preferredSocietiesFormatted = `${formattedItems.join(", ")} [Total: $${totalPrice}]`;
-        } catch (dbError) {
-          console.error("Error mapping societies to prices for sheet sync:", dbError);
-          preferredSocietiesFormatted = data.preferred_societies.join(", ");
-        }
-      } else {
-        preferredSocietiesFormatted = "None Selected [Total: $0]";
-      }
-    }
-
-    // Append row to Google Sheet
-    const timestamp = new Date().toISOString();
     const sheetRow = [
       timestamp,
       data.full_name,
@@ -141,10 +112,10 @@ export async function POST(request: Request) {
       data.date_of_birth,
       data.origin,
       data.membership_type,
-      preferredSocietiesFormatted,
+      data.preferred_societies ? data.preferred_societies.join(", ") : "",
     ];
 
-    // Wait for sheet write to finish before the function exits
+    // Await sheets sync to ensure completion before serverless function finishes execution
     await appendToGoogleSheet(sheetRow);
 
     return NextResponse.json({ success: true });

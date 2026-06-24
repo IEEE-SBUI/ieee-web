@@ -7,6 +7,7 @@ import { ChevronDown, Info } from "lucide-react";
 import PageHeader from "@/src/components/PageHeader";
 import { ALL_COUNTRY_CODES } from "@/src/utils/countryCodes";
 import { IEEE_SOCIETIES } from "@/src/data/ieeeSocieties";
+import { WobblyBlob, Starburst } from "@/src/components/DecorativeShapes";
 
 const DEFAULT_SOCIETIES = IEEE_SOCIETIES;
 
@@ -220,26 +221,33 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
           {/* Theme Banner */}
           <div className="relative w-full aspect-[3/1] rounded-xl overflow-hidden border border-white/5 shadow-md">
             <Image
-              src="/banner-2026.png"
+              src="/banner-2026.webp"
               alt="IEEE SBUI 2026 Instrumenting Harmony Theme Banner"
               fill
               sizes="(max-width: 1024px) 100vw, 400px"
               className="object-cover"
               priority
+              fetchPriority="high"
             />
           </div>
 
-          <h3 className="text-xl font-extrabold text-white">Hello, Future Young Professionals! 🌟</h3>
+          <div className="relative">
+            <h2 className="text-xl font-extrabold text-white pr-8">Hello, Future Young Professionals! 🌟</h2>
+          </div>
           <p className="text-gray-300">
-            We’re excited to welcome new members to the IEEE Student Branch Universitas Indonesia! By joining IEEE SBUI, you gain access to a global network of innovators, exclusive events, and professional development opportunities.
+            We're excited to welcome new members to the IEEE Student Branch Universitas Indonesia! By joining IEEE SBUI, you gain access to a global network of innovators, exclusive events, and professional development opportunities.
           </p>
-          
+
           <div className="space-y-3 mt-2">
-            <p className="font-bold text-[var(--color-accent-teal)] text-xs uppercase">Membership Benefits</p>
+            <div className="mb-1">
+              <span className="font-extrabold text-[var(--color-accent-teal)] text-xs uppercase tracking-wider">
+                Membership Benefits
+              </span>
+            </div>
             <ul className="space-y-3 pl-1">
               <li className="flex items-start gap-2.5">
                 <span className="text-emerald-400 shrink-0 mt-0.5">-</span>
-                <span>Access to IEEE’s vast digital library and research papers (IEEExplore) 📚</span>
+                <span>Access to IEEE's vast digital library and research papers (IEEExplore) 📚</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="text-emerald-400 shrink-0 mt-0.5">-</span>
@@ -264,23 +272,23 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
             <p>
               <strong className="text-[var(--color-accent-sky)]">📆 Registration Period:</strong> Open Now!
             </p>
-            <p className="text-xs text-gray-400">
-              Don’t miss out on this opportunity to be part of a leading global engineering and technology community! Mark your calendars and register now!
+            <p className="text-xs text-gray-300">
+              Don&apos;t miss out on this opportunity to be part of a leading global engineering and technology community! Mark your calendars and register now!
             </p>
           </div>
           
-          <p className="text-xs text-gray-400">
-            For any questions or further details, feel free to reach out. We’re excited to have you on board!
+          <p className="text-xs text-gray-300">
+            For any questions or further details, feel free to reach out. We&apos;re excited to have you on board!
           </p>
           
-          <div className="border-t border-white/5 pt-4 mt-2 flex justify-between items-end text-xs text-gray-400">
+          <div className="border-t border-white/5 pt-4 mt-2 flex justify-between items-end text-xs text-gray-300">
             <div>
               <p>Sincerely,</p>
               <p className="font-semibold text-white mt-0.5">IEEE SBUI 2026</p>
             </div>
             <div className="text-right">
               <p className="font-semibold text-[var(--color-accent-teal)]">#InstrumentingHarmony</p>
-              <p className="text-[10px] text-gray-500">Involve - Evolve - Resolve</p>
+              <p className="text-xs text-gray-200">Involve - Evolve - Resolve</p>
             </div>
           </div>
         </div>
@@ -299,56 +307,60 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
             {/* Section 1: Personal Info */}
           <div>
-            <h3 className="text-lg font-bold text-white border-b border-white/5 pb-2 mb-6">
+            <h2 className="text-lg font-bold text-white border-b border-white/5 pb-2 mb-6">
               Personal Information
-            </h3>
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs text-white font-semibold mb-2">
+                <label htmlFor="full_name" className="block text-xs text-white font-semibold mb-2">
                   Full Name <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
                   name="full_name"
+                  id="full_name"
                   value={formData.full_name}
                   onChange={handleInputChange}
                   required
                   placeholder="Enter your full name"
-                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
+                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-white font-semibold mb-2">
+                <label htmlFor="date_of_birth" className="block text-xs text-white font-semibold mb-2">
                   Date of Birth <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="date"
                   name="date_of_birth"
+                  id="date_of_birth"
                   value={formData.date_of_birth}
                   onChange={handleInputChange}
                   required
+                  aria-label="Date of birth"
                   className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-xs text-white font-semibold mb-2">
+                <label htmlFor="email" className="block text-xs text-white font-semibold mb-2">
                   Email Address <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="email"
                   name="email"
+                  id="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   required
                   placeholder="name@domain.com"
-                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
+                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-xs text-white font-semibold mb-2">
+                <label htmlFor="phone_number" className="block text-xs text-white font-semibold mb-2">
                   Phone Number <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <div className="flex w-full gap-2 relative" ref={ccDropdownRef}>
@@ -384,7 +396,8 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
                             value={CCSearchQuery}
                             onChange={(e) => setCCSearchQuery(e.target.value)}
                             placeholder="Search country or code..."
-                            className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-500 text-xs focus:outline-none focus:border-[var(--color-accent-teal)] transition-all"
+                            aria-label="Search country or calling code"
+                            className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-400 text-xs focus:outline-none focus:border-[var(--color-accent-teal)] transition-all"
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
@@ -392,7 +405,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
                         {/* List */}
                         <div className="max-h-[220px] overflow-y-auto custom-scrollbar">
                           {filteredCountries.length === 0 ? (
-                            <div className="px-4 py-3 text-xs text-gray-500 text-center">
+                            <div className="px-4 py-3 text-xs text-gray-300 text-center">
                               No results found
                             </div>
                           ) : (
@@ -425,6 +438,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
                   <input
                     type="tel"
                     name="phone_number"
+                    id="phone_number"
                     value={formData.phone_number}
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, "");
@@ -432,23 +446,24 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
                     }}
                     required
                     placeholder="e.g. 8123456789"
-                    className="flex-1 min-w-0 bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
+                    className="flex-1 min-w-0 bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
                   />
                 </div>
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-xs text-white font-semibold mb-2">
+                <label  htmlFor="id_line" className="block text-xs text-white font-semibold mb-2">
                   LINE ID <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
                   name="id_line"
+                  id="id_line"
                   value={formData.id_line}
                   onChange={handleInputChange}
                   required
                   placeholder="Enter your LINE ID"
-                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
+                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
                 />
               </div>
             </div>
@@ -456,18 +471,20 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
           {/* Section 2: Academic Details */}
           <div>
-            <h3 className="text-lg font-bold text-white border-b border-white/5 pb-2 mb-6">
+            <h2 className="text-lg font-bold text-white border-b border-white/5 pb-2 mb-6">
               Academic Details
-            </h3>
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs text-white font-semibold mb-2">
+                <label htmlFor="batch" className="block text-xs text-white font-semibold mb-2">
                   Batch Year <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <select
                   name="batch"
+                  id="batch"
                   value={formData.batch}
                   onChange={handleInputChange}
+                  aria-label="Batch year"
                   className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
                 >
                   <option value="2025">2025</option>
@@ -478,7 +495,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
               </div>
 
               <div>
-                <label className="block text-xs text-white font-semibold mb-2">
+                <label htmlFor="origin" className="block text-xs text-white font-semibold mb-2">
                   Origin <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 mt-3">
@@ -486,6 +503,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
                     <input
                       type="radio"
                       name="origin"
+                      id="origin_internal"
                       value="internal"
                       checked={formData.origin === "internal"}
                       onChange={handleInputChange}
@@ -497,6 +515,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
                     <input
                       type="radio"
                       name="origin"
+                      id="origin_external"
                       value="external"
                       checked={formData.origin === "external"}
                       onChange={handleInputChange}
@@ -508,32 +527,34 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
               </div>
 
               <div>
-                <label className="block text-xs text-white font-semibold mb-2">
+                <label htmlFor="faculty" className="block text-xs text-white font-semibold mb-2">
                   Faculty <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
                   name="faculty"
+                  id="faculty"
                   value={formData.faculty}
                   onChange={handleInputChange}
                   required
                   placeholder="e.g. Faculty of Engineering"
-                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
+                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-white font-semibold mb-2">
+                <label htmlFor="major" className="block text-xs text-white font-semibold mb-2">
                   Major <span className="text-red-500 ml-0.5">*</span>
                 </label>
                 <input
                   type="text"
                   name="major"
+                  id="major"
                   value={formData.major}
                   onChange={handleInputChange}
                   required
                   placeholder="e.g. Computer Engineering"
-                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
+                  className="w-full bg-[var(--color-bg-primary)] border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--color-accent-teal)] focus:ring-1 focus:ring-[var(--color-accent-teal)] transition-all"
                 />
               </div>
             </div>
@@ -541,9 +562,9 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
 
           {/* Section 3: Membership Details */}
           <div>
-            <h3 className="text-lg font-bold text-white border-b border-white/5 pb-2 mb-6">
+            <h2 className="text-lg font-bold text-white border-b border-white/5 pb-2 mb-6">
               Membership Details
-            </h3>
+            </h2>
             <div className="flex flex-col gap-6">
               <div>
                 <label className="block text-xs text-white font-semibold mb-2">
@@ -588,7 +609,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
                   <p className="text-xs text-white font-bold mb-1">
                     Preferred IEEE Societies (Optional)
                   </p>
-                  <p className="text-xs text-gray-400 mb-4 leading-relaxed">
+                  <p className="text-xs text-gray-300 mb-4 leading-relaxed">
                     Select your areas of technical interest to join specific IEEE societies (price per society is listed next to each option).
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">

@@ -60,10 +60,12 @@ export default function HeroSection() {
             articles, and meet engineers from around the world.
           </p>
 
-          <div className="flex flex-col gap-4 sm:flex-row">
-            <Button variant="primary" href="/register">
-              Register Now
-            </Button>
+          <div className="flex flex-col gap-4 sm:flex-row items-start">
+            <div className="relative w-fit">
+              <Button variant="primary" className="bg-gradient-to-r from-[var(--color-accent-teal)] to-[var(--color-accent-sky)] hover:opacity-90 !text-black" href="/register">
+                Register Now
+              </Button>
+            </div>
             <Button variant="secondary" href="/divisions">
               Explore Divisions
             </Button>
