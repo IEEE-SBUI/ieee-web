@@ -13,7 +13,7 @@ permissions:
 env:
   # Static routes only — /articles/[slug] is dynamic and has no fixed URL
   # to audit, so it's intentionally excluded here.
-  AUDIT_PATHS: "/ /about /articles /divisions /events /teams"
+  AUDIT_PATHS: "/ /about /articles /divisions /events /teams /register"
 
 jobs:
   lighthouse-preview:
