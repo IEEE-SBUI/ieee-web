@@ -235,7 +235,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
             <h2 className="text-xl font-extrabold text-white pr-8">Hello, Future Young Professionals! 🌟</h2>
           </div>
           <p className="text-gray-300">
-            We're excited to welcome new members to the IEEE Student Branch Universitas Indonesia! By joining IEEE SBUI, you gain access to a global network of innovators, exclusive events, and professional development opportunities.
+            {"We're excited to welcome new members to the IEEE Student Branch Universitas Indonesia! By joining IEEE SBUI, you gain access to a global network of innovators, exclusive events, and professional development opportunities."}
           </p>
 
           <div className="space-y-3 mt-2">
@@ -247,7 +247,7 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
             <ul className="space-y-3 pl-1">
               <li className="flex items-start gap-2.5">
                 <span className="text-emerald-400 shrink-0 mt-0.5">-</span>
-                <span>Access to IEEE's vast digital library and research papers (IEEExplore) 📚</span>
+                <span>{"Access to IEEE's vast digital library and research papers (IEEExplore) 📚"}</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <span className="text-emerald-400 shrink-0 mt-0.5">-</span>
@@ -273,12 +273,12 @@ export default function RegisterForm({ settings, societies }: RegisterFormProps)
               <strong className="text-[var(--color-accent-sky)]">📆 Registration Period:</strong> Open Now!
             </p>
             <p className="text-xs text-gray-300">
-              Don&apos;t miss out on this opportunity to be part of a leading global engineering and technology community! Mark your calendars and register now!
+              {"Don't miss out on this opportunity to be part of a leading global engineering and technology community! Mark your calendars and register now!"}
             </p>
           </div>
           
           <p className="text-xs text-gray-300">
-            For any questions or further details, feel free to reach out. We&apos;re excited to have you on board!
+            {"For any questions or further details, feel free to reach out. We're excited to have you on board!"}
           </p>
           
           <div className="border-t border-white/5 pt-4 mt-2 flex justify-between items-end text-xs text-gray-300">
