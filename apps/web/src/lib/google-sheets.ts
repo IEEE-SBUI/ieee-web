@@ -5,9 +5,9 @@ const sheetId = process.env.GOOGLE_SHEET_ID;
 /**
  * Extracts and cleans the Google service account credentials.
  * Handles:
- * 1. Wrapping single/double quotes around GOOGLE_SERVICE_ACCOUNT_JSON (often added in Vercel UI).
- * 2. Escaped newlines (\n) in the private key string.
- * 3. Fallback to individual variables for email and private key if JSON is not defined or fails.
+ * - Wrapping single/double quotes around GOOGLE_SERVICE_ACCOUNT_JSON (often added in Vercel UI).
+ * - Escaped newlines (\n) in the private key string.
+ * - Fallback to individual variables for email and private key if JSON is not defined or fails.
  */
 function getCredentials() {
   const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
