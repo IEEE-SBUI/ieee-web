@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/src/utils/supabase/admin";
 import { appendToGoogleSheet } from "@/src/lib/google-sheets";
+import { IEEE_SOCIETIES } from "@/src/data/ieeeSocieties";
 
 const registerSchema = z.object({
   full_name: z.string().min(1, "Full name is required"),
@@ -88,6 +89,39 @@ export async function POST(request: Request) {
       );
     }
 
+    // Fetch societies from Supabase to match prices
+    let societiesList: Array<{ name: string; price: number }> = [];
+    try {
+      const { data: dbSocieties } = await supabase
+        .from("societies")
+        .select("name, price");
+      if (dbSocieties && dbSocieties.length > 0) {
+        societiesList = dbSocieties;
+      }
+    } catch (e) {
+      console.error("Error fetching societies for Google Sheets sync:", e);
+    }
+
+    let formattedSocieties = "";
+    if (data.membership_type === "local") {
+      formattedSocieties = "N/A";
+    } else {
+      const selectedNames = data.preferred_societies || [];
+      const activeList = societiesList.length > 0 ? societiesList : IEEE_SOCIETIES;
+      let total = 0;
+      const parts = selectedNames.map((name) => {
+        const matched = activeList.find(
+          (s) => s.name.toLowerCase() === name.toLowerCase()
+        );
+        const price = matched ? matched.price : 0;
+        total += price;
+        return `${name} ($${price})`;
+      });
+      formattedSocieties = selectedNames.length > 0
+        ? `${parts.join(", ")} [Total: $${total}]`
+        : "";
+    }
+
     // Sync to Google Sheet
     const timestamp = new Intl.DateTimeFormat("en-GB", {
       timeZone: "Asia/Jakarta",
@@ -112,7 +146,7 @@ export async function POST(request: Request) {
       data.date_of_birth,
       data.origin,
       data.membership_type,
-      data.preferred_societies ? data.preferred_societies.join(", ") : "",
+      formattedSocieties,
     ];
 
     // Await sheets sync to ensure completion before serverless function finishes execution

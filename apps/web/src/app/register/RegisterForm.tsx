@@ -7,7 +7,6 @@ import { ChevronDown, Info } from "lucide-react";
 import PageHeader from "@/src/components/PageHeader";
 import { ALL_COUNTRY_CODES } from "@/src/utils/countryCodes";
 import { IEEE_SOCIETIES } from "@/src/data/ieeeSocieties";
-import { WobblyBlob, Starburst } from "@/src/components/DecorativeShapes";
 
 const DEFAULT_SOCIETIES = IEEE_SOCIETIES;
 
