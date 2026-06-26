@@ -1,23 +1,18 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
-import { client } from "@/src/sanity/client";
-import { urlFor } from "@/src/sanity/imageUrl";
-import { Corridor, CORRIDOR_COLORS } from "@/src/lib/tokens";
 import PageHeader from "@/src/components/PageHeader";
 
-export const revalidate = 60;
-
 /* ── Types ─────────────────────────────────────────────────────── */
-
 interface SanityImage {
   asset?: { _ref?: string };
   alt?: string;
 }
-
 interface PersonRef {
   _id?: string;
   name: string;
   image?: SanityImage;
-  /** Only present on exec-board members fetched with photoType. */
   photoType?: "individual" | "duo";
   duoPartner?: {
     _id: string;
@@ -25,16 +20,14 @@ interface PersonRef {
     image?: SanityImage;
   };
 }
-
 interface DivisionData {
   abbreviation: string;
   fullName: string;
-  corridor: Corridor;
+  corridor: "Internal Operations" | "Education and Development" | "Public Relations";
   manager?: PersonRef;
   viceManager?: PersonRef;
   staff?: PersonRef[];
 }
-
 interface TeamConfigData {
   year: string;
   president?: PersonRef;
@@ -46,57 +39,168 @@ interface TeamConfigData {
   directorPublicRelations?: PersonRef;
 }
 
-/* ── Queries ────────────────────────────────────────────────────── */
-
-// Exec board members include _id, photoType, and duoPartner so the page
-// can group pairs into a single landscape duo card.
-const CONFIG_QUERY = `*[_type == "teamConfig" && year == $year][0]{
-  year,
-  president->{ _id, name, image, photoType, duoPartner->{ _id, name, image } },
-  vicePresident->{ _id, name, image, photoType, duoPartner->{ _id, name, image } },
-  secretary->{ _id, name, image, photoType, duoPartner->{ _id, name, image } },
-  treasurer->{ _id, name, image, photoType, duoPartner->{ _id, name, image } },
-  directorInternalOps->{ _id, name, image },
-  directorEduDev->{ _id, name, image },
-  directorPublicRelations->{ _id, name, image }
-}`;
-
-const DIVISIONS_QUERY = `*[_type == "division"] | order(order asc) {
-  abbreviation,
-  fullName,
-  corridor,
-  manager->{ name, image },
-  viceManager->{ name, image },
-  staff[]->{ name, image }
-}`;
-
-/* ── Corridor order ─────────────────────────────────────────────── */
-
-const CORRIDORS: Corridor[] = [
-  "Internal Operations",
-  "Education and Development",
-  "Public Relations",
-];
-
-/* ── Helpers ────────────────────────────────────────────────────── */
-
-function buildImageUrl(
-  image: SanityImage | undefined,
-  displayW: number,
-  displayH: number
-): string | null {
-  if (!image?.asset?._ref) return null;
-  try {
-    return urlFor(image as Parameters<typeof urlFor>[0])
-      .width(displayW * 2)
-      .height(displayH * 2)
-      .fit("crop")
-      .url();
-  } catch {
-    return null;
-  }
+interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations";
+  image?: SanityImage;
+  order: number;
 }
 
+/* ── Simulated Data ─────────────────────────────────────────────── */
+const MOCK_CONFIG: TeamConfigData = {
+  year: "2026",
+  president: { _id: "p1", name: "Ahmad Rizky Pratama", photoType: "individual" },
+  vicePresident: { _id: "p2", name: "Dewi Nuraini", photoType: "individual" },
+  secretary: {
+    _id: "p3",
+    name: "Siti Putri Rahayu",
+    photoType: "duo",
+    duoPartner: { _id: "p4", name: "Fariz Hakim" },
+  },
+  treasurer: { _id: "p4", name: "Fariz Hakim", photoType: "individual" },
+  directorInternalOps: { _id: "d1", name: "Bagas Wicaksono" },
+  directorEduDev: { _id: "d2", name: "Kirana Maharani" },
+  directorPublicRelations: { _id: "d3", name: "Nadia Rachma" },
+};
+
+const MOCK_DIVISIONS: DivisionData[] = [
+  {
+    abbreviation: "HRD",
+    fullName: "Human Resources Development",
+    corridor: "Internal Operations",
+    manager: { name: "Yusuf Pratama" },
+    viceManager: { name: "Lina Agustina" },
+    staff: [
+      { name: "Raka Kurnia" },
+      { name: "Nisa Aulia" },
+      { name: "Dimas Maulana" },
+      { name: "Fira Handayani" },
+      { name: "Galuh Permata" },
+      { name: "Iqbal Marzuki" },
+      { name: "Zara Nabila" },
+    ],
+  },
+  {
+    abbreviation: "FIN",
+    fullName: "Finance and Budgeting",
+    corridor: "Internal Operations",
+    manager: { name: "Aldi Lesmana" },
+    viceManager: { name: "Tania Putri" },
+    staff: [
+      { name: "Gilang Fauzi" },
+      { name: "Mirna Rahayu" },
+      { name: "Eksa Wibowo" },
+    ],
+  },
+  {
+    abbreviation: "SEKRE",
+    fullName: "Secretariat",
+    corridor: "Internal Operations",
+    manager: { name: "Rini Handayani" },
+    viceManager: { name: "Deni Surya" },
+    staff: [{ name: "Zahra Amelia" }, { name: "Fani Nurlita" }],
+  },
+  {
+    abbreviation: "ACAD",
+    fullName: "Academic Excellence",
+    corridor: "Education and Development",
+    manager: { name: "Hendra Firman" },
+    viceManager: { name: "Annisa Nur" },
+    staff: [
+      { name: "Bima Irawan" },
+      { name: "Salma Lestari" },
+      { name: "Rizwan Azhar" },
+      { name: "Dela Ayu" },
+      { name: "Kevin Saputra" },
+      { name: "Mega Wulandari" },
+    ],
+  },
+  {
+    abbreviation: "RND",
+    fullName: "Research and Development",
+    corridor: "Education and Development",
+    manager: { name: "Ilham Oktavian" },
+    viceManager: { name: "Maya Fitriani" },
+    staff: [
+      { name: "Reza Yudha" },
+      { name: "Dara Ananda" },
+      { name: "Winda Nurhaliza" },
+    ],
+  },
+  {
+    abbreviation: "MEDIA",
+    fullName: "Media and Creative",
+    corridor: "Public Relations",
+    manager: { name: "Putri Sari" },
+    viceManager: { name: "Adi Firmansyah" },
+    staff: [
+      { name: "Cinta Natasya" },
+      { name: "Vira Ramadhani" },
+      { name: "Bayu Nugroho" },
+      { name: "Tiara Dewi" },
+      { name: "Rian Maulana" },
+    ],
+  },
+  {
+    abbreviation: "COLLAB",
+    fullName: "Collaboration and Partnerships",
+    corridor: "Public Relations",
+    manager: { name: "Hafid Abdillah" },
+    viceManager: { name: "Layla Kusuma" },
+    staff: [{ name: "Titan Alfarizi" }, { name: "Sandi Aprilian" }],
+  },
+  {
+    abbreviation: "EVENT",
+    fullName: "Events and Community",
+    corridor: "Public Relations",
+    manager: { name: "Rizal Anwar" },
+    viceManager: { name: "Niar Amelia" },
+    staff: [
+      { name: "Faza Rabbani" },
+      { name: "Yara Sakinah" },
+      { name: "Dani Kurniawan" },
+      { name: "Aulia Fitri" },
+    ],
+  },
+];
+
+/* ── Accent Configuration (Using Established Corridor Colors) ── */
+const ACCENT_COLORS: Record<string, { text: string; bg: string; border: string; raw: string }> = {
+  "Leadership": {
+    text: "text-[#f59e0b]",
+    bg: "from-[#f59e0b]/10 to-[#f59e0b]/20 text-[#f59e0b]/40 border-[#f59e0b]/10 hover:border-[#f59e0b]/30",
+    border: "border-[#f59e0b]/10 hover:border-[#f59e0b]/30",
+    raw: "#f59e0b",
+  },
+  "Internal Operations": {
+    text: "text-[#1CE1A4]",
+    bg: "from-[#1CE1A4]/10 to-[#1CE1A4]/20 text-[#1CE1A4]/40 border-[#1CE1A4]/10 hover:border-[#1CE1A4]/30",
+    border: "border-[#1CE1A4]/10 hover:border-[#1CE1A4]/30",
+    raw: "#1CE1A4",
+  },
+  "Education and Development": {
+    text: "text-[#8280E5]",
+    bg: "from-[#8280E5]/10 to-[#8280E5]/20 text-[#8280E5]/40 border-[#8280E5]/10 hover:border-[#8280E5]/30",
+    border: "border-[#8280E5]/10 hover:border-[#8280E5]/30",
+    raw: "#8280E5",
+  },
+  "Education & Dev": {
+    text: "text-[#8280E5]",
+    bg: "from-[#8280E5]/10 to-[#8280E5]/20 text-[#8280E5]/40 border-[#8280E5]/10 hover:border-[#8280E5]/30",
+    border: "border-[#8280E5]/10 hover:border-[#8280E5]/30",
+    raw: "#8280E5",
+  },
+  "Public Relations": {
+    text: "text-[#46BCED]",
+    bg: "from-[#46BCED]/10 to-[#46BCED]/20 text-[#46BCED]/40 border-[#46BCED]/10 hover:border-[#46BCED]/30",
+    border: "border-[#46BCED]/10 hover:border-[#46BCED]/30",
+    raw: "#46BCED",
+  },
+};
+
+/* ── Helpers ────────────────────────────────────────────────────── */
 function getInitials(name?: string): string {
   if (!name) return "?";
   return name
@@ -107,515 +211,432 @@ function getInitials(name?: string): string {
     .toUpperCase();
 }
 
-/* ── Exec board slot grouping ───────────────────────────────────── */
-
-type ExecEntry = { member: PersonRef | undefined; role: string };
-
-type DisplaySlot =
-  | { kind: "solo"; member: PersonRef; role: string }
-  | {
-      kind: "duo";
-      primary: PersonRef;
-      primaryRole: string;
-      partner: { _id: string; name: string; image?: SanityImage };
-      partnerRole: string;
-    };
-
-/**
- * Groups exec board entries into solo/duo display slots.
- * Members who appear as someone's duoPartner are consumed by that duo card
- * and skipped in their own position.
- */
-function buildExecSlots(entries: ExecEntry[]): DisplaySlot[] {
-  // Collect IDs that are already displayed inside a duo card.
-  const partnerIds = new Set<string>();
-  for (const { member } of entries) {
-    if (member?._id && member.photoType === "duo" && member.duoPartner?._id) {
-      partnerIds.add(member.duoPartner._id);
-    }
-  }
-
-  // _id → role so we can label the partner inside a duo card.
-  const idToRole = new Map<string, string>(
-    entries
-      .filter((e) => e.member?._id)
-      .map(({ member, role }) => [member!._id!, role])
+/* ── Base Components ────────────────────────────────────────────── */
+function SectionDivider({ label, colorClass }: { label: string; colorClass?: string }) {
+  return (
+    <div className="flex items-center gap-3 my-4">
+      <span className={`text-[10px] font-extrabold tracking-widest uppercase whitespace-nowrap ${colorClass || "text-gray-400"}`}>
+        {label}
+      </span>
+      <div className="h-[1px] flex-grow bg-white/5" />
+    </div>
   );
-
-  const slots: DisplaySlot[] = [];
-  for (const { member, role } of entries) {
-    if (!member) continue;
-    if (member._id && partnerIds.has(member._id)) continue;
-
-    if (member.photoType === "duo" && member.duoPartner?._id) {
-      slots.push({
-        kind: "duo",
-        primary: member,
-        primaryRole: role,
-        partner: member.duoPartner,
-        partnerRole: idToRole.get(member.duoPartner._id) ?? "",
-      });
-    } else {
-      slots.push({ kind: "solo", member, role });
-    }
-  }
-  return slots;
 }
 
-/* ── Photo components ───────────────────────────────────────────── */
+function MemberCard({ member }: { member: TeamMember }) {
+  const accent = ACCENT_COLORS[member.category] || ACCENT_COLORS["Leadership"];
 
-/**
- * Portrait card (2:3) for a single exec board member.
- * Math: at 192 px wide in a 4-col grid, photo is 192 × 288 px.
- */
-function SoloCard({ member, role }: { member: PersonRef; role: string }) {
-  const src = buildImageUrl(member.image, 192, 288);
   return (
-    <div
-      className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--hover-border-color)]"
-      style={{ "--hover-border-color": "rgba(28,225,164,0.4)" } as React.CSSProperties}
-    >
-      <div className="relative aspect-[2/3] w-full overflow-hidden">
-        {src ? (
+    <div className="group overflow-hidden rounded-2xl border border-white/5 bg-[var(--color-bg-card)]/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--color-bg-card)]/75 flex flex-col h-full shadow-md">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/20">
+        {member.image ? (
           <Image
-            src={src}
+            src={member.image.asset?._ref || ""}
             alt={member.name}
             fill
-            className="object-cover"
-            sizes="(max-width: 640px) 50vw, 200px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div
-            className="flex h-full w-full items-center justify-center"
-            style={{ background: "rgba(28,225,164,0.08)" }}
-          >
-            <span className="text-4xl font-black text-white/20">
+          <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent.bg} border-b border-white/5`}>
+            <span className="text-4xl font-black tracking-wider select-none transition-transform duration-300 group-hover:scale-110">
               {getInitials(member.name)}
             </span>
           </div>
         )}
       </div>
-      <div className="px-4 py-3 text-center">
-        <p className="font-bold text-white text-sm leading-snug">{member.name}</p>
-        <p className="mt-0.5 text-xs font-semibold tracking-wide text-[var(--color-accent-teal)]">
-          {role}
+      <div className="p-4 flex-grow flex flex-col justify-end gap-0.5">
+        <h4 className="font-bold text-white text-sm sm:text-base leading-tight group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
+          {member.name}
+        </h4>
+        <p className={`text-[11px] font-bold tracking-wide ${accent.text}`}>
+          {member.role}
         </p>
       </div>
     </div>
   );
 }
 
-/**
- * Landscape duo card (4:3) for two exec members sharing one group photo.
- * At 4:3 with width = 2 × SoloCard width, the photo height matches the
- * solo card photo height (288 px), keeping grid rows uniform.
- */
 function DuoCard({
-  primary,
-  primaryRole,
-  partner,
-  partnerRole,
+  member1,
+  role1,
+  member2,
+  role2,
+  category,
 }: {
-  primary: PersonRef;
-  primaryRole: string;
-  partner: { _id: string; name: string; image?: SanityImage };
-  partnerRole: string;
+  member1: PersonRef;
+  role1: string;
+  member2: PersonRef;
+  role2: string;
+  category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations";
 }) {
-  const src = buildImageUrl(primary.image, 400, 300);
+  const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Leadership"];
+
   return (
-    <div
-      className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-card)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--hover-border-color)]"
-      style={{ "--hover-border-color": "rgba(28,225,164,0.4)" } as React.CSSProperties}
-    >
-      {/* Wide 4:3 landscape photo */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden">
-        {src ? (
-          <Image
-            src={src}
-            alt={`${primary.name} and ${partner.name}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, 50vw"
+    <div className="group overflow-hidden rounded-2xl border border-white/5 bg-[var(--color-bg-card)]/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--color-bg-card)]/75 flex flex-col h-full shadow-md sm:col-span-2">
+      <div className="relative aspect-[1.8/1] sm:aspect-[2.1/1] w-full overflow-hidden bg-black/20 flex divide-x divide-white/5 border-b border-white/5">
+        {/* Member 1 */}
+        <div className="relative flex-1 h-full overflow-hidden">
+          {member1.image ? (
+            <Image
+              src={member1.image.asset?._ref || ""}
+              alt={member1.name}
+              fill
+              sizes="33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent.bg}`}>
+              <span className="text-3xl font-black tracking-wider select-none transition-transform duration-300 group-hover:scale-110">
+                {getInitials(member1.name)}
+              </span>
+            </div>
+          )}
+        </div>
+        {/* Member 2 */}
+        <div className="relative flex-1 h-full overflow-hidden">
+          {member2.image ? (
+            <Image
+              src={member2.image.asset?._ref || ""}
+              alt={member2.name}
+              fill
+              sizes="33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent.bg}`}>
+              <span className="text-3xl font-black tracking-wider select-none transition-transform duration-300 group-hover:scale-110">
+                {getInitials(member2.name)}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="p-4 grid grid-cols-2 divide-x divide-white/5 flex-grow">
+        <div className="pr-4 flex flex-col justify-end gap-0.5">
+          <h4 className="font-bold text-white text-xs sm:text-base leading-tight group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
+            {member1.name}
+          </h4>
+          <p className={`text-[10px] sm:text-[11px] font-bold tracking-wide ${accent.text}`}>
+            {role1}
+          </p>
+        </div>
+        <div className="pl-4 flex flex-col justify-end gap-0.5">
+          <h4 className="font-bold text-white text-xs sm:text-base leading-tight group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
+            {member2.name}
+          </h4>
+          <p className={`text-[10px] sm:text-[11px] font-bold tracking-wide ${accent.text}`}>
+            {role2}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Section Components ─────────────────────────────────────────── */
+function ExecutiveBoardSection() {
+  const config = MOCK_CONFIG;
+
+  return (
+    <div className="space-y-6">
+      <div className="border-l-4 border-amber-500 pl-4 py-1">
+        <h3 className="text-xl font-black text-white uppercase tracking-wider">
+          Executive Board
+        </h3>
+      </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {/* President & Vice President Duo Card */}
+        {config.president && config.vicePresident && (
+          <DuoCard
+            member1={config.president}
+            role1="President"
+            member2={config.vicePresident}
+            role2="Vice President"
+            category="Leadership"
           />
-        ) : (
-          <div
-            className="flex h-full w-full items-center justify-center gap-4"
-            style={{ background: "rgba(28,225,164,0.08)" }}
-          >
-            <span className="text-4xl font-black text-white/20">
-              {getInitials(primary.name)}
-            </span>
-            <span className="text-2xl text-white/10">/</span>
-            <span className="text-4xl font-black text-white/20">
-              {getInitials(partner.name)}
-            </span>
-          </div>
+        )}
+
+        {/* Secretary & Treasurer */}
+        {config.secretary && (
+          <MemberCard
+            member={{
+              id: "secretary",
+              name: config.secretary.name,
+              role: "Secretary",
+              category: "Leadership",
+              image: config.secretary.image,
+              order: 3,
+            }}
+          />
+        )}
+
+        {config.treasurer && (
+          <MemberCard
+            member={{
+              id: "treasurer",
+              name: config.treasurer.name,
+              role: "Treasurer",
+              category: "Leadership",
+              image: config.treasurer.image,
+              order: 4,
+            }}
+          />
         )}
       </div>
+    </div>
+  );
+}
 
-      {/* Two name + role blocks side by side */}
-      <div className="flex divide-x divide-white/10">
-        <div className="flex-1 px-4 py-3 text-center">
-          <p className="font-bold text-white text-sm leading-snug">{primary.name}</p>
-          <p className="mt-0.5 text-xs font-semibold tracking-wide text-[var(--color-accent-teal)]">
-            {primaryRole}
-          </p>
-        </div>
-        <div className="flex-1 px-4 py-3 text-center">
-          <p className="font-bold text-white text-sm leading-snug">{partner.name}</p>
-          <p className="mt-0.5 text-xs font-semibold tracking-wide text-[var(--color-accent-teal)]">
-            {partnerRole}
-          </p>
-        </div>
+function CorridorDirectorsSection() {
+  const config = MOCK_CONFIG;
+  const directors = [
+    { name: config.directorInternalOps?.name, role: "Director of Internal Operations", corridor: "Internal Operations" },
+    { name: config.directorEduDev?.name, role: "Director of Education and Development", corridor: "Education and Development" },
+    { name: config.directorPublicRelations?.name, role: "Director of Public Relations", corridor: "Public Relations" },
+  ].filter((d) => d.name) as Array<{ name: string; role: string; corridor: string }>;
+
+  return (
+    <div className="space-y-6">
+      <div className="border-l-4 border-amber-500 pl-4 py-1">
+        <h3 className="text-xl font-black text-white uppercase tracking-wider">
+          Board of Directors
+        </h3>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {directors.map((dir, idx) => {
+          let category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Leadership";
+          if (dir.corridor === "Internal Operations") category = "Internal Operations";
+          else if (dir.corridor === "Education and Development") category = "Education & Dev";
+          else if (dir.corridor === "Public Relations") category = "Public Relations";
+
+          return (
+            <MemberCard
+              key={idx}
+              member={{
+                id: `dir-${idx}`,
+                name: dir.name,
+                role: dir.role,
+                category,
+                order: idx,
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );
 }
 
-/**
- * Small rectangular thumbnail. Used for Director, Manager, Vice Manager,
- * and Staff rows. Replaces the circular avatar.
- */
-function Thumb({
-  image,
-  name,
-  size,
-  accentColor,
+function CorridorSection({
+  corridorName,
 }: {
-  image?: SanityImage;
-  name?: string;
-  size: number;
-  accentColor?: string;
+  corridorName: "Internal Operations" | "Education and Development" | "Public Relations";
 }) {
-  const src = buildImageUrl(image, size, size);
-  if (src) {
-    return (
-      <Image
-        src={src}
-        alt={name ?? "Member"}
-        width={size}
-        height={size}
-        className="rounded-lg object-cover flex-shrink-0"
-        style={{ width: size, height: size }}
-      />
-    );
-  }
+  const config = MOCK_CONFIG;
+  const divisions = MOCK_DIVISIONS;
+  
+  let categoryKey: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Internal Operations";
+  if (corridorName === "Education and Development") categoryKey = "Education & Dev";
+  else if (corridorName === "Public Relations") categoryKey = "Public Relations";
+
+  const accent = ACCENT_COLORS[corridorName];
+
+  // Fetch director for this corridor
+  let director: PersonRef | undefined;
+  if (corridorName === "Internal Operations") director = config.directorInternalOps;
+  else if (corridorName === "Education and Development") director = config.directorEduDev;
+  else if (corridorName === "Public Relations") director = config.directorPublicRelations;
+
+  const corridorDivisions = divisions.filter((d) => d.corridor === corridorName);
+
   return (
-    <div
-      className="rounded-lg flex items-center justify-center font-bold text-white flex-shrink-0"
-      style={{
-        width: size,
-        height: size,
-        fontSize: Math.max(10, Math.floor(size * 0.35)),
-        background: accentColor ? `${accentColor}33` : "rgba(255,255,255,0.08)",
-      }}
-    >
-      {getInitials(name)}
-    </div>
-  );
-}
-
-/* ── BOD sub-components ─────────────────────────────────────────── */
-
-function DirectorCard({
-  member,
-  role,
-  accentColor,
-}: {
-  member?: PersonRef;
-  role: string;
-  accentColor: string;
-}) {
-  return (
-    <div
-      className="flex items-center gap-3 rounded-xl border bg-[var(--color-bg-card)] px-4 py-3"
-      style={{ borderColor: `${accentColor}44` }}
-    >
-      <Thumb image={member?.image} name={member?.name} size={48} accentColor={accentColor} />
-      <div className="min-w-0">
-        <p className="font-bold text-white text-sm leading-snug truncate">
-          {member?.name ?? "—"}
-        </p>
-        <p className="text-xs font-semibold tracking-wide" style={{ color: accentColor }}>
-          {role}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function MemberRow({
-  member,
-  label,
-  accentColor,
-}: {
-  member?: PersonRef;
-  label: string;
-  accentColor: string;
-}) {
-  if (!member) return null;
-  return (
-    <div className="flex items-center gap-2.5">
-      <Thumb image={member.image} name={member.name} size={36} accentColor={accentColor} />
-      <div className="min-w-0">
-        <p className="text-sm font-semibold text-white leading-tight truncate">{member.name}</p>
-        <p className="text-[11px] text-[var(--color-text-muted)]">{label}</p>
-      </div>
-    </div>
-  );
-}
-
-const STAFF_MAX = 6;
-
-function StaffStrip({
-  staff,
-  accentColor,
-}: {
-  staff?: PersonRef[];
-  accentColor: string;
-}) {
-  if (!staff || staff.length === 0) return null;
-  const shown = staff.slice(0, STAFF_MAX);
-  const overflow = staff.length - shown.length;
-  return (
-    <div className="flex items-end gap-2 flex-wrap">
-      {shown.map((member, i) => (
-        <div key={i} className="flex flex-col items-center gap-1">
-          <Thumb image={member.image} name={member.name} size={32} accentColor={accentColor} />
-          <p className="text-[9px] text-[var(--color-text-muted)] text-center max-w-[38px] truncate leading-tight">
-            {member.name.split(" ")[0]}
-          </p>
-        </div>
-      ))}
-      {overflow > 0 && (
-        <div
-          className="rounded-lg flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
-          style={{ width: 32, height: 32, background: `${accentColor}33` }}
-        >
-          +{overflow}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function DivisionCard({
-  division,
-  accentColor,
-}: {
-  division: DivisionData;
-  accentColor: string;
-}) {
-  return (
-    <div
-      className="flex flex-col rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-5 gap-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--hover-border-color)]"
-      style={{ "--hover-border-color": `${accentColor}66` } as React.CSSProperties}
-    >
-      <div>
-        <span
-          className="block h-1.5 w-10 rounded-full mb-3"
-          style={{ background: accentColor }}
-          aria-hidden="true"
-        />
-        <span className="text-[11px] font-semibold tracking-wider" style={{ color: accentColor }}>
-          {division.abbreviation}
-        </span>
-        <h4 className="text-white font-bold text-base leading-snug mt-0.5">
-          {division.fullName}
-        </h4>
+    <div className="space-y-10">
+      {/* Corridor Header */}
+      <div className="border-l-4 pl-4 py-1" style={{ borderColor: accent.raw }}>
+        <h3 className="text-2xl font-black text-white uppercase tracking-wider">
+          {corridorName}
+        </h3>
       </div>
 
-      {(division.manager || division.viceManager) && (
-        <div className="flex flex-col gap-2.5 border-t border-[var(--color-border)] pt-3">
-          <MemberRow member={division.manager} label="Manager" accentColor={accentColor} />
-          <MemberRow member={division.viceManager} label="Vice Manager" accentColor={accentColor} />
+      {/* Director */}
+      {director && (
+        <div className="space-y-4">
+          <span className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400 block">
+            Corridor Leadership
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <MemberCard
+              member={{
+                id: `corridor-dir-${corridorName}`,
+                name: director.name,
+                role: `Director of ${corridorName}`,
+                category: categoryKey,
+                image: director.image,
+                order: 0,
+              }}
+            />
+          </div>
         </div>
       )}
 
-      {division.staff && division.staff.length > 0 && (
-        <div className="border-t border-[var(--color-border)] pt-3">
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)] mb-2">
-            Staff
-          </p>
-          <StaffStrip staff={division.staff} accentColor={accentColor} />
-        </div>
-      )}
+      {/* Corridor Divisions */}
+      <div className="space-y-12">
+        {corridorDivisions.map((division) => {
+          const managerCard = division.manager ? (
+            <MemberCard
+              member={{
+                id: `mgr-${division.abbreviation}`,
+                name: division.manager.name,
+                role: `Manager of ${division.fullName} (${division.abbreviation})`,
+                category: categoryKey,
+                image: division.manager.image,
+                order: 0,
+              }}
+            />
+          ) : null;
+
+          const viceManagerCard = division.viceManager ? (
+            <MemberCard
+              member={{
+                id: `v-mgr-${division.abbreviation}`,
+                name: division.viceManager.name,
+                role: `Vice Manager of ${division.fullName} (${division.abbreviation})`,
+                category: categoryKey,
+                image: division.viceManager.image,
+                order: 0,
+              }}
+            />
+          ) : null;
+
+          return (
+            <div
+              key={division.abbreviation}
+              className="bg-white/[0.015] border border-white/5 rounded-3xl p-6 md:p-8 space-y-6"
+            >
+              {/* Division Title */}
+              <div>
+                <span className="text-[11px] font-extrabold uppercase tracking-widest" style={{ color: accent.raw }}>
+                  {division.abbreviation}
+                </span>
+                <h4 className="text-xl font-black text-white mt-0.5 leading-snug">
+                  {division.fullName}
+                </h4>
+              </div>
+
+              {/* Management Grid */}
+              {(managerCard || viceManagerCard) && (
+                <div className="space-y-4">
+                  <SectionDivider label="Management" colorClass={accent.text} />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {managerCard}
+                    {viceManagerCard}
+                  </div>
+                </div>
+              )}
+
+              {/* Staff Grid */}
+              {division.staff && division.staff.length > 0 && (
+                <div className="space-y-4">
+                  <SectionDivider label="Staff" colorClass="text-gray-400/80" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {division.staff.map((staffMember, index) => (
+                      <MemberCard
+                        key={index}
+                        member={{
+                          id: `staff-${division.abbreviation}-${index}`,
+                          name: staffMember.name,
+                          role: `Staff of ${division.fullName} (${division.abbreviation})`,
+                          category: categoryKey,
+                          image: staffMember.image,
+                          order: index + 1,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-/* ── Page ───────────────────────────────────────────────────────── */
+/* ── Main Page Component ────────────────────────────────────────── */
+export default function TeamsPage() {
+  const year = "2026";
+  const [activeFilter, setActiveFilter] = useState<string>("All");
 
-interface PageProps {
-  searchParams: Promise<{ year?: string }>;
-}
-
-export async function generateMetadata({ searchParams }: PageProps) {
-  const { year: yearParam } = await searchParams;
-  const year = yearParam || "2026";
-  const displayYear = year.toLowerCase() === "others" ? "Archive" : year;
-  return {
-    title: `Team ${displayYear} | IEEE Student Branch Universitas Indonesia`,
-    description: `Meet the talented individuals making up the IEEE Student Branch Universitas Indonesia executive board and division members for ${displayYear === "Archive" ? "past years" : displayYear}.`,
-  };
-}
-
-export default async function TeamsPage({ searchParams }: PageProps) {
-  const { year: yearParam } = await searchParams;
-  const year = yearParam || "2026";
-  const isOthers = year.toLowerCase() === "others";
-  const displayYear = isOthers ? "Archive" : `Team ${year}`;
-
-  let config: TeamConfigData | null = null;
-  let divisions: DivisionData[] = [];
-
-  if (!isOthers) {
-    try {
-      [config, divisions] = await Promise.all([
-        client.fetch<TeamConfigData | null>(CONFIG_QUERY, { year }),
-        client.fetch<DivisionData[]>(DIVISIONS_QUERY),
-      ]);
-      divisions = divisions ?? [];
-    } catch (err) {
-      console.error("Failed to fetch team data from Sanity:", err);
-    }
-  }
-
-  const directorMap: Record<Corridor, PersonRef | undefined> = {
-    "Internal Operations": config?.directorInternalOps,
-    "Education and Development": config?.directorEduDev,
-    "Public Relations": config?.directorPublicRelations,
-  };
-
-  const execSlots = config
-    ? buildExecSlots([
-        { member: config.president, role: "President" },
-        { member: config.vicePresident, role: "Vice President" },
-        { member: config.secretary, role: "Secretary" },
-        { member: config.treasurer, role: "Treasurer" },
-      ])
-    : [];
+  const filters = ["All", "Leadership", "Internal Operations", "Education & Dev", "Public Relations"];
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
       <PageHeader
-        title={displayYear}
-        description={
-          isOthers
-            ? "Explore the IEEE Student Branch Universitas Indonesia committees from past years."
-            : `Meet the talented individuals who make up the IEEE Student Branch Universitas Indonesia for ${year}.`
-        }
+        title={`Team ${year}`}
+        description={`Meet the talented individuals who make up the IEEE Student Branch Universitas Indonesia for ${year}.`}
       />
-
       <main className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-[117px] py-16 md:py-24">
-        {isOthers || config === null ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-2xl">
-            <p className="text-sm md:text-base leading-relaxed text-[var(--color-text-muted)]">
-              {isOthers
-                ? "Archive view coming soon."
-                : `No committee data found for ${year}.`}
-            </p>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Left Column (Sticky Sidebar Filters) */}
+          <div className="lg:col-span-3 lg:sticky lg:top-[120px] h-fit flex flex-col gap-6">
+            <div>
+              <span className="text-[var(--color-accent-teal)] font-bold text-xs uppercase tracking-wider">
+                IEEE SBUI 2026
+              </span>
+              <h2 className="text-3xl font-extrabold text-white mt-1">
+                Meet Our Team
+              </h2>
+            </div>
+            <div className="flex lg:flex-col gap-2 flex-wrap">
+              {filters.map((filter) => {
+                const isActive = activeFilter === filter;
+                return (
+                  <button
+                    key={filter}
+                    onClick={() => setActiveFilter(filter)}
+                    className={`px-4 py-2.5 rounded-xl text-left text-xs font-bold tracking-wider uppercase transition-all duration-300 border ${
+                      isActive
+                        ? "bg-white text-black border-white shadow-lg"
+                        : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-white/5"
+                    }`}
+                  >
+                    {filter}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        ) : (
-          <>
-            {/* ── Executive Board ─────────────────────────── */}
-            <section className="mb-20">
-              <h2 className="text-white md:text-gradient pb-1 text-3xl font-bold leading-tight md:text-4xl mb-10">
-                Executive Board
-              </h2>
 
-              {/*
-                Grid: 2 cols on mobile → 4 cols on sm+.
-                SoloCard  = col-span-1 (1 column).
-                DuoCard   = col-span-2 (2 columns, same width as 2 solos).
-                Because DuoCard uses aspect-[4/3] and SoloCard uses aspect-[2/3],
-                both have the same photo height at any given card width.
-              */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
-                {execSlots.map((slot, i) =>
-                  slot.kind === "duo" ? (
-                    <div key={`duo-${i}`} className="col-span-2">
-                      <DuoCard
-                        primary={slot.primary}
-                        primaryRole={slot.primaryRole}
-                        partner={slot.partner}
-                        partnerRole={slot.partnerRole}
-                      />
-                    </div>
-                  ) : (
-                    <SoloCard
-                      key={slot.member._id ?? String(i)}
-                      member={slot.member}
-                      role={slot.role}
-                    />
-                  )
-                )}
-              </div>
-            </section>
-
-            {/* ── Board of Directors ──────────────────────── */}
-            <section>
-              <h2 className="text-white md:text-gradient pb-1 text-3xl font-bold leading-tight md:text-4xl mb-10">
-                Board of Directors
-              </h2>
-
-              <div className="flex flex-col gap-8">
-                {CORRIDORS.map((corridor) => {
-                  const accentColor = CORRIDOR_COLORS[corridor];
-                  const director = directorMap[corridor];
-                  const corridorDivisions = divisions.filter(
-                    (d) => d.corridor === corridor
-                  );
-                  const gridCols =
-                    corridorDivisions.length <= 2
-                      ? "md:grid-cols-2"
-                      : "md:grid-cols-2 lg:grid-cols-3";
-
-                  return (
-                    <div
-                      key={corridor}
-                      className="rounded-2xl border border-[var(--color-border)] overflow-hidden"
-                    >
-                      <div
-                        className="px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-                        style={{ background: `${accentColor}12` }}
-                      >
-                        <h3 className="text-xl font-bold" style={{ color: accentColor }}>
-                          {corridor}
-                        </h3>
-                        {director && (
-                          <DirectorCard
-                            member={director}
-                            role="Director"
-                            accentColor={accentColor}
-                          />
-                        )}
-                      </div>
-
-                      <div className="p-6">
-                        {corridorDivisions.length === 0 ? (
-                          <p className="text-sm text-[var(--color-text-muted)]">
-                            No divisions found.
-                          </p>
-                        ) : (
-                          <div className={`grid grid-cols-1 gap-4 ${gridCols}`}>
-                            {corridorDivisions.map((div) => (
-                              <DivisionCard
-                                key={div.abbreviation}
-                                division={div}
-                                accentColor={accentColor}
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          </>
-        )}
+          {/* Right Column (Hierarchy Grid) */}
+          <div className="lg:col-span-9 space-y-16">
+            {activeFilter === "All" && (
+              <>
+                <ExecutiveBoardSection />
+                <CorridorSection corridorName="Internal Operations" />
+                <CorridorSection corridorName="Education and Development" />
+                <CorridorSection corridorName="Public Relations" />
+              </>
+            )}
+            {activeFilter === "Leadership" && (
+              <>
+                <ExecutiveBoardSection />
+                <CorridorDirectorsSection />
+              </>
+            )}
+            {activeFilter === "Internal Operations" && (
+              <CorridorSection corridorName="Internal Operations" />
+            )}
+            {activeFilter === "Education & Dev" && (
+              <CorridorSection corridorName="Education and Development" />
+            )}
+            {activeFilter === "Public Relations" && (
+              <CorridorSection corridorName="Public Relations" />
+            )}
+          </div>
+        </div>
       </main>
     </div>
   );
