@@ -5,6 +5,7 @@ import {category} from './category'
 import {committeeMember} from './committeeMember'
 import {division} from './division'
 import {registrationSettings} from './registrationSettings'
+import {teamConfig} from './teamConfig'
 
 export const schemaTypes = [
   article,
@@ -14,4 +15,5 @@ export const schemaTypes = [
   committeeMember,
   division,
   registrationSettings,
+  teamConfig,
 ]
