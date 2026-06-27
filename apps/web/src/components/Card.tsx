@@ -105,7 +105,8 @@ export default function Card({
         </defs>
       </svg>
 
-      <div className="flex flex-col items-center gap-[15px] py-[20px]">
+      <div className={`flex flex-col items-center ${ children ? "gap-2 py-1" : "gap-[15px] py-[20px]"}`}
+      >
         {Icon && (
           <Icon
             size={24}
@@ -122,11 +123,17 @@ export default function Card({
           </h3>
         )}
 
-        {description && (
-          <p className="max-w-[207px] text-[13px] leading-relaxed tracking-[-0.26px] text-[rgba(200,205,211,0.8)]">
-            {description}
-          </p>
-        )}
+        {children ? (
+  <div className="w-full text-sm">
+    {children}
+  </div>
+) : (
+  description && (
+    <p className="max-w-[207px] text-[13px] leading-relaxed tracking-[-0.26px] text-[rgba(200,205,211,0.8)]">
+      {description}
+    </p>
+  )
+)}
       </div>
     </div>
   );
