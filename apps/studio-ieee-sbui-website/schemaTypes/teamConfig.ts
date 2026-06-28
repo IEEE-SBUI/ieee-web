@@ -55,12 +55,27 @@ export const teamConfig = defineType({
       validation: (rule) => rule.required().error('Secretary is required.'),
     }),
     defineField({
+      name: 'vicesecretary',
+      title: 'Vice Secretary',
+      type: 'reference',
+      to: [{type: 'committeeMember'}],
+      validation: (rule) => rule.required().error('Vice Secretary is required.'),
+    }),
+    defineField({
       name: 'treasurer',
       title: 'Treasurer',
       type: 'reference',
       to: [{type: 'committeeMember'}],
       validation: (rule) => rule.required().error('Treasurer is required.'),
     }),
+    defineField({
+      name: 'vicetreasurer',
+      title: 'Vice Treasurer',
+      type: 'reference',
+      to: [{type: 'committeeMember'}],
+      validation: (rule) => rule.required().error('Vice Treasurer is required.'),
+    }),
+    
     defineField({
       name: 'directorInternalOps',
       title: 'Director of Internal Operations',
