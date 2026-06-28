@@ -90,7 +90,7 @@ export default function Card({
     <div
       className={`
         group flex flex-col items-center rounded-[20px] border-2 border-[rgba(130,128,229,0.15)]
-        px-[20px] pb-[43px] pt-[22px] text-center shadow-[0px_4px_2px_0px_rgba(0,0,0,0.25)]
+        px-5 py-8 text-center shadow-[0px_4px_2px_0px_rgba(0,0,0,0.25)]
         ${sharedClasses}
       `}
     >
@@ -105,7 +105,8 @@ export default function Card({
         </defs>
       </svg>
 
-      <div className="flex flex-col items-center gap-[15px] py-[20px]">
+      <div className={`flex flex-col items-center flex-1 w-full ${ children ? "gap-2 py-1" : "gap-[15px] py-[20px]"}`}
+      >
         {Icon && (
           <Icon
             size={24}
@@ -122,10 +123,18 @@ export default function Card({
           </h3>
         )}
 
-        {description && (
-          <p className="max-w-[207px] text-[13px] leading-relaxed tracking-[-0.26px] text-[rgba(200,205,211,0.8)]">
-            {description}
-          </p>
+        {children ? (
+          <div className="w-full text-sm flex-1 flex flex-col justify-center">
+            {children}
+          </div>
+        ) : (
+          description && (
+            <div className="flex-1 flex flex-col justify-center">
+              <p className="max-w-[207px] text-[13px] leading-relaxed tracking-[-0.26px] text-[rgba(200,205,211,0.8)] mx-auto">
+                {description}
+              </p>
+            </div>
+          )
         )}
       </div>
     </div>

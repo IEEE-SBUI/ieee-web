@@ -334,7 +334,7 @@ function DuoCard({
       <div className="p-4 sm:p-5 flex flex-col sm:flex-row justify-between sm:items-end gap-3 sm:gap-4 mt-auto">
         {/* Left Side */}
         <div className="flex flex-col gap-0.5 min-w-0">
-          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
             {leftMember.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
@@ -345,7 +345,7 @@ function DuoCard({
 
         {/* Right Side */}
         <div className="flex flex-col gap-0.5 sm:items-end sm:text-right min-w-0">
-          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
             {rightMember.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
@@ -463,7 +463,7 @@ function TrioCard({
       <div className="p-4 sm:p-5 flex flex-col sm:grid sm:grid-cols-3 gap-3 sm:gap-2 mt-auto">
         {/* Left Side */}
         <div className="flex flex-col gap-0.5 min-w-0">
-          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
             {left.m.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
@@ -474,7 +474,7 @@ function TrioCard({
 
         {/* Center Side */}
         <div className="flex flex-col gap-0.5 sm:items-center sm:text-center min-w-0">
-          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words w-full">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words w-full group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
             {center.m.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
@@ -485,7 +485,7 @@ function TrioCard({
 
         {/* Right Side */}
         <div className="flex flex-col gap-0.5 sm:items-end sm:text-right min-w-0">
-          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words w-full">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words w-full group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
             {right.m.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">

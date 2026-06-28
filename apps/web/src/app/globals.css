@@ -16,7 +16,7 @@
   --color-border: rgba(255, 255, 255, 0.08);
 
   /* Gradients */
-  --theme-brand-gradient: linear-gradient(45deg, #1CE1A4, #46BCED, #8280E5);
+  --theme-brand-gradient: linear-gradient(90deg, var(--color-accent-sky), var(--color-accent-teal));
   --theme-radial-gradient: radial-gradient(circle, #3EB5B2 0%, #214C6D 100%);
   --theme-dark-gradient: linear-gradient(90deg, #0A2B23 0%, #122938 50%, #1C1A36 100%);
 }
