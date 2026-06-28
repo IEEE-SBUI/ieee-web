@@ -3,6 +3,7 @@ import PageHeader from "@/src/components/PageHeader";
 import Card from "@/src/components/Card";
 import SectionHeading from "@/src/components/SectionHeading";
 import AnimatedStatItem from "@/src/features/about/components/AnimatedStatItem";
+import { Starburst } from "@/src/components/DecorativeShapes";
 import { Flag, Target } from "lucide-react";
 
 /**
@@ -42,21 +43,48 @@ export default function AboutPage() {
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
       <PageHeader
         title="About IEEE SBUI"
-        description="IEEE Student Branch Universitas Indonesia was the first IEEE Student Branch in the country. Since then, we have grown into eight divisions covering engineering, research, events, and media. Each division runs its own projects throughout the year, giving members opportunities to participate in workshops, competitions, research, publications, and leadership roles that help them grow as future engineers and leaders."
+        description="Discover the history, vision, and mission of the first IEEE Student Branch in Indonesia, and how we foster engineering excellence."
       />
 
       <main className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 lg:px-[117px]">
+        {/* Who We Are Intro */}
+        <section className="mb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-5 relative">
+            <span className="text-[var(--color-accent-teal)] font-bold text-xs uppercase tracking-widest block mb-2">
+              Established 1993
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black text-white leading-tight uppercase">
+              A Legacy of <br />
+              <span className="text-gradient">Innovation</span>
+            </h2>
+            {/* Playful starburst sticker */}
+            <div className="absolute -top-6 -right-6 md:-right-12">
+              <Starburst text="1st SB" size="w-16 h-16 md:w-20 md:h-20" className="rotate-[15deg] hover:scale-110 transition-transform duration-300" />
+            </div>
+          </div>
+          <div className="lg:col-span-7 bg-white/[0.02] border border-white/5 rounded-3xl p-8 md:p-10 relative overflow-hidden backdrop-blur-sm shadow-md">
+            {/* Subtle background blob */}
+            <div className="absolute -right-20 -bottom-20 w-48 h-48 rounded-full bg-[var(--color-accent-teal)]/5 blur-3xl pointer-events-none" />
+            <p className="text-lg md:text-xl leading-relaxed text-[var(--color-text-muted)] font-medium">
+              IEEE Student Branch Universitas Indonesia was the first IEEE Student Branch in the country. Since then, we have grown into eight divisions covering engineering, research, events, and media.
+            </p>
+            <p className="text-base md:text-lg leading-relaxed text-[rgba(200,205,211,0.8)] mt-4">
+              Each division runs its own projects throughout the year, giving members opportunities to participate in workshops, competitions, research, publications, and leadership roles that help them grow as future engineers and leaders.
+            </p>
+          </div>
+        </section>
+
         {/* Vision & Mission */}
         <section className="mb-24">
           <SectionHeading heading="Vision and Mission" />
 
-          <div className="mt-12 grid items-start gap-12 lg:grid-cols-[1fr_1.4fr]">
+          <div className="mt-12 grid items-start gap-12 md:grid-cols-2">
             {/* Vision */}
             <Card
               variant="icon"
               icon={Target}
               title="Our Vision"
-              className="h-fit pt-2 pb-5"
+              className="h-full pt-2 pb-5"
             >
               <div className="mt-1 text-left">
                 <p className="text-sm leading-7 text-[rgba(200,205,211,0.8)]">
@@ -73,7 +101,7 @@ export default function AboutPage() {
               variant="icon"
               icon={Flag}
               title="Our Mission"
-              className="h-fit pt-2 pb-5"
+              className="h-full pt-2 pb-5"
             >
               <div className="mt-1 space-y-3 text-left">
                 <div className="flex items-start gap-2">
@@ -148,7 +176,7 @@ export default function AboutPage() {
                 </span>
               </div>
 
-              <div className="flex gap-14">
+              <div className="grid grid-cols-3 gap-6 sm:gap-14">
                 {STATS.map((stat) => (
                   <AnimatedStatItem
                     key={stat.label}
@@ -165,28 +193,26 @@ export default function AboutPage() {
         <section className="mb-24">
           <SectionHeading heading="Our Journey" />
 
-          <div className="mx-auto max-w-4xl">
+          <div className="mx-auto max-w-4xl relative pl-8 border-l border-white/10 space-y-12">
+            {/* Floating glowing timeline track indicator */}
+            <div className="absolute left-0 top-0 bottom-0 w-[1px] bg-gradient-to-b from-[var(--color-accent-teal)] via-[#46BCED] to-[#8280E5]" />
+
             {HISTORY.map((item, index) => (
               <div
                 key={item.year}
-                className="relative flex gap-8 pb-12 last:pb-0"
+                className="relative group transition-all duration-300 hover:translate-x-1"
               >
-                {/* Timeline */}
-                <div className="relative flex w-6 justify-center">
-                  <div className="z-10 h-4 w-4 rounded-full bg-[var(--color-accent-teal)] ring-4 ring-[var(--color-bg-primary)]" />
-
-                  {index !== HISTORY.length - 1 && (
-                    <div className="absolute top-4 h-full w-[2px] bg-white/10" />
-                  )}
+                {/* Timeline node */}
+                <div className="absolute -left-[41px] top-1.5 z-10 h-6 w-6 rounded-full bg-[var(--color-bg-primary)] border-2 border-[var(--color-accent-teal)] flex items-center justify-center transition-all duration-300 group-hover:border-[#46BCED] group-hover:scale-110">
+                  <div className="h-2.5 w-2.5 rounded-full bg-[var(--color-accent-teal)] group-hover:bg-[#46BCED]" />
                 </div>
 
-                {/* Content */}
-                <div className="flex-1">
-                  <h3 className="mb-2 text-2xl font-bold text-white">
+                {/* Content card */}
+                <div className="bg-white/[0.015] hover:bg-white/[0.035] border border-white/5 hover:border-white/10 rounded-2xl p-6 md:p-8 transition-all duration-300 shadow-md">
+                  <span className="inline-block px-3 py-1 rounded-full text-xs font-black uppercase text-black bg-[var(--color-accent-teal)] mb-3">
                     {item.year}
-                  </h3>
-
-                  <p className="leading-8 text-[var(--color-text-muted)]">
+                  </span>
+                  <p className="leading-relaxed text-[var(--color-text-muted)] text-sm md:text-base">
                     {item.description}
                   </p>
                 </div>
@@ -199,10 +225,10 @@ export default function AboutPage() {
         <section className="mb-16">
           <SectionHeading heading="Contact Us" />
 
-          <div className="grid items-center gap-8 lg:grid-cols-[1fr_0.75fr]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
             {/* Left */}
-            <div className="max-w-[340px] lg:ml-32">
+            <div className="max-w-[400px] justify-self-center md:justify-self-start lg:pl-12">
 
               <div className="mb-10">
                 <p className="mb-2 text-sm font-semibold uppercase tracking-[0.25em] text-[var(--color-accent-teal)]">
@@ -244,7 +270,7 @@ export default function AboutPage() {
 
             {/* Right */}
             <div className="flex justify-center">
-            <div className="w-full max-w-[500px] lg:-ml-32 overflow-hidden rounded-2xl border border-white/10 shadow-lg">
+            <div className="w-full max-w-[500px] overflow-hidden rounded-2xl border border-white/10 shadow-lg">
               <iframe
                 title="IEEE SBUI Location"
                 src="https://www.google.com/maps?q=Faculty+of+Engineering+Universitas+Indonesia&output=embed"
