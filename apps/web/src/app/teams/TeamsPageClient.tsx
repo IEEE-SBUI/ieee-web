@@ -103,12 +103,6 @@ const ACCENT_COLORS: Record<string, { text: string; bg: string; border: string; 
     border: "border-[#8280E5]/10 hover:border-[#8280E5]/30",
     raw: "#8280E5",
   },
-  "Education & Dev": {
-    text: "text-[#8280E5]",
-    bg: "from-[#8280E5]/10 to-[#8280E5]/20 text-[#8280E5]/40 border-[#8280E5]/10 hover:border-[#8280E5]/30",
-    border: "border-[#8280E5]/10 hover:border-[#8280E5]/30",
-    raw: "#8280E5",
-  },
   "Public Relations": {
     text: "text-[#46BCED]",
     bg: "from-[#46BCED]/10 to-[#46BCED]/20 text-[#46BCED]/40 border-[#46BCED]/10 hover:border-[#46BCED]/30",
@@ -337,24 +331,26 @@ function DuoCard({
           </div>
         )}
       </div>
-      <div className="p-4 sm:p-5 flex justify-between items-end gap-4 mt-auto">
-        {/* Left Side (Left-Aligned) */}
+      <div className="p-4 sm:p-5 flex flex-col sm:flex-row justify-between sm:items-end gap-3 sm:gap-4 mt-auto">
+        {/* Left Side */}
         <div className="flex flex-col gap-0.5 min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words">
             {leftMember.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {leftRole}
+            <span className="sm:hidden text-gray-500 font-medium"> • Left in photo</span>
           </p>
         </div>
 
-        {/* Right Side (Right-Aligned) */}
-        <div className="flex flex-col gap-0.5 items-end text-right min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
+        {/* Right Side */}
+        <div className="flex flex-col gap-0.5 sm:items-end sm:text-right min-w-0">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words">
             {rightMember.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {rightRole}
+            <span className="sm:hidden text-gray-500 font-medium"> • Right in photo</span>
           </p>
         </div>
       </div>
@@ -410,14 +406,34 @@ function TrioCard({
   }
 
   const remaining = members.filter((_, idx) => !usedIndices.has(idx));
-  if (!leftItem && remaining.length > 0) {
-    left = remaining.shift()!;
-  }
-  if (!centerItem && remaining.length > 0) {
-    center = remaining.shift()!;
-  }
-  if (!rightItem && remaining.length > 0) {
-    right = remaining.shift()!;
+
+  // Smart fallback sorting: if no positions are set and there's a primary leader, put them in the center
+  if (remaining.length === 3) {
+    const isLeader = (role: string) => {
+      const r = role.toLowerCase();
+      return (r.includes("president") || r.includes("manager")) && !r.includes("vice");
+    };
+    const leaderIndex = members.findIndex((x) => isLeader(x.r));
+    if (leaderIndex !== -1) {
+      center = members[leaderIndex];
+      const others = members.filter((_, idx) => idx !== leaderIndex);
+      left = others[0];
+      right = others[1];
+    } else {
+      left = members[0];
+      center = members[1];
+      right = members[2];
+    }
+  } else {
+    if (!leftItem && remaining.length > 0) {
+      left = remaining.shift()!;
+    }
+    if (!centerItem && remaining.length > 0) {
+      center = remaining.shift()!;
+    }
+    if (!rightItem && remaining.length > 0) {
+      right = remaining.shift()!;
+    }
   }
 
   const sharedImage = left.m.image || center.m.image || right.m.image;
@@ -444,34 +460,37 @@ function TrioCard({
           </div>
         )}
       </div>
-      <div className="p-4 sm:p-5 grid grid-cols-3 gap-2 mt-auto">
+      <div className="p-4 sm:p-5 flex flex-col sm:grid sm:grid-cols-3 gap-3 sm:gap-2 mt-auto">
         {/* Left Side */}
         <div className="flex flex-col gap-0.5 min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words">
             {left.m.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {left.r}
+            <span className="sm:hidden text-gray-500 font-medium"> • Left in photo</span>
           </p>
         </div>
 
         {/* Center Side */}
-        <div className="flex flex-col gap-0.5 items-center text-center min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate w-full">
+        <div className="flex flex-col gap-0.5 sm:items-center sm:text-center min-w-0">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words w-full">
             {center.m.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {center.r}
+            <span className="sm:hidden text-gray-500 font-medium"> • Center in photo</span>
           </p>
         </div>
 
         {/* Right Side */}
-        <div className="flex flex-col gap-0.5 items-end text-right min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate w-full">
+        <div className="flex flex-col gap-0.5 sm:items-end sm:text-right min-w-0">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words w-full">
             {right.m.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {right.r}
+            <span className="sm:hidden text-gray-500 font-medium"> • Right in photo</span>
           </p>
         </div>
       </div>
