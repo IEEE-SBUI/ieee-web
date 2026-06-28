@@ -68,12 +68,12 @@ export default function AnimatedStatItem({
   }, [played, value]);
 
   return (
-    <div ref={ref} className="flex flex-col">
-      <span className="text-3xl font-bold text-[var(--color-accent-teal)] md:text-4xl">
+    <div ref={ref} className="flex flex-col items-center text-center">
+      <span className="text-4xl md:text-5xl font-black text-gradient leading-none">
         {displayValue}
       </span>
 
-      <span className="mt-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+      <span className="mt-4 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--color-text-muted)]">
         {label}
       </span>
     </div>
