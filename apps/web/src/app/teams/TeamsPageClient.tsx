@@ -191,6 +191,7 @@ function MemberCard({ member }: { member: TeamMember }) {
             alt={member.name}
             fill
             unoptimized
+            style={{ objectPosition: "center 15%" }}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -268,13 +269,14 @@ function DuoCard({
 
   return (
     <div className="group overflow-hidden rounded-2xl border border-white/5 bg-[var(--color-bg-card)]/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--color-bg-card)]/75 flex flex-col h-full shadow-md sm:col-span-2">
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/20 border-b border-white/5">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/20 border-b border-white/5">
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={`${leftMember.name} and ${rightMember.name}`}
             fill
             unoptimized
+            style={{ objectPosition: "center 15%" }}
             sizes="(max-width: 640px) 100vw, 66vw"
             className="object-cover transition-transform duration-500 group-hover:scale-103"
           />
