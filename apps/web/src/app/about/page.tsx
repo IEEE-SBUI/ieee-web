@@ -1,6 +1,7 @@
 import React from "react";
 import PageHeader from "@/src/components/PageHeader";
 import Card from "@/src/components/Card";
+import SectionHeading from "@/src/components/SectionHeading";
 import AnimatedStatItem from "@/src/features/about/components/AnimatedStatItem";
 import { Flag, Target } from "lucide-react";
 
@@ -47,31 +48,25 @@ export default function AboutPage() {
       <main className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 lg:px-[117px]">
         {/* Vision & Mission */}
         <section className="mb-24">
-          <div className="flex justify-center">
-            <h2 className="text-gradient pb-1 text-3xl font-bold md:text-4xl">
-              Vision and Mission
-            </h2>
-          </div>
+          <SectionHeading heading="Vision and Mission" />
 
           <div className="mt-12 grid items-start gap-12 lg:grid-cols-[1fr_1.4fr]">
             {/* Vision */}
-            <div className="flex flex-col items-center justify-center px-6 text-center">
-              <Target
-                size={42}
-                className="mb-6 text-[var(--color-accent-teal)]"
-              />
-
-              <h3 className="mb-6 text-3xl font-bold text-white">
-                Our Vision
-              </h3>
-
-              <p className="max-w-sm text-lg leading-9 text-[var(--color-text-muted)]">
-                Ensure each member is driven by shared goals and ideas,
-                gathering together in the field of electrical and electronics
-                engineering to work in harmony for the betterment and
-                advancement of humanity.
-              </p>
-            </div>
+            <Card
+              variant="icon"
+              icon={Target}
+              title="Our Vision"
+              className="h-fit pt-2 pb-5"
+            >
+              <div className="mt-1 text-left">
+                <p className="text-sm leading-7 text-[rgba(200,205,211,0.8)]">
+                  Ensure each member is driven by shared goals and ideas,
+                  gathering together in the field of electrical and electronics
+                  engineering to work in harmony for the betterment and
+                  advancement of humanity.
+                </p>
+              </div>
+            </Card>
 
             {/* Mission */}
             <Card
@@ -168,11 +163,7 @@ export default function AboutPage() {
 
         {/* History */}
         <section className="mb-24">
-          <div className="mb-12 flex justify-center">
-            <h2 className="text-gradient pb-1 text-3xl font-bold md:text-4xl">
-              Our Journey
-            </h2>
-          </div>
+          <SectionHeading heading="Our Journey" />
 
           <div className="mx-auto max-w-4xl">
             {HISTORY.map((item, index) => (
@@ -206,11 +197,7 @@ export default function AboutPage() {
 
         {/* Contact */}
         <section className="mb-16">
-          <div className="mb-12 flex justify-center">
-            <h2 className="text-gradient pb-1 text-3xl font-bold md:text-4xl">
-              Contact Us
-            </h2>
-          </div>
+          <SectionHeading heading="Contact Us" />
 
           <div className="grid items-center gap-8 lg:grid-cols-[1fr_0.75fr]">
 
