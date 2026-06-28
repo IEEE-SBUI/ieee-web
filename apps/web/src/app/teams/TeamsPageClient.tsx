@@ -339,6 +339,7 @@ function DuoCard({
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {leftRole}
+            <span className="sm:hidden text-gray-500 font-medium"> • Left in photo</span>
           </p>
         </div>
 
@@ -349,6 +350,7 @@ function DuoCard({
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {rightRole}
+            <span className="sm:hidden text-gray-500 font-medium"> • Right in photo</span>
           </p>
         </div>
       </div>
@@ -466,6 +468,7 @@ function TrioCard({
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {left.r}
+            <span className="sm:hidden text-gray-500 font-medium"> • Left in photo</span>
           </p>
         </div>
 
@@ -476,6 +479,7 @@ function TrioCard({
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {center.r}
+            <span className="sm:hidden text-gray-500 font-medium"> • Center in photo</span>
           </p>
         </div>
 
@@ -486,6 +490,7 @@ function TrioCard({
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
             {right.r}
+            <span className="sm:hidden text-gray-500 font-medium"> • Right in photo</span>
           </p>
         </div>
       </div>
