@@ -170,7 +170,7 @@ function buildRenderItems(
 function SectionDivider({ label, colorClass }: { label: string; colorClass?: string }) {
   return (
     <div className="flex items-center gap-3 my-4">
-      <span className={`text-[10px] font-extrabold tracking-widest uppercase whitespace-nowrap ${colorClass || "text-gray-400"}`}>
+      <span className={`text-[10px] font-extrabold uppercase whitespace-nowrap ${colorClass || "text-gray-400"}`}>
         {label}
       </span>
       <div className="h-[1px] flex-grow bg-white/5" />
@@ -191,13 +191,12 @@ function MemberCard({ member }: { member: TeamMember }) {
             alt={member.name}
             fill
             unoptimized
-            style={{ objectPosition: "center 15%" }}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent.bg} border-b border-white/5`}>
-            <span className="text-4xl font-black tracking-wider select-none transition-transform duration-300 group-hover:scale-110">
+            <span className="text-4xl font-black select-none transition-transform duration-300 group-hover:scale-110">
               {getInitials(member.name)}
             </span>
           </div>
@@ -207,7 +206,7 @@ function MemberCard({ member }: { member: TeamMember }) {
         <h4 className="font-bold text-white text-sm sm:text-base leading-tight group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
           {member.name}
         </h4>
-        <p className={`text-[11px] font-bold tracking-wide ${accent.text}`}>
+        <p className={`text-[11px] font-bold ${accent.text}`}>
           {member.role}
         </p>
       </div>
@@ -276,13 +275,13 @@ function DuoCard({
             alt={`${leftMember.name} and ${rightMember.name}`}
             fill
             unoptimized
-            style={{ objectPosition: "center 15%" }}
+            style={{ objectPosition: "center 38%" }}
             sizes="(max-width: 640px) 100vw, 66vw"
             className="object-cover transition-transform duration-500 group-hover:scale-103"
           />
         ) : (
           <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent.bg}`}>
-            <span className="text-3xl font-black tracking-wider select-none transition-transform duration-300 group-hover:scale-110">
+            <span className="text-3xl font-black select-none transition-transform duration-300 group-hover:scale-110">
               {getInitials(leftMember.name)} + {getInitials(rightMember.name)}
             </span>
           </div>
@@ -294,7 +293,7 @@ function DuoCard({
           <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
             {leftMember.name}
           </h4>
-          <p className={`text-[10px] sm:text-[11px] font-semibold tracking-wide ${accent.text}`}>
+          <p className={`text-[10px] sm:text-[11px] font-semibold ${accent.text}`}>
             {leftRole}
           </p>
         </div>
@@ -304,7 +303,7 @@ function DuoCard({
           <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
             {rightMember.name}
           </h4>
-          <p className={`text-[10px] sm:text-[11px] font-semibold tracking-wide ${accent.text}`}>
+          <p className={`text-[10px] sm:text-[11px] font-semibold ${accent.text}`}>
             {rightRole}
           </p>
         </div>
@@ -359,7 +358,7 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
   return (
     <div className="space-y-6">
       <div className="border-l-4 border-amber-500 pl-4 py-1">
-        <h3 className="text-xl font-black text-white uppercase tracking-wider">
+        <h3 className="text-xl font-black text-white uppercase">
           Executive Board
         </h3>
       </div>
@@ -406,7 +405,7 @@ function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
   return (
     <div className="space-y-6">
       <div className="border-l-4 border-amber-500 pl-4 py-1">
-        <h3 className="text-xl font-black text-white uppercase tracking-wider">
+        <h3 className="text-xl font-black text-white uppercase">
           Board of Directors
         </h3>
       </div>
@@ -441,7 +440,7 @@ function CorridorSection({
     <div className="space-y-10">
       {/* Corridor Header */}
       <div className="border-l-4 pl-4 py-1" style={{ borderColor: accent.raw }}>
-        <h3 className="text-2xl font-black text-white uppercase tracking-wider">
+        <h3 className="text-2xl font-black text-white uppercase">
           {corridorName}
         </h3>
       </div>
@@ -449,7 +448,7 @@ function CorridorSection({
       {/* Director */}
       {director && (
         <div className="space-y-4">
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-gray-400 block">
+          <span className="text-[10px] font-extrabold uppercase text-gray-400 block">
             Corridor Leadership
           </span>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -491,7 +490,7 @@ function CorridorSection({
             >
               {/* Division Title */}
               <div>
-                <span className="text-[11px] font-extrabold uppercase tracking-widest" style={{ color: accent.raw }}>
+                <span className="text-[11px] font-extrabold uppercase" style={{ color: accent.raw }}>
                   {division.abbreviation}
                 </span>
                 <h4 className="text-xl font-black text-white mt-0.5 leading-snug">
@@ -545,7 +544,7 @@ export default function TeamsPageClient({ config, divisions }: TeamsPageClientPr
           {/* Left Column (Sticky Sidebar Filters) */}
           <div className="lg:col-span-3 lg:sticky lg:top-[120px] h-fit flex flex-col gap-6">
             <div>
-              <span className="text-[var(--color-accent-teal)] font-bold text-xs uppercase tracking-wider">
+              <span className="text-[var(--color-accent-teal)] font-bold text-xs uppercase">
                 IEEE SBUI {year}
               </span>
               <h2 className="text-3xl font-extrabold text-white mt-1">
@@ -559,7 +558,7 @@ export default function TeamsPageClient({ config, divisions }: TeamsPageClientPr
                   <button
                     key={filter}
                     onClick={() => setActiveFilter(filter)}
-                    className={`px-4 py-2.5 rounded-xl text-left text-xs font-bold tracking-wider uppercase transition-all duration-300 border ${
+                    className={`px-4 py-2.5 rounded-xl text-left text-xs font-bold uppercase transition-all duration-300 border ${
                       isActive
                         ? "bg-white text-black border-white shadow-lg"
                         : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-white/5"
