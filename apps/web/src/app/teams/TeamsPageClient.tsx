@@ -404,14 +404,34 @@ function TrioCard({
   }
 
   const remaining = members.filter((_, idx) => !usedIndices.has(idx));
-  if (!leftItem && remaining.length > 0) {
-    left = remaining.shift()!;
-  }
-  if (!centerItem && remaining.length > 0) {
-    center = remaining.shift()!;
-  }
-  if (!rightItem && remaining.length > 0) {
-    right = remaining.shift()!;
+
+  // Smart fallback sorting: if no positions are set and there's a primary leader, put them in the center
+  if (remaining.length === 3) {
+    const isLeader = (role: string) => {
+      const r = role.toLowerCase();
+      return (r.includes("president") || r.includes("manager")) && !r.includes("vice");
+    };
+    const leaderIndex = members.findIndex((x) => isLeader(x.r));
+    if (leaderIndex !== -1) {
+      center = members[leaderIndex];
+      const others = members.filter((_, idx) => idx !== leaderIndex);
+      left = others[0];
+      right = others[1];
+    } else {
+      left = members[0];
+      center = members[1];
+      right = members[2];
+    }
+  } else {
+    if (!leftItem && remaining.length > 0) {
+      left = remaining.shift()!;
+    }
+    if (!centerItem && remaining.length > 0) {
+      center = remaining.shift()!;
+    }
+    if (!rightItem && remaining.length > 0) {
+      right = remaining.shift()!;
+    }
   }
 
   const sharedImage = left.m.image || center.m.image || right.m.image;
