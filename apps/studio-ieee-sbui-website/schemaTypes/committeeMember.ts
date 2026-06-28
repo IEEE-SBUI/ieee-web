@@ -103,7 +103,7 @@ export const committeeMember = defineType({
       return {
         title: selection.title,
         media: selection.media,
-        subtitle: selection.subtitle === 'duo' ? '🤝 Duo Photo' : 'Individual Portrait',
+        subtitle: selection.subtitle === 'duo' ? 'Duo Photo' : 'Individual Portrait',
       }
     },
   },
