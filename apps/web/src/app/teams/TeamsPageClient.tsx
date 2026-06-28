@@ -184,14 +184,13 @@ function MemberCard({ member }: { member: TeamMember }) {
 
   return (
     <div className="group overflow-hidden rounded-2xl border border-white/5 bg-[var(--color-bg-card)]/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--color-bg-card)]/75 flex flex-col h-full shadow-md">
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/20">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-black/20">
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={member.name}
             fill
             unoptimized
-            style={{ objectPosition: "center 38%" }}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -203,11 +202,11 @@ function MemberCard({ member }: { member: TeamMember }) {
           </div>
         )}
       </div>
-      <div className="p-4 flex-grow flex flex-col justify-center items-center text-center gap-1">
+      <div className="p-4 flex-grow flex flex-col justify-end gap-0.5">
         <h4 className="font-bold text-white text-sm sm:text-base leading-tight group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
           {member.name}
         </h4>
-        <p className="text-[11px] font-semibold text-gray-400">
+        <p className="text-[11px] font-bold text-gray-400">
           {member.role}
         </p>
       </div>
@@ -349,17 +348,12 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
 
   const items = buildRenderItems(entries, "Leadership");
 
-  // Center President/VP card on its own row
-  const presVpCard = items.find(
-    (item) => item.kind === "duo" && item.role1.toLowerCase().includes("president")
+  const presVpItems = items.filter(
+    (item) =>
+      item.kind === "duo" ||
+      item.member.role.toLowerCase().includes("president")
   );
-  const presVpSolos = items.filter(
-    (item) => item.kind === "solo" && item.member.role.toLowerCase().includes("president")
-  );
-
-  const otherItems = items.filter(
-    (item) => item !== presVpCard && !presVpSolos.includes(item)
-  );
+  const otherItems = items.filter((item) => !presVpItems.includes(item));
 
   return (
     <div className="space-y-6">
@@ -369,33 +363,12 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
         </h3>
       </div>
       
-      {/* President & Vice President Duo Card Row (Centered) */}
-      {presVpCard && (
-        <div className="flex justify-center w-full">
-          <div className="w-full md:w-2/3">
-            <DuoCard
-              member1={presVpCard.member1}
-              role1={presVpCard.role1}
-              member2={presVpCard.member2}
-              role2={presVpCard.role2}
-              category={presVpCard.category}
-            />
-          </div>
-        </div>
+      {/* President & Vice President Duo Card Row */}
+      {presVpItems.length > 0 && (
+        <RenderGrid items={presVpItems} />
       )}
 
-      {/* Fallback to grid if President and VP are solo cards */}
-      {presVpSolos.length > 0 && (
-        <div className="flex justify-center w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full md:w-2/3">
-            {presVpSolos.map((item) => (
-              <MemberCard key={item.member.id} member={item.member} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Other Board members (Secretary, Treasurer, etc.) below */}
+      {/* Secretary, Treasurer, etc. below */}
       {otherItems.length > 0 && (
         <RenderGrid items={otherItems} />
       )}
