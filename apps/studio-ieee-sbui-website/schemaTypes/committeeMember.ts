@@ -91,6 +91,14 @@ export const committeeMember = defineType({
       description: 'Optional link to the member LinkedIn profile.',
       validation: (rule) => rule.uri({scheme: ['http', 'https']}),
     }),
+    defineField({
+      name: 'isLeftInDuo',
+      title: 'Is on Left in Duo Photo',
+      type: 'boolean',
+      description: 'Check this if this member stands on the left side in the shared duo photo.',
+      hidden: ({document}) => document?.photoType !== 'duo',
+      initialValue: false,
+    }),
   ],
   // Show name and photo in the Studio list view.
   preview: {

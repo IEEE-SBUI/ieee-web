@@ -15,10 +15,12 @@ interface PersonRef {
   name: string;
   image?: SanityImage;
   photoType?: "individual" | "duo";
+  isLeftInDuo?: boolean;
   duoPartner?: {
     _id: string;
     name: string;
     image?: SanityImage;
+    isLeftInDuo?: boolean;
   };
 }
 interface DivisionData {
@@ -50,6 +52,18 @@ interface TeamMember {
   image?: SanityImage;
   order: number;
 }
+
+type RenderItem =
+  | { kind: "solo"; member: TeamMember }
+  | {
+      kind: "duo";
+      id: string;
+      member1: PersonRef;
+      role1: string;
+      member2: PersonRef;
+      role2: string;
+      category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations";
+    };
 
 /* ── Accent Configuration (Using Established Corridor Colors) ── */
 const ACCENT_COLORS: Record<string, { text: string; bg: string; border: string; raw: string }> = {
@@ -97,15 +111,13 @@ function getInitials(name?: string): string {
 }
 
 /**
- * Merges duo photo partners into a single standard card configuration.
- * If a member has photoType == "duo" and has a partner, it creates one merged
- * record with combined names and roles, and skips the partner's individual entry.
+ * Builds list of items to render, merging duo partners into a single landscape DuoCard.
  */
-function mergeDuoMembers(
+function buildRenderItems(
   entries: Array<{ member: PersonRef; role: string }>,
   category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations"
-): TeamMember[] {
-  const cards: TeamMember[] = [];
+): RenderItem[] {
+  const items: RenderItem[] = [];
   const processedIds = new Set<string>();
 
   entries.forEach(({ member, role }, idx) => {
@@ -118,43 +130,40 @@ function mergeDuoMembers(
       const partner = member.duoPartner;
       const partnerId = partner._id || partner.name;
 
-      // Find the partner's role from other entries if present
       const partnerEntry = entries.find(
         (e) => e.member && (e.member._id === partner._id || e.member.name === partner.name)
       );
       const partnerRole = partnerEntry ? partnerEntry.role : "";
 
-      // Combine roles. If roles are identical, keep one.
-      let combinedRole = role;
-      if (partnerRole && partnerRole !== role) {
-        combinedRole = `${role} & ${partnerRole}`;
-      }
-
-      cards.push({
+      items.push({
+        kind: "duo",
         id: `duo-${memberId}-${partnerId}`,
-        name: `${member.name} & ${partner.name}`,
-        role: combinedRole,
-        image: member.image || partner.image,
+        member1: member,
+        role1: role,
+        member2: partner,
+        role2: partnerRole,
         category,
-        order: idx,
       });
 
       processedIds.add(memberId);
       processedIds.add(partnerId);
     } else {
-      cards.push({
-        id: memberId,
-        name: member.name,
-        role: role,
-        image: member.image,
-        category,
-        order: idx,
+      items.push({
+        kind: "solo",
+        member: {
+          id: memberId,
+          name: member.name,
+          role: role,
+          image: member.image,
+          category,
+          order: idx,
+        },
       });
       processedIds.add(memberId);
     }
   });
 
-  return cards;
+  return items;
 }
 
 /* ── Base Components ────────────────────────────────────────────── */
@@ -205,6 +214,126 @@ function MemberCard({ member }: { member: TeamMember }) {
   );
 }
 
+function DuoCard({
+  member1,
+  role1,
+  member2,
+  role2,
+  category,
+}: {
+  member1: PersonRef;
+  role1: string;
+  member2: PersonRef;
+  role2: string;
+  category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations";
+}) {
+  const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Leadership"];
+
+  // Determine left vs right placement based on isLeftInDuo and fallback hierarchy
+  let leftMember = member1;
+  let leftRole = role1;
+  let rightMember = member2;
+  let rightRole = role2;
+
+  if (member1.isLeftInDuo === true || member2.isLeftInDuo === false) {
+    leftMember = member1;
+    leftRole = role1;
+    rightMember = member2;
+    rightRole = role2;
+  } else if (member2.isLeftInDuo === true || member1.isLeftInDuo === false) {
+    leftMember = member2;
+    leftRole = role2;
+    rightMember = member1;
+    rightRole = role1;
+  } else {
+    // Fallback: leader (President or Manager without "vice") on the left, vice on the right
+    const isM1Leader = role1.toLowerCase().includes("president") || (role1.toLowerCase().includes("manager") && !role1.toLowerCase().includes("vice"));
+    const isM2Leader = role2.toLowerCase().includes("president") || (role2.toLowerCase().includes("manager") && !role2.toLowerCase().includes("vice"));
+
+    if (isM1Leader && !isM2Leader) {
+      leftMember = member1;
+      leftRole = role1;
+      rightMember = member2;
+      rightRole = role2;
+    } else if (isM2Leader && !isM1Leader) {
+      leftMember = member2;
+      leftRole = role2;
+      rightMember = member1;
+      rightRole = role1;
+    }
+  }
+
+  const sharedImage = leftMember.image || rightMember.image;
+  const imageUrl = sharedImage ? urlFor(sharedImage) : "";
+
+  return (
+    <div className="group overflow-hidden rounded-2xl border border-white/5 bg-[var(--color-bg-card)]/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--color-bg-card)]/75 flex flex-col h-full shadow-md sm:col-span-2">
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/20 border-b border-white/5">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={`${leftMember.name} and ${rightMember.name}`}
+            fill
+            unoptimized
+            sizes="(max-width: 640px) 100vw, 66vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-103"
+          />
+        ) : (
+          <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent.bg}`}>
+            <span className="text-3xl font-black tracking-wider select-none transition-transform duration-300 group-hover:scale-110">
+              {getInitials(leftMember.name)} + {getInitials(rightMember.name)}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="p-4 sm:p-5 flex justify-between items-end gap-4 mt-auto">
+        {/* Left Side (Left-Aligned) */}
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
+            {leftMember.name}
+          </h4>
+          <p className={`text-[10px] sm:text-[11px] font-semibold tracking-wide ${accent.text}`}>
+            {leftRole}
+          </p>
+        </div>
+
+        {/* Right Side (Right-Aligned) */}
+        <div className="flex flex-col gap-0.5 items-end text-right min-w-0">
+          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
+            {rightMember.name}
+          </h4>
+          <p className={`text-[10px] sm:text-[11px] font-semibold tracking-wide ${accent.text}`}>
+            {rightRole}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RenderGrid({ items }: { items: RenderItem[] }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {items.map((item) => {
+        if (item.kind === "duo") {
+          return (
+            <DuoCard
+              key={item.id}
+              member1={item.member1}
+              role1={item.role1}
+              member2={item.member2}
+              role2={item.role2}
+              category={item.category}
+            />
+          );
+        } else {
+          return <MemberCard key={item.member.id} member={item.member} />;
+        }
+      })}
+    </div>
+  );
+}
+
 /* ── Section Components ─────────────────────────────────────────── */
 function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
   const entries = [
@@ -216,11 +345,14 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
     config.vicetreasurer && { member: config.vicetreasurer, role: "Vice Treasurer" },
   ].filter(Boolean) as Array<{ member: PersonRef; role: string }>;
 
-  const cards = mergeDuoMembers(entries, "Leadership");
+  const items = buildRenderItems(entries, "Leadership");
 
-  // Separate President/VP card to keep it on its own row/level on top
-  const presVpCard = cards.find((c) => c.role.toLowerCase().includes("president"));
-  const otherCards = cards.filter((c) => c !== presVpCard);
+  const presVpItems = items.filter(
+    (item) =>
+      item.kind === "duo" ||
+      item.member.role.toLowerCase().includes("president")
+  );
+  const otherItems = items.filter((item) => !presVpItems.includes(item));
 
   return (
     <div className="space-y-6">
@@ -231,19 +363,13 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
       </div>
       
       {/* President & Vice President Duo Card Row */}
-      {presVpCard && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          <MemberCard member={presVpCard} />
-        </div>
+      {presVpItems.length > 0 && (
+        <RenderGrid items={presVpItems} />
       )}
 
       {/* Secretary, Treasurer, etc. below */}
-      {otherCards.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {otherCards.map((card) => (
-            <MemberCard key={card.id} member={card} />
-          ))}
-        </div>
+      {otherItems.length > 0 && (
+        <RenderGrid items={otherItems} />
       )}
     </div>
   );
@@ -256,6 +382,25 @@ function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
     { name: config.directorPublicRelations?.name, image: config.directorPublicRelations?.image, role: "Director of Public Relations", corridor: "Public Relations" },
   ].filter((d) => d.name) as Array<{ name: string; image?: SanityImage; role: string; corridor: string }>;
 
+  const items = directors.map((dir, idx) => {
+    let category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Leadership";
+    if (dir.corridor === "Internal Operations") category = "Internal Operations";
+    else if (dir.corridor === "Education and Development") category = "Education & Dev";
+    else if (dir.corridor === "Public Relations") category = "Public Relations";
+
+    return {
+      kind: "solo" as const,
+      member: {
+        id: `dir-${idx}`,
+        name: dir.name,
+        role: dir.role,
+        image: dir.image,
+        category,
+        order: idx,
+      },
+    };
+  });
+
   return (
     <div className="space-y-6">
       <div className="border-l-4 border-amber-500 pl-4 py-1">
@@ -263,28 +408,7 @@ function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
           Board of Directors
         </h3>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {directors.map((dir, idx) => {
-          let category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Leadership";
-          if (dir.corridor === "Internal Operations") category = "Internal Operations";
-          else if (dir.corridor === "Education and Development") category = "Education & Dev";
-          else if (dir.corridor === "Public Relations") category = "Public Relations";
-
-          return (
-            <MemberCard
-              key={idx}
-              member={{
-                id: `dir-${idx}`,
-                name: dir.name,
-                role: dir.role,
-                image: dir.image,
-                category,
-                order: idx,
-              }}
-            />
-          );
-        })}
-      </div>
+      <RenderGrid items={items} />
     </div>
   );
 }
@@ -304,7 +428,6 @@ function CorridorSection({
 
   const accent = ACCENT_COLORS[corridorName];
 
-  // Fetch director for this corridor
   let director: PersonRef | undefined;
   if (corridorName === "Internal Operations") director = config.directorInternalOps;
   else if (corridorName === "Education and Development") director = config.directorEduDev;
@@ -346,18 +469,18 @@ function CorridorSection({
       <div className="space-y-12">
         {corridorDivisions.map((division) => {
           const managementEntries = [
-            division.manager && { member: division.manager, role: `Manager of ${division.fullName} (${division.abbreviation})` },
-            division.viceManager && { member: division.viceManager, role: `Vice Manager of ${division.fullName} (${division.abbreviation})` },
+            division.manager && { member: division.manager, role: "Manager" },
+            division.viceManager && { member: division.viceManager, role: "Vice Manager" },
           ].filter(Boolean) as Array<{ member: PersonRef; role: string }>;
 
-          const managementCards = mergeDuoMembers(managementEntries, categoryKey);
+          const managementItems = buildRenderItems(managementEntries, categoryKey);
 
-          const staffEntries = (division.staff || []).map((staffMember, index) => ({
+          const staffEntries = (division.staff || []).map((staffMember) => ({
             member: staffMember,
-            role: `Staff of ${division.fullName} (${division.abbreviation})`,
+            role: "Staff",
           }));
 
-          const staffCards = mergeDuoMembers(staffEntries, categoryKey);
+          const staffItems = buildRenderItems(staffEntries, categoryKey);
 
           return (
             <div
@@ -375,26 +498,18 @@ function CorridorSection({
               </div>
 
               {/* Management Grid */}
-              {managementCards.length > 0 && (
+              {managementItems.length > 0 && (
                 <div className="space-y-4">
                   <SectionDivider label="Management" colorClass={accent.text} />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {managementCards.map((card) => (
-                      <MemberCard key={card.id} member={card} />
-                    ))}
-                  </div>
+                  <RenderGrid items={managementItems} />
                 </div>
               )}
 
               {/* Staff Grid */}
-              {staffCards.length > 0 && (
+              {staffItems.length > 0 && (
                 <div className="space-y-4">
                   <SectionDivider label="Staff" colorClass="text-gray-400/80" />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {staffCards.map((card) => (
-                      <MemberCard key={card.id} member={card} />
-                    ))}
-                  </div>
+                  <RenderGrid items={staffItems} />
                 </div>
               )}
             </div>
