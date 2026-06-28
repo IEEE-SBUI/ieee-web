@@ -39,6 +39,7 @@ export const committeeMember = defineType({
         list: [
           {title: 'Individual Portrait', value: 'individual'},
           {title: 'Duo Photo (2 people)', value: 'duo'},
+          {title: 'Trio Photo (3 people)', value: 'trio'},
         ],
         layout: 'radio',
       },
@@ -99,6 +100,28 @@ export const committeeMember = defineType({
       hidden: ({document}) => document?.photoType !== 'duo',
       initialValue: false,
     }),
+    defineField({
+      name: 'trioPartners',
+      title: 'Trio Partners',
+      type: 'array',
+      of: [{type: 'reference', to: [{type: 'committeeMember'}]}],
+      description: 'The other two people who appear in the trio photo.',
+      hidden: ({document}) => document?.photoType !== 'trio',
+    }),
+    defineField({
+      name: 'trioPosition',
+      title: 'Trio Photo Position',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Left', value: 'left'},
+          {title: 'Center', value: 'center'},
+          {title: 'Right', value: 'right'},
+        ],
+        layout: 'radio',
+      },
+      hidden: ({document}) => document?.photoType !== 'trio',
+    }),
   ],
   // Show name and photo in the Studio list view.
   preview: {
@@ -111,7 +134,12 @@ export const committeeMember = defineType({
       return {
         title: selection.title,
         media: selection.media,
-        subtitle: selection.subtitle === 'duo' ? 'Duo Photo' : 'Individual Portrait',
+        subtitle:
+          selection.subtitle === 'duo'
+            ? 'Duo Photo'
+            : selection.subtitle === 'trio'
+              ? 'Trio Photo'
+              : 'Individual Portrait',
       }
     },
   },

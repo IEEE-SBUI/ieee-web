@@ -7,15 +7,15 @@ export const revalidate = 60;
 // Query for TeamConfig for year 2026
 const TEAM_CONFIG_QUERY = `*[_type == "teamConfig" && year == "2026"][0] {
   year,
-  president-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
-  vicePresident-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
-  secretary-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
-  vicesecretary-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
-  treasurer-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
-  vicetreasurer-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
-  directorInternalOps-> { _id, name, image, photoType, isLeftInDuo },
-  directorEduDev-> { _id, name, image, photoType, isLeftInDuo },
-  directorPublicRelations-> { _id, name, image, photoType, isLeftInDuo }
+  president-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  vicePresident-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  secretary-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  vicesecretary-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  treasurer-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  vicetreasurer-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  directorInternalOps-> { _id, name, image, photoType, isLeftInDuo, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  directorEduDev-> { _id, name, image, photoType, isLeftInDuo, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  directorPublicRelations-> { _id, name, image, photoType, isLeftInDuo, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } }
 }`;
 
 // Query for divisions
@@ -23,9 +23,9 @@ const DIVISIONS_QUERY = `*[_type == "division"] | order(order asc) {
   abbreviation,
   fullName,
   corridor,
-  manager-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
-  viceManager-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
-  staff[]-> { _id, name, image, photoType, isLeftInDuo }
+  manager-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  viceManagers[]-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  staff[]-> { _id, name, image, photoType, isLeftInDuo, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } }
 }`;
 
 export default async function TeamsPage() {
