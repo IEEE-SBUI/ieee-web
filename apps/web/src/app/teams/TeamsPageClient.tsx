@@ -34,9 +34,9 @@ interface TeamConfigData {
   president?: PersonRef;
   vicePresident?: PersonRef;
   secretary?: PersonRef;
-  vicesecretary?: PersonRef; // viceSecretary
+  vicesecretary?: PersonRef;
   treasurer?: PersonRef;
-  vicetreasurer?: PersonRef; // viceTreasurer
+  vicetreasurer?: PersonRef;
   directorInternalOps?: PersonRef;
   directorEduDev?: PersonRef;
   directorPublicRelations?: PersonRef;
@@ -96,6 +96,67 @@ function getInitials(name?: string): string {
     .toUpperCase();
 }
 
+/**
+ * Merges duo photo partners into a single standard card configuration.
+ * If a member has photoType == "duo" and has a partner, it creates one merged
+ * record with combined names and roles, and skips the partner's individual entry.
+ */
+function mergeDuoMembers(
+  entries: Array<{ member: PersonRef; role: string }>,
+  category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations"
+): TeamMember[] {
+  const cards: TeamMember[] = [];
+  const processedIds = new Set<string>();
+
+  entries.forEach(({ member, role }, idx) => {
+    if (!member) return;
+    const memberId = member._id || member.name;
+
+    if (processedIds.has(memberId)) return;
+
+    if (member.photoType === "duo" && member.duoPartner) {
+      const partner = member.duoPartner;
+      const partnerId = partner._id || partner.name;
+
+      // Find the partner's role from other entries if present
+      const partnerEntry = entries.find(
+        (e) => e.member && (e.member._id === partner._id || e.member.name === partner.name)
+      );
+      const partnerRole = partnerEntry ? partnerEntry.role : "";
+
+      // Combine roles. If roles are identical, keep one.
+      let combinedRole = role;
+      if (partnerRole && partnerRole !== role) {
+        combinedRole = `${role} & ${partnerRole}`;
+      }
+
+      cards.push({
+        id: `duo-${memberId}-${partnerId}`,
+        name: `${member.name} & ${partner.name}`,
+        role: combinedRole,
+        image: member.image || partner.image,
+        category,
+        order: idx,
+      });
+
+      processedIds.add(memberId);
+      processedIds.add(partnerId);
+    } else {
+      cards.push({
+        id: memberId,
+        name: member.name,
+        role: role,
+        image: member.image,
+        category,
+        order: idx,
+      });
+      processedIds.add(memberId);
+    }
+  });
+
+  return cards;
+}
+
 /* ── Base Components ────────────────────────────────────────────── */
 function SectionDivider({ label, colorClass }: { label: string; colorClass?: string }) {
   return (
@@ -120,6 +181,7 @@ function MemberCard({ member }: { member: TeamMember }) {
             src={imageUrl}
             alt={member.name}
             fill
+            unoptimized
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -143,87 +205,23 @@ function MemberCard({ member }: { member: TeamMember }) {
   );
 }
 
-function DuoCard({
-  member1,
-  role1,
-  member2,
-  role2,
-  category,
-}: {
-  member1: PersonRef;
-  role1: string;
-  member2: PersonRef;
-  role2: string;
-  category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations";
-}) {
-  const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Leadership"];
-  const imgUrl1 = member1.image ? urlFor(member1.image) : "";
-  const imgUrl2 = member2.image ? urlFor(member2.image) : "";
-
-  return (
-    <div className="group overflow-hidden rounded-2xl border border-white/5 bg-[var(--color-bg-card)]/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--color-bg-card)]/75 flex flex-col h-full shadow-md sm:col-span-2">
-      <div className="relative aspect-[1.8/1] sm:aspect-[2.1/1] w-full overflow-hidden bg-black/20 flex divide-x divide-white/5 border-b border-white/5">
-        {/* Member 1 */}
-        <div className="relative flex-1 h-full overflow-hidden">
-          {imgUrl1 ? (
-            <Image
-              src={imgUrl1}
-              alt={member1.name}
-              fill
-              sizes="33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent.bg}`}>
-              <span className="text-3xl font-black tracking-wider select-none transition-transform duration-300 group-hover:scale-110">
-                {getInitials(member1.name)}
-              </span>
-            </div>
-          )}
-        </div>
-        {/* Member 2 */}
-        <div className="relative flex-1 h-full overflow-hidden">
-          {imgUrl2 ? (
-            <Image
-              src={imgUrl2}
-              alt={member2.name}
-              fill
-              sizes="33vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent.bg}`}>
-              <span className="text-3xl font-black tracking-wider select-none transition-transform duration-300 group-hover:scale-110">
-                {getInitials(member2.name)}
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="p-4 grid grid-cols-2 divide-x divide-white/5 flex-grow">
-        <div className="pr-4 flex flex-col justify-end gap-0.5">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
-            {member1.name}
-          </h4>
-          <p className={`text-[10px] sm:text-[11px] font-bold tracking-wide ${accent.text}`}>
-            {role1}
-          </p>
-        </div>
-        <div className="pl-4 flex flex-col justify-end gap-0.5">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight group-hover:text-[var(--color-accent-teal)] transition-colors duration-300">
-            {member2.name}
-          </h4>
-          <p className={`text-[10px] sm:text-[11px] font-bold tracking-wide ${accent.text}`}>
-            {role2}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ── Section Components ─────────────────────────────────────────── */
 function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
+  const entries = [
+    config.president && { member: config.president, role: "President" },
+    config.vicePresident && { member: config.vicePresident, role: "Vice President" },
+    config.secretary && { member: config.secretary, role: "Secretary" },
+    config.vicesecretary && { member: config.vicesecretary, role: "Vice Secretary" },
+    config.treasurer && { member: config.treasurer, role: "Treasurer" },
+    config.vicetreasurer && { member: config.vicetreasurer, role: "Vice Treasurer" },
+  ].filter(Boolean) as Array<{ member: PersonRef; role: string }>;
+
+  const cards = mergeDuoMembers(entries, "Leadership");
+
+  // Separate President/VP card to keep it on its own row/level on top
+  const presVpCard = cards.find((c) => c.role.toLowerCase().includes("president"));
+  const otherCards = cards.filter((c) => c !== presVpCard);
+
   return (
     <div className="space-y-6">
       <div className="border-l-4 border-amber-500 pl-4 py-1">
@@ -232,72 +230,21 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
         </h3>
       </div>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {/* President & Vice President Duo Card */}
-        {config.president && config.vicePresident && (
-          <DuoCard
-            member1={config.president}
-            role1="President"
-            member2={config.vicePresident}
-            role2="Vice President"
-            category="Leadership"
-          />
-        )}
+      {/* President & Vice President Duo Card Row */}
+      {presVpCard && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <MemberCard member={presVpCard} />
+        </div>
+      )}
 
-        {/* Secretary & Vice Secretary */}
-        {config.secretary && (
-          <MemberCard
-            member={{
-              id: "secretary",
-              name: config.secretary.name,
-              role: config.vicesecretary ? "Secretary" : "Secretary",
-              category: "Leadership",
-              image: config.secretary.image,
-              order: 3,
-            }}
-          />
-        )}
-
-        {config.vicesecretary && (
-          <MemberCard
-            member={{
-              id: "vicesecretary",
-              name: config.vicesecretary.name,
-              role: "Vice Secretary",
-              category: "Leadership",
-              image: config.vicesecretary.image,
-              order: 4,
-            }}
-          />
-        )}
-
-        {/* Treasurer & Vice Treasurer */}
-        {config.treasurer && (
-          <MemberCard
-            member={{
-              id: "treasurer",
-              name: config.treasurer.name,
-              role: "Treasurer",
-              category: "Leadership",
-              image: config.treasurer.image,
-              order: 5,
-            }}
-          />
-        )}
-
-        {config.vicetreasurer && (
-          <MemberCard
-            member={{
-              id: "vicetreasurer",
-              name: config.vicetreasurer.name,
-              role: "Vice Treasurer",
-              category: "Leadership",
-              image: config.vicetreasurer.image,
-              order: 6,
-            }}
-          />
-        )}
-      </div>
+      {/* Secretary, Treasurer, etc. below */}
+      {otherCards.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {otherCards.map((card) => (
+            <MemberCard key={card.id} member={card} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -305,7 +252,7 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
 function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
   const directors = [
     { name: config.directorInternalOps?.name, image: config.directorInternalOps?.image, role: "Director of Internal Operations", corridor: "Internal Operations" },
-    { name: config.directorEduDev?.image ? config.directorEduDev?.name : config.directorEduDev?.name, image: config.directorEduDev?.image, role: "Director of Education and Development", corridor: "Education and Development" },
+    { name: config.directorEduDev?.name, image: config.directorEduDev?.image, role: "Director of Education and Development", corridor: "Education and Development" },
     { name: config.directorPublicRelations?.name, image: config.directorPublicRelations?.image, role: "Director of Public Relations", corridor: "Public Relations" },
   ].filter((d) => d.name) as Array<{ name: string; image?: SanityImage; role: string; corridor: string }>;
 
@@ -398,31 +345,19 @@ function CorridorSection({
       {/* Corridor Divisions */}
       <div className="space-y-12">
         {corridorDivisions.map((division) => {
-          const managerCard = division.manager ? (
-            <MemberCard
-              member={{
-                id: `mgr-${division.abbreviation}`,
-                name: division.manager.name,
-                role: `Manager of ${division.fullName} (${division.abbreviation})`,
-                category: categoryKey,
-                image: division.manager.image,
-                order: 0,
-              }}
-            />
-          ) : null;
+          const managementEntries = [
+            division.manager && { member: division.manager, role: `Manager of ${division.fullName} (${division.abbreviation})` },
+            division.viceManager && { member: division.viceManager, role: `Vice Manager of ${division.fullName} (${division.abbreviation})` },
+          ].filter(Boolean) as Array<{ member: PersonRef; role: string }>;
 
-          const viceManagerCard = division.viceManager ? (
-            <MemberCard
-              member={{
-                id: `v-mgr-${division.abbreviation}`,
-                name: division.viceManager.name,
-                role: `Vice Manager of ${division.fullName} (${division.abbreviation})`,
-                category: categoryKey,
-                image: division.viceManager.image,
-                order: 0,
-              }}
-            />
-          ) : null;
+          const managementCards = mergeDuoMembers(managementEntries, categoryKey);
+
+          const staffEntries = (division.staff || []).map((staffMember, index) => ({
+            member: staffMember,
+            role: `Staff of ${division.fullName} (${division.abbreviation})`,
+          }));
+
+          const staffCards = mergeDuoMembers(staffEntries, categoryKey);
 
           return (
             <div
@@ -440,33 +375,24 @@ function CorridorSection({
               </div>
 
               {/* Management Grid */}
-              {(managerCard || viceManagerCard) && (
+              {managementCards.length > 0 && (
                 <div className="space-y-4">
                   <SectionDivider label="Management" colorClass={accent.text} />
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {managerCard}
-                    {viceManagerCard}
+                    {managementCards.map((card) => (
+                      <MemberCard key={card.id} member={card} />
+                    ))}
                   </div>
                 </div>
               )}
 
               {/* Staff Grid */}
-              {division.staff && division.staff.length > 0 && (
+              {staffCards.length > 0 && (
                 <div className="space-y-4">
                   <SectionDivider label="Staff" colorClass="text-gray-400/80" />
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {division.staff.map((staffMember, index) => (
-                      <MemberCard
-                        key={index}
-                        member={{
-                          id: `staff-${division.abbreviation}-${index}`,
-                          name: staffMember.name,
-                          role: `Staff of ${division.fullName} (${division.abbreviation})`,
-                          category: categoryKey,
-                          image: staffMember.image,
-                          order: index + 1,
-                        }}
-                      />
+                    {staffCards.map((card) => (
+                      <MemberCard key={card.id} member={card} />
                     ))}
                   </div>
                 </div>
