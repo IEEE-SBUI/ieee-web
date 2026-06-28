@@ -14,7 +14,7 @@ interface PersonRef {
   _id?: string;
   name: string;
   image?: SanityImage;
-  photoType?: "individual" | "duo";
+  photoType?: "individual" | "duo" | "trio";
   isLeftInDuo?: boolean;
   duoPartner?: {
     _id: string;
@@ -22,13 +22,20 @@ interface PersonRef {
     image?: SanityImage;
     isLeftInDuo?: boolean;
   };
+  trioPosition?: "left" | "center" | "right";
+  trioPartners?: Array<{
+    _id: string;
+    name: string;
+    image?: SanityImage;
+    trioPosition?: "left" | "center" | "right";
+  }>;
 }
 interface DivisionData {
   abbreviation: string;
   fullName: string;
   corridor: "Internal Operations" | "Education and Development" | "Public Relations";
   manager?: PersonRef;
-  viceManager?: PersonRef;
+  viceManagers?: PersonRef[];
   staff?: PersonRef[];
 }
 interface TeamConfigData {
@@ -48,7 +55,7 @@ interface TeamMember {
   id: string;
   name: string;
   role: string;
-  category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations";
+  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
   image?: SanityImage;
   order: number;
 }
@@ -62,12 +69,23 @@ type RenderItem =
       role1: string;
       member2: PersonRef;
       role2: string;
-      category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations";
+      category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+    }
+  | {
+      kind: "trio";
+      id: string;
+      member1: PersonRef;
+      role1: string;
+      member2: PersonRef;
+      role2: string;
+      member3: PersonRef;
+      role3: string;
+      category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
     };
 
 /* ── Accent Configuration (Using Established Corridor Colors) ── */
 const ACCENT_COLORS: Record<string, { text: string; bg: string; border: string; raw: string }> = {
-  "Leadership": {
+  "Executive Board": {
     text: "text-[#f59e0b]",
     bg: "from-[#f59e0b]/10 to-[#f59e0b]/20 text-[#f59e0b]/40 border-[#f59e0b]/10 hover:border-[#f59e0b]/30",
     border: "border-[#f59e0b]/10 hover:border-[#f59e0b]/30",
@@ -111,11 +129,11 @@ function getInitials(name?: string): string {
 }
 
 /**
- * Builds list of items to render, merging duo partners into a single landscape DuoCard.
+ * Builds list of items to render, merging duo/trio partners into wide shared cards.
  */
 function buildRenderItems(
   entries: Array<{ member: PersonRef; role: string }>,
-  category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations"
+  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations"
 ): RenderItem[] {
   const items: RenderItem[] = [];
   const processedIds = new Set<string>();
@@ -126,14 +144,46 @@ function buildRenderItems(
 
     if (processedIds.has(memberId)) return;
 
-    if (member.photoType === "duo" && member.duoPartner) {
+    if (member.photoType === "trio" && member.trioPartners && member.trioPartners.length >= 2) {
+      const partner1 = member.trioPartners[0];
+      const partner2 = member.trioPartners[1];
+      const partner1Id = partner1._id || partner1.name;
+      const partner2Id = partner2._id || partner2.name;
+
+      const p1Entry = entries.find(
+        (e) => e.member && (e.member._id === partner1._id || e.member.name === partner1.name)
+      );
+      const p2Entry = entries.find(
+        (e) => e.member && (e.member._id === partner2._id || e.member.name === partner2.name)
+      );
+
+      const role1 = role;
+      const role2 = p1Entry ? p1Entry.role : "Staff";
+      const role3 = p2Entry ? p2Entry.role : "Staff";
+
+      items.push({
+        kind: "trio",
+        id: `trio-${memberId}-${partner1Id}-${partner2Id}`,
+        member1: member,
+        role1,
+        member2: partner1,
+        role2,
+        member3: partner2,
+        role3,
+        category,
+      });
+
+      processedIds.add(memberId);
+      processedIds.add(partner1Id);
+      processedIds.add(partner2Id);
+    } else if (member.photoType === "duo" && member.duoPartner) {
       const partner = member.duoPartner;
       const partnerId = partner._id || partner.name;
 
       const partnerEntry = entries.find(
         (e) => e.member && (e.member._id === partner._id || e.member.name === partner.name)
       );
-      const partnerRole = partnerEntry ? partnerEntry.role : "";
+      const partnerRole = partnerEntry ? partnerEntry.role : "Vice Manager";
 
       items.push({
         kind: "duo",
@@ -179,7 +229,7 @@ function SectionDivider({ label, colorClass }: { label: string; colorClass?: str
 }
 
 function MemberCard({ member }: { member: TeamMember }) {
-  const accent = ACCENT_COLORS[member.category] || ACCENT_COLORS["Leadership"];
+  const accent = ACCENT_COLORS[member.category] || ACCENT_COLORS["Executive Board"];
   const imageUrl = member.image ? urlFor(member.image) : "";
 
   return (
@@ -225,9 +275,9 @@ function DuoCard({
   role1: string;
   member2: PersonRef;
   role2: string;
-  category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations";
+  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
 }) {
-  const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Leadership"];
+  const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Executive Board"];
 
   // Determine left vs right placement based on isLeftInDuo and fallback hierarchy
   let leftMember = member1;
@@ -312,6 +362,123 @@ function DuoCard({
   );
 }
 
+function TrioCard({
+  member1,
+  role1,
+  member2,
+  role2,
+  member3,
+  role3,
+  category,
+}: {
+  member1: PersonRef;
+  role1: string;
+  member2: PersonRef;
+  role2: string;
+  member3: PersonRef;
+  role3: string;
+  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+}) {
+  const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Executive Board"];
+
+  const members = [
+    { m: member1, r: role1 },
+    { m: member2, r: role2 },
+    { m: member3, r: role3 },
+  ];
+
+  let left = members[0];
+  let center = members[1];
+  let right = members[2];
+
+  const leftItem = members.find((x) => x.m.trioPosition === "left");
+  const centerItem = members.find((x) => x.m.trioPosition === "center");
+  const rightItem = members.find((x) => x.m.trioPosition === "right");
+
+  const usedIndices = new Set<number>();
+  if (leftItem) {
+    left = leftItem;
+    usedIndices.add(members.indexOf(leftItem));
+  }
+  if (centerItem) {
+    center = centerItem;
+    usedIndices.add(members.indexOf(centerItem));
+  }
+  if (rightItem) {
+    right = rightItem;
+    usedIndices.add(members.indexOf(rightItem));
+  }
+
+  const remaining = members.filter((_, idx) => !usedIndices.has(idx));
+  if (!leftItem && remaining.length > 0) {
+    left = remaining.shift()!;
+  }
+  if (!centerItem && remaining.length > 0) {
+    center = remaining.shift()!;
+  }
+  if (!rightItem && remaining.length > 0) {
+    right = remaining.shift()!;
+  }
+
+  const sharedImage = left.m.image || center.m.image || right.m.image;
+  const imageUrl = sharedImage ? urlFor(sharedImage) : "";
+
+  return (
+    <div className="group overflow-hidden rounded-2xl border border-white/5 bg-[var(--color-bg-card)]/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--color-bg-card)]/75 flex flex-col h-full shadow-md sm:col-span-2 md:col-span-3">
+      <div className="relative aspect-[16/10] sm:aspect-[2.1/1] w-full overflow-hidden bg-black/20 border-b border-white/5">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={`${left.m.name}, ${center.m.name}, and ${right.m.name}`}
+            fill
+            unoptimized
+            style={{ objectPosition: "center 38%" }}
+            sizes="(max-width: 640px) 100vw, 100vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-103"
+          />
+        ) : (
+          <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${accent.bg}`}>
+            <span className="text-3xl font-black select-none transition-transform duration-300 group-hover:scale-110">
+              {getInitials(left.m.name)} + {getInitials(center.m.name)} + {getInitials(right.m.name)}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="p-4 sm:p-5 grid grid-cols-3 gap-2 mt-auto">
+        {/* Left Side */}
+        <div className="flex flex-col gap-0.5 min-w-0">
+          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
+            {left.m.name}
+          </h4>
+          <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
+            {left.r}
+          </p>
+        </div>
+
+        {/* Center Side */}
+        <div className="flex flex-col gap-0.5 items-center text-center min-w-0">
+          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate w-full">
+            {center.m.name}
+          </h4>
+          <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
+            {center.r}
+          </p>
+        </div>
+
+        {/* Right Side */}
+        <div className="flex flex-col gap-0.5 items-end text-right min-w-0">
+          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate w-full">
+            {right.m.name}
+          </h4>
+          <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
+            {right.r}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function RenderGrid({ items }: { items: RenderItem[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -324,6 +491,19 @@ function RenderGrid({ items }: { items: RenderItem[] }) {
               role1={item.role1}
               member2={item.member2}
               role2={item.role2}
+              category={item.category}
+            />
+          );
+        } else if (item.kind === "trio") {
+          return (
+            <TrioCard
+              key={item.id}
+              member1={item.member1}
+              role1={item.role1}
+              member2={item.member2}
+              role2={item.role2}
+              member3={item.member3}
+              role3={item.role3}
               category={item.category}
             />
           );
@@ -346,12 +526,13 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
     config.vicetreasurer && { member: config.vicetreasurer, role: "Vice Treasurer" },
   ].filter(Boolean) as Array<{ member: PersonRef; role: string }>;
 
-  const items = buildRenderItems(entries, "Leadership");
+  const items = buildRenderItems(entries, "Executive Board");
 
   const presVpItems = items.filter(
     (item) =>
       item.kind === "duo" ||
-      item.member.role.toLowerCase().includes("president")
+      item.kind === "trio" ||
+      (item.kind === "solo" && item.member.role.toLowerCase().includes("president"))
   );
   const otherItems = items.filter((item) => !presVpItems.includes(item));
 
@@ -363,7 +544,7 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
         </h3>
       </div>
       
-      {/* President & Vice President Duo Card Row */}
+      {/* President & Vice President Duo/Trio Card Row */}
       {presVpItems.length > 0 && (
         <RenderGrid items={presVpItems} />
       )}
@@ -384,7 +565,7 @@ function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
   ].filter((d) => d.name) as Array<{ name: string; image?: SanityImage; role: string; corridor: string }>;
 
   const items = directors.map((dir, idx) => {
-    let category: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Leadership";
+    let category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Executive Board";
     if (dir.corridor === "Internal Operations") category = "Internal Operations";
     else if (dir.corridor === "Education and Development") category = "Education & Dev";
     else if (dir.corridor === "Public Relations") category = "Public Relations";
@@ -423,7 +604,7 @@ function CorridorSection({
   config: TeamConfigData;
   divisions: DivisionData[];
 }) {
-  let categoryKey: "Leadership" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Internal Operations";
+  let categoryKey: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Internal Operations";
   if (corridorName === "Education and Development") categoryKey = "Education & Dev";
   else if (corridorName === "Public Relations") categoryKey = "Public Relations";
 
@@ -471,7 +652,7 @@ function CorridorSection({
         {corridorDivisions.map((division) => {
           const managementEntries = [
             division.manager && { member: division.manager, role: "Manager" },
-            division.viceManager && { member: division.viceManager, role: "Vice Manager" },
+            ...(division.viceManagers || []).map((vm) => ({ member: vm, role: "Vice Manager" })),
           ].filter(Boolean) as Array<{ member: PersonRef; role: string }>;
 
           const managementItems = buildRenderItems(managementEntries, categoryKey);
@@ -501,7 +682,7 @@ function CorridorSection({
               {/* Management Grid */}
               {managementItems.length > 0 && (
                 <div className="space-y-4">
-                  <SectionDivider label="Management" colorClass={accent.text} />
+                  <SectionDivider label="Management" />
                   <RenderGrid items={managementItems} />
                 </div>
               )}
@@ -531,7 +712,7 @@ export default function TeamsPageClient({ config, divisions }: TeamsPageClientPr
   const year = config.year || "2026";
   const [activeFilter, setActiveFilter] = useState<string>("All");
 
-  const filters = ["All", "Leadership", "Internal Operations", "Education & Dev", "Public Relations"];
+  const filters = ["All", "Executive Board", "Internal Operations", "Education & Dev", "Public Relations"];
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
@@ -544,9 +725,6 @@ export default function TeamsPageClient({ config, divisions }: TeamsPageClientPr
           {/* Left Column (Sticky Sidebar Filters) */}
           <div className="lg:col-span-3 lg:sticky lg:top-[120px] h-fit flex flex-col gap-6">
             <div>
-              <span className="text-[var(--color-accent-teal)] font-bold text-xs uppercase">
-                IEEE SBUI {year}
-              </span>
               <h2 className="text-3xl font-extrabold text-white mt-1">
                 Meet Our Team
               </h2>
@@ -581,7 +759,7 @@ export default function TeamsPageClient({ config, divisions }: TeamsPageClientPr
                 <CorridorSection corridorName="Public Relations" config={config} divisions={divisions} />
               </>
             )}
-            {activeFilter === "Leadership" && (
+            {activeFilter === "Executive Board" && (
               <>
                 <ExecutiveBoardSection config={config} />
                 <CorridorDirectorsSection config={config} />

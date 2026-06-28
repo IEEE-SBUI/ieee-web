@@ -23,9 +23,6 @@ const NAV_LINKS = [
 /** Dropdown menu links for listing historical executive committee boards. */
 const TEAMS_DROPDOWN = [
   { label: "Team 2026", href: "/teams?year=2026" },
-  { label: "Team 2025", href: "/teams?year=2025" },
-  { label: "Team 2024", href: "/teams?year=2024" },
-  { label: "Others", href: "/teams?year=others" },
 ] as const;
 
 /**

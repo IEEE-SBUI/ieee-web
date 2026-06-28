@@ -59,10 +59,10 @@ export const division = defineType({
       to: [{type: 'committeeMember'}],
     }),
     defineField({
-      name: 'viceManager',
-      title: 'Vice Manager',
-      type: 'reference',
-      to: [{type: 'committeeMember'}],
+      name: 'viceManagers',
+      title: 'Vice Managers',
+      type: 'array',
+      of: [{type: 'reference', to: [{type: 'committeeMember'}]}],
     }),
     defineField({
       name: 'staff',
