@@ -48,8 +48,13 @@ A document type to manage taxonomy terms.
 ### Committee Member Schema (`committeeMember.ts`)
 A shared document type for every person in the organization, from the President down to staff. Divisions reference it for their leadership and staff, and the Committee page reuses it.
 - **Name**: The member's full name. This is required.
+- **Photo Type**: A required radio option of `individual`, `duo`, or `trio` depending on whether they share a photo.
 - **Profile Photo**: A required image field with hotspot enabled. It includes a required alt text sub-field for accessibility.
 - **LinkedIn URL**: An optional link to the member's LinkedIn profile, validated as a web URL.
+- **Duo Partner**: A reference to a Committee Member, visible only when Photo Type is set to "duo".
+- **Is on Left in Duo Photo**: A boolean toggle indicating whether this member stands on the left in the shared duo photo.
+- **Trio Partners**: An array of references to the other two Committee Members, visible only when Photo Type is set to "trio".
+- **Trio Photo Position**: A radio option of `left`, `center`, or `right` indicating this member's standing position in the trio photo.
 
 This schema is **read-only for users who are not administrators or developers** (role-based access control), so only authorized roles can create or edit member records.
 
@@ -60,9 +65,24 @@ A document type representing a single division, grouped under one of the three c
 - **Corridor**: A required dropdown with exactly three options: "Internal Operations", "Education and Development", and "Public Relations".
 - **Description**: A text area describing what the division does.
 - **Manager**: A reference to a Committee Member who manages the division.
-- **Vice Manager**: A reference to a Committee Member who serves as vice manager.
+- **Vice Managers**: An array of references to Committee Members who serve as vice managers (supports divisions with multiple vice managers).
 - **Staff**: An array of references to Committee Member documents.
 - **Display Order**: A number that controls the division's order within its corridor (ascending).
+
+Like Committee Member, this schema is **read-only for non administrator/developer roles** (role-based access control).
+
+### Team Config Schema (`teamConfig.ts`)
+A configuration document representing the leadership board and directors for a given academic year.
+- **Year**: The academic year (e.g. "2026"). This is required.
+- **President**: A reference to a Committee Member.
+- **Vice President**: A reference to a Committee Member.
+- **Secretary**: A reference to a Committee Member.
+- **Vice Secretary**: A reference to a Committee Member.
+- **Treasurer**: A reference to a Committee Member.
+- **Vice Treasurer**: A reference to a Committee Member.
+- **Director of Internal Operations**: A reference to a Committee Member.
+- **Director of Education and Development**: A reference to a Committee Member.
+- **Director of Public Relations**: A reference to a Committee Member.
 
 Like Committee Member, this schema is **read-only for non administrator/developer roles** (role-based access control).
 
