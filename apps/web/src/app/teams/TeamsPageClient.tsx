@@ -331,10 +331,10 @@ function DuoCard({
           </div>
         )}
       </div>
-      <div className="p-4 sm:p-5 flex justify-between items-end gap-4 mt-auto">
-        {/* Left Side (Left-Aligned) */}
+      <div className="p-4 sm:p-5 flex flex-col sm:flex-row justify-between sm:items-end gap-3 sm:gap-4 mt-auto">
+        {/* Left Side */}
         <div className="flex flex-col gap-0.5 min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words">
             {leftMember.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
@@ -342,9 +342,9 @@ function DuoCard({
           </p>
         </div>
 
-        {/* Right Side (Right-Aligned) */}
-        <div className="flex flex-col gap-0.5 items-end text-right min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
+        {/* Right Side */}
+        <div className="flex flex-col gap-0.5 sm:items-end sm:text-right min-w-0">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words">
             {rightMember.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
@@ -438,10 +438,10 @@ function TrioCard({
           </div>
         )}
       </div>
-      <div className="p-4 sm:p-5 grid grid-cols-3 gap-2 mt-auto">
+      <div className="p-4 sm:p-5 flex flex-col sm:grid sm:grid-cols-3 gap-3 sm:gap-2 mt-auto">
         {/* Left Side */}
         <div className="flex flex-col gap-0.5 min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words">
             {left.m.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
@@ -450,8 +450,8 @@ function TrioCard({
         </div>
 
         {/* Center Side */}
-        <div className="flex flex-col gap-0.5 items-center text-center min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate w-full">
+        <div className="flex flex-col gap-0.5 sm:items-center sm:text-center min-w-0">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words w-full">
             {center.m.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
@@ -460,8 +460,8 @@ function TrioCard({
         </div>
 
         {/* Right Side */}
-        <div className="flex flex-col gap-0.5 items-end text-right min-w-0">
-          <h4 className="font-bold text-white text-xs sm:text-base leading-tight truncate w-full">
+        <div className="flex flex-col gap-0.5 sm:items-end sm:text-right min-w-0">
+          <h4 className="font-bold text-white text-sm sm:text-base leading-tight break-words w-full">
             {right.m.name}
           </h4>
           <p className="text-[10px] sm:text-[11px] font-semibold text-gray-400">
