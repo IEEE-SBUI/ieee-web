@@ -1,46 +1,54 @@
-import React from "react";
-import PageHeader from "@/src/components/PageHeader";
+import { client } from "@/src/sanity/client";
+import TeamsPageClient from "./TeamsPageClient";
 
-interface PageProps {
-  searchParams: Promise<{ year?: string }>;
-}
+// Revalidate once every 60 seconds (incremental static regeneration)
+export const revalidate = 60;
 
-/**
- * Generate metadata based on the dynamic year in the searchParams.
- */
-export async function generateMetadata({ searchParams }: PageProps) {
-  const resolvedParams = await searchParams;
-  const yearVal = resolvedParams.year || "2026";
-  const displayYear = yearVal.toLowerCase() === "others" ? "Archive" : yearVal;
-  return {
-    title: `Team ${displayYear} | IEEE Student Branch Universitas Indonesia`,
-    description: `Meet the talented individuals making up the IEEE Student Branch Universitas Indonesia executive board and division members for ${displayYear === "Archive" ? "past years" : displayYear}.`,
-  };
-}
+// Query for TeamConfig for year 2026
+const TEAM_CONFIG_QUERY = `*[_type == "teamConfig" && year == "2026"][0] {
+  year,
+  president-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  vicePresident-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  secretary-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  vicesecretary-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  treasurer-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  vicetreasurer-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  directorInternalOps-> { _id, name, image, photoType, isLeftInDuo, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  directorEduDev-> { _id, name, image, photoType, isLeftInDuo, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  directorPublicRelations-> { _id, name, image, photoType, isLeftInDuo, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } }
+}`;
 
-/**
-  * Teams directory placeholder page (route `/teams`), rendering dynamic title
-  * based on the `year` search parameter.
-  */
-export default async function TeamsPage({ searchParams }: PageProps) {
-  const resolvedParams = await searchParams;
-  const yearVal = resolvedParams.year || "2026";
-  const displayYear = yearVal.toLowerCase() === "others" ? "Archive" : `Team ${yearVal}`;
+// Query for divisions
+const DIVISIONS_QUERY = `*[_type == "division"] | order(order asc) {
+  abbreviation,
+  fullName,
+  corridor,
+  manager-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  viceManagers[]-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo }, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } },
+  staff[]-> { _id, name, image, photoType, isLeftInDuo, trioPosition, trioPartners[]-> { _id, name, image, trioPosition } }
+}`;
 
-  return (
-    <div className="min-h-screen bg-[var(--color-bg-primary)]">
-      <PageHeader
-        title={displayYear}
-        description={`Meet the talented individuals making up the IEEE Student Branch Universitas Indonesia executive board and division members for ${yearVal.toLowerCase() === "others" ? "past years" : yearVal}.`}
-      />
-      <main className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-[117px] py-16 text-center">
-        <div className="flex flex-col items-center justify-center py-20 px-4 text-center bg-[#0C1517] border border-[rgba(255,255,255,0.06)] rounded-2xl">
-          {/* TODO: Implement UI and replace with actual team member cards. */}
-          <p className="text-sm md:text-base leading-relaxed text-[var(--color-text-muted)]">
-            This is a placeholder page for the {displayYear} directory. Full list of members coming soon!
-          </p>
-        </div>
-      </main>
-    </div>
-  );
+export default async function TeamsPage() {
+  let config: any = null;
+  let divisions: any[] = [];
+
+  try {
+    const [fetchedConfig, fetchedDivisions] = await Promise.all([
+      client.fetch(TEAM_CONFIG_QUERY),
+      client.fetch(DIVISIONS_QUERY),
+    ]);
+    config = fetchedConfig;
+    divisions = fetchedDivisions;
+  } catch (error) {
+    console.error("Failed to fetch teams data from Sanity, using mock fallback:", error);
+  }
+
+  // Safe fallback if no config or divisions found in Sanity
+  if (!config) {
+    config = {
+      year: new Date().getFullYear().toString(),
+    };
+  }
+
+  return <TeamsPageClient config={config} divisions={divisions || []} />;
 }
