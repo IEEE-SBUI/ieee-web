@@ -7,15 +7,15 @@ export const revalidate = 60;
 // Query for TeamConfig for year 2026
 const TEAM_CONFIG_QUERY = `*[_type == "teamConfig" && year == "2026"][0] {
   year,
-  president-> { _id, name, image, photoType, duoPartner-> { _id, name, image } },
-  vicePresident-> { _id, name, image, photoType, duoPartner-> { _id, name, image } },
-  secretary-> { _id, name, image, photoType, duoPartner-> { _id, name, image } },
-  vicesecretary-> { _id, name, image, photoType, duoPartner-> { _id, name, image } },
-  treasurer-> { _id, name, image, photoType, duoPartner-> { _id, name, image } },
-  vicetreasurer-> { _id, name, image, photoType, duoPartner-> { _id, name, image } },
-  directorInternalOps-> { _id, name, image, photoType },
-  directorEduDev-> { _id, name, image, photoType },
-  directorPublicRelations-> { _id, name, image, photoType }
+  president-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
+  vicePresident-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
+  secretary-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
+  vicesecretary-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
+  treasurer-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
+  vicetreasurer-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
+  directorInternalOps-> { _id, name, image, photoType, isLeftInDuo },
+  directorEduDev-> { _id, name, image, photoType, isLeftInDuo },
+  directorPublicRelations-> { _id, name, image, photoType, isLeftInDuo }
 }`;
 
 // Query for divisions
@@ -23,9 +23,9 @@ const DIVISIONS_QUERY = `*[_type == "division"] | order(order asc) {
   abbreviation,
   fullName,
   corridor,
-  manager-> { _id, name, image, photoType },
-  viceManager-> { _id, name, image, photoType },
-  staff[]-> { _id, name, image, photoType }
+  manager-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
+  viceManager-> { _id, name, image, photoType, isLeftInDuo, duoPartner-> { _id, name, image, isLeftInDuo } },
+  staff[]-> { _id, name, image, photoType, isLeftInDuo }
 }`;
 
 export default async function TeamsPage() {
