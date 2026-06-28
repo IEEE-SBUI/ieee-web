@@ -110,3 +110,28 @@ body {
     transform: translate(5px, -10px);
   }
 }
+
+/* Defer rendering of off-screen layout blocks on load for modern performance */
+.content-visibility-auto {
+  content-visibility: auto;
+}
+
+.intrinsic-about-preview {
+  contain-intrinsic-size: auto 550px;
+}
+
+.intrinsic-corridor {
+  contain-intrinsic-size: auto 600px;
+}
+
+.intrinsic-benefits {
+  contain-intrinsic-size: auto 600px;
+}
+
+.intrinsic-articles {
+  contain-intrinsic-size: auto 800px;
+}
+
+.intrinsic-events {
+  contain-intrinsic-size: auto 600px;
+}

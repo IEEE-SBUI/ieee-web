@@ -81,7 +81,7 @@ export default async function FeaturedArticlesSection() {
 
   return (
     <section
-      className="relative overflow-hidden"
+      className="relative overflow-hidden content-visibility-auto intrinsic-articles"
       style={{ background: "var(--theme-dark-gradient)" }}
       aria-labelledby="featured-heading"
     >

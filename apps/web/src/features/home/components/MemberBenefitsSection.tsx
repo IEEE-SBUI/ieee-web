@@ -41,7 +41,7 @@ const BENEFITS = [
  */
 export default function MemberBenefitsSection() {
   return (
-    <section aria-labelledby="benefits-heading">
+    <section aria-labelledby="benefits-heading" className="content-visibility-auto intrinsic-benefits">
       <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 md:py-24 lg:px-[117px]">
         {/* Centered header */}
         <div className="mx-auto max-w-3xl text-center" id="benefits-heading">

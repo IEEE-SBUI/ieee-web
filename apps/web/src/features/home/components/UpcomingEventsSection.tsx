@@ -61,7 +61,7 @@ const EVENTS = [
  */
 export default function UpcomingEventsSection() {
   return (
-    <section aria-labelledby="events-heading">
+    <section aria-labelledby="events-heading" className="content-visibility-auto intrinsic-events">
       <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 md:py-24 lg:px-[117px]">
         {/* Centered header */}
         <div className="mx-auto max-w-3xl text-center" id="events-heading">
