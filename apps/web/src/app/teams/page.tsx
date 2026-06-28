@@ -47,15 +47,33 @@ export default async function TeamsPage() {
   if (!config) {
     config = {
       year: "2026",
-      president: { name: "Ahmad Rizky Pratama" },
-      vicePresident: { name: "Dewi Nuraini" },
-      secretary: { name: "Siti Putri Rahayu" },
-      vicesecretary: null,
-      treasurer: { name: "Fariz Hakim" },
-      vicetreasurer: null,
-      directorInternalOps: { name: "Bagas Wicaksono" },
-      directorEduDev: { name: "Kirana Maharani" },
-      directorPublicRelations: { name: "Nadia Rachma" },
+      president: {
+        _id: "p1",
+        name: "Ahmad Rizky Pratama",
+        photoType: "duo",
+        duoPartner: { _id: "p2", name: "Dewi Nuraini" },
+      },
+      vicePresident: {
+        _id: "p2",
+        name: "Dewi Nuraini",
+        photoType: "duo",
+        duoPartner: { _id: "p1", name: "Ahmad Rizky Pratama" },
+      },
+      secretary: {
+        _id: "p3",
+        name: "Siti Putri Rahayu",
+        photoType: "duo",
+        duoPartner: { _id: "p4", name: "Fariz Hakim" },
+      },
+      treasurer: {
+        _id: "p4",
+        name: "Fariz Hakim",
+        photoType: "duo",
+        duoPartner: { _id: "p3", name: "Siti Putri Rahayu" },
+      },
+      directorInternalOps: { _id: "d1", name: "Bagas Wicaksono" },
+      directorEduDev: { _id: "d2", name: "Kirana Maharani" },
+      directorPublicRelations: { _id: "d3", name: "Nadia Rachma" },
     };
   }
 
