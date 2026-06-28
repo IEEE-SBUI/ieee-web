@@ -22,7 +22,7 @@ const STATS = [
  */
 export default function AboutPreviewSection() {
   return (
-    <section aria-labelledby="about-heading">
+    <section aria-labelledby="about-heading" className="content-visibility-auto intrinsic-about-preview">
       <div className="mx-auto grid max-w-[1440px] items-center gap-12 px-6 py-16 sm:px-12 md:py-24 lg:grid-cols-2 lg:px-[117px]">
         {/* Left: copy + stats + CTA */}
         <div className="flex flex-col gap-6">

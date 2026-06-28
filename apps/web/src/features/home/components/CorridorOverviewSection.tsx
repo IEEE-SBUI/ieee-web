@@ -39,7 +39,7 @@ const CORRIDORS: { corridor: Corridor; title: string; description: string }[] = 
 export default function CorridorOverviewSection() {
   return (
     <section
-      className="relative overflow-hidden"
+      className="relative overflow-hidden content-visibility-auto intrinsic-corridor"
       style={{ background: "var(--theme-dark-gradient)" }}
       aria-labelledby="corridor-heading"
     >
