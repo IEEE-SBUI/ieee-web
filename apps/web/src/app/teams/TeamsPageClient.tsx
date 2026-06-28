@@ -103,12 +103,6 @@ const ACCENT_COLORS: Record<string, { text: string; bg: string; border: string; 
     border: "border-[#8280E5]/10 hover:border-[#8280E5]/30",
     raw: "#8280E5",
   },
-  "Education & Dev": {
-    text: "text-[#8280E5]",
-    bg: "from-[#8280E5]/10 to-[#8280E5]/20 text-[#8280E5]/40 border-[#8280E5]/10 hover:border-[#8280E5]/30",
-    border: "border-[#8280E5]/10 hover:border-[#8280E5]/30",
-    raw: "#8280E5",
-  },
   "Public Relations": {
     text: "text-[#46BCED]",
     bg: "from-[#46BCED]/10 to-[#46BCED]/20 text-[#46BCED]/40 border-[#46BCED]/10 hover:border-[#46BCED]/30",
