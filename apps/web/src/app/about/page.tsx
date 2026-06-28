@@ -3,7 +3,6 @@ import PageHeader from "@/src/components/PageHeader";
 import Card from "@/src/components/Card";
 import SectionHeading from "@/src/components/SectionHeading";
 import AnimatedStatItem from "@/src/features/about/components/AnimatedStatItem";
-import { Starburst } from "@/src/components/DecorativeShapes";
 import { Flag, Target } from "lucide-react";
 
 /**
@@ -57,10 +56,6 @@ export default function AboutPage() {
               A Legacy of <br />
               <span className="text-gradient">Innovation</span>
             </h2>
-            {/* Playful starburst sticker */}
-            <div className="absolute -top-6 -right-6 md:-right-12">
-              <Starburst text="1st SB" size="w-16 h-16 md:w-20 md:h-20" className="rotate-[15deg] hover:scale-110 transition-transform duration-300" />
-            </div>
           </div>
           <div className="lg:col-span-7 bg-white/[0.02] border border-white/5 rounded-3xl p-8 md:p-10 relative overflow-hidden backdrop-blur-sm shadow-md">
             {/* Subtle background blob */}
