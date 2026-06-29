@@ -1,92 +1,239 @@
 import { notFound } from 'next/navigation';
-import { client } from '../../../sanity/client'; 
-import { PortableText } from '@portabletext/react'; 
+import { client, urlFor } from '@/src/sanity/client'; 
+import { PortableText, PortableTextComponents } from '@portabletext/react'; 
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowLeft, Calendar, MapPin, Share2 } from 'lucide-react';
+
+interface SanityEvent {
+  title: string;
+  slug: { current: string };
+  date: string;
+  location: string;
+  description?: string;
+  body: any[];
+  registrationUrl?: string;
+  category?: string;
+  imageUrl?: string;
+}
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+const components: PortableTextComponents = {
+  types: {
+    image: ({ value }) => {
+      if (!value?.asset?._ref) return null;
+      const imageUrl = urlFor(value);
+      return (
+        <figure className="my-6 flex flex-col items-center gap-3">
+          <div className="relative overflow-hidden rounded-2xl border border-white/5 bg-[#0C1517] w-full aspect-video">
+            <Image
+              src={imageUrl}
+              alt={value.alt || "Event image"}
+              fill
+              unoptimized
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 720px"
+              loading="lazy"
+            />
+          </div>
+          {value.caption && (
+            <figcaption className="text-xs md:text-sm text-center text-[var(--color-text-muted)] italic">
+              {value.caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+    },
+  },
+  marks: {
+    link: ({ children, value }) => {
+      const href = value?.href || "#";
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[var(--color-accent-teal)] underline hover:text-white transition-colors duration-200"
+        >
+          {children}
+        </a>
+      );
+    },
+    code: ({ children }) => {
+      return (
+        <code className="bg-[#121214] border border-white/10 px-1.5 py-0.5 rounded text-xs text-[var(--color-accent-teal)] font-mono">
+          {children}
+        </code>
+      );
+    },
+  },
+  block: {
+    h2: ({ children }) => (
+      <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4 tracking-tight">
+        {children}
+      </h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="text-lg md:text-xl font-bold text-white mt-6 mb-3 tracking-tight">
+        {children}
+      </h3>
+    ),
+    h4: ({ children }) => (
+      <h4 className="text-base md:text-lg font-bold text-white mt-4 mb-2 tracking-tight">
+        {children}
+      </h4>
+    ),
+    normal: ({ children }) => (
+      <p className="text-sm md:text-base leading-relaxed text-[var(--color-text-muted)] mb-4">
+        {children}
+      </p>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-4 border-[var(--color-accent-teal)] bg-[#0C1517] px-5 py-4 my-6 rounded-r-xl italic text-white/90 text-sm md:text-base">
+        {children}
+      </blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => (
+      <ul className="list-disc pl-6 mb-4 text-[var(--color-text-muted)] space-y-2 text-sm md:text-base">
+        {children}
+      </ul>
+    ),
+    number: ({ children }) => (
+      <ol className="list-decimal pl-6 mb-4 text-[var(--color-text-muted)] space-y-2 text-sm md:text-base">
+        {children}
+      </ol>
+    ),
+  },
+};
 
 const query = `*[_type == "event" && slug.current == $slug][0]{
   title, slug, date, location, description, body, registrationUrl, category,
   "imageUrl": image.asset->url
 }`;
 
-export default async function EventDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = await params;
-  const event = await client.fetch(query, { slug: resolvedParams.slug });
+export default async function EventDetailPage({ params }: PageProps) {
+  const { slug } = await params;
+  const event = await client.fetch<SanityEvent | null>(query, { slug });
 
   if (!event) {
     notFound();
   }
 
-  const isPast = new Date(event.date) < new Date();
+  const { title, date, location, description, body, registrationUrl, category, imageUrl } = event;
+  const isPast = new Date(date) < new Date();
 
   return (
-    <main className="bg-[#080811] text-white min-h-screen pt-16 pb-20 font-sans">
+    <main className="min-h-screen bg-[var(--color-bg-primary)] pb-16">
       
-      {/* 1. TITLE (32px, Bold, Center, Light Blue to Green Gradient) */}
-      <div className="px-5 text-center mb-10">
-        <h1 className="text-[32px] font-bold text-center inline-block bg-gradient-to-r from-blue-300 to-green-400 text-transparent bg-clip-text">
-          {event.title}
-        </h1>
+      {/* Sleek Top Bar (Matches Mobile Mockup Header) */}
+      <div className="mx-auto max-w-3xl px-6 py-6 flex items-center justify-between border-b border-white/5">
+        <Link 
+          href="/events" 
+          className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:text-[var(--color-accent-teal)] hover:bg-white/10 transition-all cursor-pointer"
+        >
+          <ArrowLeft size={16} />
+        </Link>
+        <span className="text-sm font-semibold uppercase tracking-[0.15em] text-white/60">Event Detail</span>
+        <div className="w-10 h-10" aria-hidden="true" />
       </div>
 
-      {/* 2. COVER IMAGE */}
-      {event.imageUrl && (
-        <div className="w-full max-w-[900px] mx-auto px-5 mb-10">
-          <img 
-            src={event.imageUrl} 
-            alt={event.title} 
-            className="w-full h-auto max-h-[450px] object-cover rounded-xl shadow-lg border border-gray-800"
-          />
-        </div>
-      )}
-
-      <div className="max-w-[720px] mx-auto px-5">
+      {/* Main Details Panel */}
+      <div className="mx-auto max-w-3xl px-6 py-8 flex flex-col gap-6">
         
-        {/* 3. EXPLANATION TEXT (15px, Semi-Bold, 120% Line Height, Center) */}
-        {event.description && (
-          <p className="text-[15px] font-semibold leading-[1.2] text-center text-gray-300 mb-8 mx-auto">
-            {event.description}
+        {/* Large Rounded Event Image */}
+        {imageUrl && (
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[24px] border border-white/10 bg-black/40 shadow-2xl">
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              unoptimized
+              className="object-cover"
+              priority
+            />
+          </div>
+        )}
+
+        {/* Title */}
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-white mt-2 leading-snug tracking-tight text-left">
+          {title}
+        </h1>
+
+        {/* Metadata Details Row */}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-xs md:text-sm text-[var(--color-text-muted)] pb-6 border-b border-white/5">
+          <div className="flex items-center gap-2">
+            <MapPin size={16} className="text-white/40" />
+            <span>{location}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar size={16} className="text-white/40" />
+            <span>
+              {new Date(date).toLocaleDateString("en-US", { 
+                year: "numeric", 
+                month: "long", 
+                day: "numeric" 
+              })}
+            </span>
+          </div>
+          {category && (
+            <span className="rounded-full bg-[var(--color-accent-teal)]/[0.08] border border-[var(--color-accent-teal)]/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--color-accent-teal)]">
+              {category}
+            </span>
+          )}
+        </div>
+
+        {/* Event Info Header */}
+        <h2 className="text-lg sm:text-xl font-bold text-white mt-4 text-left">
+          Event Info
+        </h2>
+
+        {/* Short Description */}
+        {description && (
+          <p className="text-sm sm:text-base leading-relaxed text-[var(--color-text-muted)] font-medium text-left">
+            {description}
           </p>
         )}
 
-        {/* METADATA (Category, Date, Location) - Matching the 15px Semi-bold font */}
-        <div className="flex flex-wrap justify-center items-center gap-6 text-[15px] font-semibold text-gray-300 mb-12">
-            {event.category && (
-                <span className="bg-[#8280E5] text-white px-4 py-1.5 rounded-full uppercase tracking-wider text-xs font-bold">
-                  {event.category}
-                </span>
-            )}
-           <span className="flex items-center gap-2">📅 {new Date(event.date).toLocaleDateString()}</span>
-           <span className="flex items-center gap-2">📍 {event.location}</span>
-        </div>
-        
-        {/* REGISTRATION CTA */}
-        <div className="mb-12 flex justify-center">
+        {/* Rich-Text content */}
+        {body && (
+          <div className="prose prose-invert max-w-none text-left">
+            <PortableText value={body} components={components} />
+          </div>
+        )}
+
+        {/* Bottom Actions Row (Matches Mockup Footer Actions) */}
+        <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between gap-4">
+          <button 
+            type="button"
+            className="h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/80 hover:text-[var(--color-accent-teal)] hover:bg-white/10 transition-all shrink-0 cursor-pointer"
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              alert("Event link copied to clipboard!");
+            }}
+            title="Share event link"
+          >
+            <Share2 size={18} />
+          </button>
+
           {isPast ? (
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-red-400 font-bold uppercase tracking-widest text-sm">Past Event</span>
-              <button disabled className="bg-gray-800 text-gray-500 py-3 px-8 rounded-lg cursor-not-allowed text-[15px] font-semibold border border-gray-700">
-                Registration Closed
-              </button>
-            </div>
+            <button disabled className="flex-1 h-12 bg-white/5 border border-white/10 text-white/30 rounded-xl cursor-not-allowed text-xs font-bold uppercase tracking-wider">
+              Registration Closed
+            </button>
           ) : (
-            <a 
-              href={event.registrationUrl} 
-              className="bg-[#1CE1A4] text-[#080811] text-[15px] font-bold py-3 px-8 rounded-lg hover:scale-105 hover:bg-[#15c58f] transition-all shadow-[0_0_15px_rgba(28,225,164,0.2)]"
+            <a
+              href={registrationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 h-12 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-accent-teal)] px-8 text-xs font-bold text-[var(--color-bg-primary)] transition-all duration-300 hover:bg-[#15c58f] shadow-[0_0_15px_rgba(28,225,164,0.15)] uppercase tracking-wider"
             >
               Register for Event
             </a>
           )}
-        </div>
-
-        {/* BODY CONTENT */}
-        <div className="prose prose-invert max-w-none mx-auto text-center prose-p:text-center prose-p:text-gray-300 prose-p:text-[15px] prose-p:font-semibold prose-p:leading-[1.2] prose-headings:text-center prose-li:text-center prose-li:text-gray-300 prose-li:text-[15px] prose-li:font-semibold prose-ul:list-inside prose-ol:list-inside prose-strong:text-gray-200">
-          <PortableText value={event.body} />
-        </div>
-
-        {/* BACK LINK */}
-        <div className="mt-16 border-t border-gray-800 pt-8">
-            <a href="/events" className="text-[#1CE1A4] hover:underline flex items-center gap-2 text-[15px] font-semibold">
-                ← Back to Events
-            </a>
         </div>
 
       </div>
