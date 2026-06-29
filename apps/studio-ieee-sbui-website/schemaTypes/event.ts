@@ -25,7 +25,17 @@ export const event = defineType({
       name: 'category',
       title: 'Category Pill',
       type: 'string',
-      description: 'e.g., IoT, Technology, Workshop',
+      options: {
+        list: [
+          { title: 'Workshop', value: 'Workshop' },
+          { title: 'Tech Talk', value: 'Tech Talk' },
+          { title: 'Competition', value: 'Competition' },
+          { title: 'Seminar', value: 'Seminar' },
+          { title: 'Other', value: 'Other' },
+        ],
+      },
+      description: 'Select the category for the event.',
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'date',
@@ -52,6 +62,15 @@ export const event = defineType({
       options: {
         hotspot: true,
       },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alternative Text',
+          description: 'Alt text for accessibility (SEO)',
+          validation: (rule) => rule.required(),
+        }
+      ]
     }),
     defineField({
       name: 'description',
