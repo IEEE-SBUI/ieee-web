@@ -6,6 +6,7 @@ import {committeeMember} from './committeeMember'
 import {division} from './division'
 import {registrationSettings} from './registrationSettings'
 import {teamConfig} from './teamConfig'
+import {event} from './event'
 
 export const schemaTypes = [
   article,
@@ -16,4 +17,5 @@ export const schemaTypes = [
   division,
   registrationSettings,
   teamConfig,
+  event
 ]
