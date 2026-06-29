@@ -23,7 +23,6 @@ interface EventsPageClientProps {
 export default function EventsPageClient({ events }: EventsPageClientProps) {
   const [eventSearch, setEventSearch] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedTimeframes, setSelectedTimeframes] = useState<string[]>([]);
   const [selectedYears, setSelectedYears] = useState<string[]>([]);
 
   // Dynamically gather all unique categories present in the data
@@ -54,37 +53,7 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
     );
   };
 
-  const handleTimeframeToggle = (tfId: string) => {
-    setSelectedTimeframes((prev) =>
-      prev.includes(tfId) ? prev.filter((t) => t !== tfId) : [...prev, tfId]
-    );
-  };
-
-  // Helper date logic for timeframes
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth();
-
-  const matchesTimeframe = (eventDateStr: string, timeframeId: string) => {
-    const eventDate = new Date(eventDateStr);
-    const eventYear = eventDate.getFullYear();
-    const eventMonth = eventDate.getMonth();
-
-    if (timeframeId === "this-month") {
-      return eventYear === currentYear && eventMonth === currentMonth;
-    }
-    if (timeframeId === "next-3-months") {
-      const futureLimit = new Date();
-      futureLimit.setMonth(now.getMonth() + 3);
-      return eventDate >= now && eventDate <= futureLimit;
-    }
-    if (timeframeId === "this-year") {
-      return eventYear === currentYear;
-    }
-    return true;
-  };
-
-  // Perform combined dynamic filtering (Search, Category, Year, and Timeframe)
+  // Perform combined dynamic filtering (Search, Category, and Year)
   const filteredEvents = events.filter((event) => {
     const matchesCategory =
       selectedCategories.length === 0 ||
@@ -98,11 +67,7 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
     const matchesYear =
       selectedYears.length === 0 || selectedYears.includes(eventYear);
 
-    const matchesTimeframeFilter =
-      selectedTimeframes.length === 0 ||
-      selectedTimeframes.some((tf) => matchesTimeframe(event.date, tf));
-
-    return matchesCategory && matchesSearch && matchesYear && matchesTimeframeFilter;
+    return matchesCategory && matchesSearch && matchesYear;
   });
 
   // Separate list into upcoming and past events
@@ -145,7 +110,6 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
   const hasActiveFilters =
     eventSearch ||
     selectedCategories.length > 0 ||
-    selectedTimeframes.length > 0 ||
     selectedYears.length > 0;
 
   return (
@@ -192,45 +156,6 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
               onClear={() => setSelectedCategories([])}
               searchPlaceholder="Search categories..."
               dropdownWidth="sm:w-[280px]"
-            />
-
-            {/* Timeframe Dropdown */}
-            <DropdownFilter
-              label="Filter by timeframe"
-              title="Timeframes"
-              items={[
-                {
-                  id: "this-month",
-                  label: "This Month",
-                  count: events.filter(
-                    (e) =>
-                      matchesTimeframe(e.date, "this-month") &&
-                      e.title.toLowerCase().includes(eventSearch.toLowerCase())
-                  ).length,
-                },
-                {
-                  id: "next-3-months",
-                  label: "Next 3 Months",
-                  count: events.filter(
-                    (e) =>
-                      matchesTimeframe(e.date, "next-3-months") &&
-                      e.title.toLowerCase().includes(eventSearch.toLowerCase())
-                  ).length,
-                },
-                {
-                  id: "this-year",
-                  label: "This Year",
-                  count: events.filter(
-                    (e) =>
-                      matchesTimeframe(e.date, "this-year") &&
-                      e.title.toLowerCase().includes(eventSearch.toLowerCase())
-                  ).length,
-                },
-              ]}
-              selectedItems={selectedTimeframes}
-              onToggle={handleTimeframeToggle}
-              onClear={() => setSelectedTimeframes([])}
-              dropdownWidth="sm:w-[240px]"
             />
 
             {/* Year Dropdown */}
@@ -295,7 +220,6 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
                   onClick={() => {
                     setEventSearch("");
                     setSelectedCategories([]);
-                    setSelectedTimeframes([]);
                     setSelectedYears([]);
                   }}
                   className="inline-flex items-center justify-center rounded-lg border border-[var(--color-accent-teal)] px-6 py-2.5 text-xs font-semibold text-[var(--color-accent-teal)] hover:bg-[var(--color-accent-teal)] hover:text-[var(--color-bg-primary)] transition-all cursor-pointer"
