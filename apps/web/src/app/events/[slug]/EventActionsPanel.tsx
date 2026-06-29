@@ -53,16 +53,27 @@ export default function EventActionsPanel({
 
   return (
     <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between gap-4">
-      <button
-        type="button"
-        className={`h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all shrink-0 cursor-pointer ${
-          copied ? "text-[var(--color-accent-teal)] border-[var(--color-accent-teal)]/30" : "text-white/80 hover:text-[var(--color-accent-teal)] hover:bg-white/10"
-        }`}
-        onClick={handleShare}
-        title={copied ? "Link copied!" : "Share event link"}
-      >
-        <Share2 size={18} />
-      </button>
+      <div className="relative">
+        <button
+          type="button"
+          className={`h-12 w-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center transition-all shrink-0 cursor-pointer ${
+            copied ? "text-[var(--color-accent-teal)] border-[var(--color-accent-teal)]/35 bg-[var(--color-accent-teal)]/5" : "text-white/80 hover:text-[var(--color-accent-teal)] hover:bg-white/10"
+          }`}
+          onClick={handleShare}
+          title="Share event link"
+        >
+          <Share2 size={18} />
+        </button>
+
+        {/* Floating Tooltip Notification */}
+        {copied && (
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 px-3 py-1.5 rounded-lg bg-[var(--color-accent-teal)] text-[var(--color-bg-primary)] text-[10px] font-bold uppercase tracking-wider whitespace-nowrap shadow-lg animate-in fade-in slide-in-from-bottom-1 duration-200">
+            Copied!
+            {/* Little Arrow pointer */}
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--color-accent-teal)]" />
+          </div>
+        )}
+      </div>
 
       {isPast ? (
         <button
