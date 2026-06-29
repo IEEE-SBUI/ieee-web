@@ -23,13 +23,23 @@ interface EventsPageClientProps {
 export default function EventsPageClient({ events }: EventsPageClientProps) {
   const [eventSearch, setEventSearch] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedTimeframes, setSelectedTimeframes] = useState<string[]>([]);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
 
   // Dynamically gather all unique categories present in the data
   const uniqueCategories = Array.from(
     new Set(events.map((e) => e.category).filter(Boolean))
   ) as string[];
 
-  // A category can be selected and deselected without clearing other filters.
+  // Dynamically gather all unique years present in the event dates
+  const yearsList = Array.from(
+    new Set(
+      events
+        .map((e) => (e.date ? new Date(e.date).getFullYear().toString() : ""))
+        .filter((y) => y !== "")
+    )
+  ).sort((a, b) => b.localeCompare(a));
+
   const handleCategoryToggle = (categoryName: string) => {
     setSelectedCategories((prev) =>
       prev.includes(categoryName)
@@ -38,15 +48,61 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
     );
   };
 
-  // Perform combined dynamic filtering (Search AND Category checkboxes)
+  const handleYearToggle = (year: string) => {
+    setSelectedYears((prev) =>
+      prev.includes(year) ? prev.filter((y) => y !== year) : [...prev, year]
+    );
+  };
+
+  const handleTimeframeToggle = (tfId: string) => {
+    setSelectedTimeframes((prev) =>
+      prev.includes(tfId) ? prev.filter((t) => t !== tfId) : [...prev, tfId]
+    );
+  };
+
+  // Helper date logic for timeframes
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+
+  const matchesTimeframe = (eventDateStr: string, timeframeId: string) => {
+    const eventDate = new Date(eventDateStr);
+    const eventYear = eventDate.getFullYear();
+    const eventMonth = eventDate.getMonth();
+
+    if (timeframeId === "this-month") {
+      return eventYear === currentYear && eventMonth === currentMonth;
+    }
+    if (timeframeId === "next-3-months") {
+      const futureLimit = new Date();
+      futureLimit.setMonth(now.getMonth() + 3);
+      return eventDate >= now && eventDate <= futureLimit;
+    }
+    if (timeframeId === "this-year") {
+      return eventYear === currentYear;
+    }
+    return true;
+  };
+
+  // Perform combined dynamic filtering (Search, Category, Year, and Timeframe)
   const filteredEvents = events.filter((event) => {
     const matchesCategory =
       selectedCategories.length === 0 ||
       selectedCategories.includes(event.category || "");
+
     const matchesSearch = event.title
       .toLowerCase()
       .includes(eventSearch.toLowerCase());
-    return matchesCategory && matchesSearch;
+
+    const eventYear = event.date ? new Date(event.date).getFullYear().toString() : "";
+    const matchesYear =
+      selectedYears.length === 0 || selectedYears.includes(eventYear);
+
+    const matchesTimeframeFilter =
+      selectedTimeframes.length === 0 ||
+      selectedTimeframes.some((tf) => matchesTimeframe(event.date, tf));
+
+    return matchesCategory && matchesSearch && matchesYear && matchesTimeframeFilter;
   });
 
   // Separate list into upcoming and past events
@@ -86,6 +142,12 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
     );
   };
 
+  const hasActiveFilters =
+    eventSearch ||
+    selectedCategories.length > 0 ||
+    selectedTimeframes.length > 0 ||
+    selectedYears.length > 0;
+
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
       <PageHeader
@@ -96,7 +158,7 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
       <main className="mx-auto max-w-[1440px] px-6 sm:px-12 lg:px-[117px] py-16">
         
         {/* Search & Category Filters (Matches Article Archive Spacing & Components) */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-12">
+        <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-4 mb-12">
           {/* Title search */}
           <div className="relative flex-1 max-w-xl">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
@@ -109,8 +171,10 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
             />
           </div>
 
-          {/* Filter Dropdown */}
+          {/* Collapsible Dropdowns Container */}
           <div className="flex flex-col sm:flex-row items-stretch gap-4">
+            
+            {/* Category Dropdown */}
             <DropdownFilter
               label="Filter by category"
               title="Categories"
@@ -129,6 +193,64 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
               searchPlaceholder="Search categories..."
               dropdownWidth="sm:w-[280px]"
             />
+
+            {/* Timeframe Dropdown */}
+            <DropdownFilter
+              label="Filter by timeframe"
+              title="Timeframes"
+              items={[
+                {
+                  id: "this-month",
+                  label: "This Month",
+                  count: events.filter(
+                    (e) =>
+                      matchesTimeframe(e.date, "this-month") &&
+                      e.title.toLowerCase().includes(eventSearch.toLowerCase())
+                  ).length,
+                },
+                {
+                  id: "next-3-months",
+                  label: "Next 3 Months",
+                  count: events.filter(
+                    (e) =>
+                      matchesTimeframe(e.date, "next-3-months") &&
+                      e.title.toLowerCase().includes(eventSearch.toLowerCase())
+                  ).length,
+                },
+                {
+                  id: "this-year",
+                  label: "This Year",
+                  count: events.filter(
+                    (e) =>
+                      matchesTimeframe(e.date, "this-year") &&
+                      e.title.toLowerCase().includes(eventSearch.toLowerCase())
+                  ).length,
+                },
+              ]}
+              selectedItems={selectedTimeframes}
+              onToggle={handleTimeframeToggle}
+              onClear={() => setSelectedTimeframes([])}
+              dropdownWidth="sm:w-[240px]"
+            />
+
+            {/* Year Dropdown */}
+            <DropdownFilter
+              label="Filter by year"
+              title="Event Year"
+              items={yearsList.map((year) => ({
+                id: year,
+                label: year,
+                count: events.filter(
+                  (e) =>
+                    new Date(e.date).getFullYear().toString() === year &&
+                    e.title.toLowerCase().includes(eventSearch.toLowerCase())
+                ).length,
+              }))}
+              selectedItems={selectedYears}
+              onToggle={handleYearToggle}
+              onClear={() => setSelectedYears([])}
+              dropdownWidth="sm:w-[200px]"
+            />
           </div>
         </div>
 
@@ -146,13 +268,13 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
             </div>
           )}
 
-          {/* 2. Past Events Section */}
+          {/* 2. Past Events Section (Dimmed default opacity, fully lit on hover) */}
           {pastEvents.length > 0 && (
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-white mb-8 border-l-4 border-white/20 pl-4">
                 Past Events
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-60 hover:opacity-100 transition-opacity duration-300">
                 {pastEvents.map(renderEventCard)}
               </div>
             </div>
@@ -166,13 +288,15 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
               </span>
               <h3 className="text-lg font-bold text-white mb-2">No Events Found</h3>
               <p className="text-sm text-[var(--color-text-muted)] max-w-sm mb-6">
-                We couldn&apos;t find any events matching your search query or selected categories. Try clearing filters or searching for something else.
+                We couldn&apos;t find any events matching your search query or selected filters. Try clearing filters or searching for something else.
               </p>
-              {(eventSearch || selectedCategories.length > 0) && (
+              {hasActiveFilters && (
                 <button
                   onClick={() => {
                     setEventSearch("");
                     setSelectedCategories([]);
+                    setSelectedTimeframes([]);
+                    setSelectedYears([]);
                   }}
                   className="inline-flex items-center justify-center rounded-lg border border-[var(--color-accent-teal)] px-6 py-2.5 text-xs font-semibold text-[var(--color-accent-teal)] hover:bg-[var(--color-accent-teal)] hover:text-[var(--color-bg-primary)] transition-all cursor-pointer"
                 >
