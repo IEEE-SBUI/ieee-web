@@ -52,7 +52,7 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
       prev.includes(year) ? prev.filter((y) => y !== year) : [...prev, year]
     );
   };
-
+  
   // Perform combined dynamic filtering (Search, Category, and Year)
   const filteredEvents = events.filter((event) => {
     const matchesCategory =
@@ -66,7 +66,6 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
     const eventYear = event.date ? new Date(event.date).getFullYear().toString() : "";
     const matchesYear =
       selectedYears.length === 0 || selectedYears.includes(eventYear);
-
     return matchesCategory && matchesSearch && matchesYear;
   });
 
