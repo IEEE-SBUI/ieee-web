@@ -55,7 +55,7 @@ interface TeamMember {
   id: string;
   name: string;
   role: string;
-  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+  category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
   image?: SanityImage;
   order: number;
 }
@@ -69,7 +69,7 @@ type RenderItem =
       role1: string;
       member2: PersonRef;
       role2: string;
-      category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+      category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
     }
   | {
       kind: "trio";
@@ -80,7 +80,7 @@ type RenderItem =
       role2: string;
       member3: PersonRef;
       role3: string;
-      category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+      category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
     };
 
 /* ── Accent Configuration (Using Established Corridor Colors) ── */
@@ -127,7 +127,7 @@ function getInitials(name?: string): string {
  */
 function buildRenderItems(
   entries: Array<{ member: PersonRef; role: string }>,
-  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations"
+  category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations"
 ): RenderItem[] {
   const items: RenderItem[] = [];
   const processedIds = new Set<string>();
@@ -269,7 +269,7 @@ function DuoCard({
   role1: string;
   member2: PersonRef;
   role2: string;
-  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+  category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
 }) {
   const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Executive Board"];
 
@@ -373,7 +373,7 @@ function TrioCard({
   role2: string;
   member3: PersonRef;
   role3: string;
-  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+  category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
 }) {
   const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Executive Board"];
 
@@ -584,9 +584,9 @@ function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
   ].filter((d) => d.name) as Array<{ name: string; image?: SanityImage; role: string; corridor: string }>;
 
   const items = directors.map((dir, idx) => {
-    let category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Executive Board";
+    let category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations" = "Executive Board";
     if (dir.corridor === "Internal Operations") category = "Internal Operations";
-    else if (dir.corridor === "Education and Development") category = "Education & Dev";
+    else if (dir.corridor === "Education and Development") category = "Education Development";
     else if (dir.corridor === "Public Relations") category = "Public Relations";
 
     return {
@@ -623,8 +623,8 @@ function CorridorSection({
   config: TeamConfigData;
   divisions: DivisionData[];
 }) {
-  let categoryKey: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Internal Operations";
-  if (corridorName === "Education and Development") categoryKey = "Education & Dev";
+  let categoryKey: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations" = "Internal Operations";
+  if (corridorName === "Education and Development") categoryKey = "Education Development";
   else if (corridorName === "Public Relations") categoryKey = "Public Relations";
 
   const accent = ACCENT_COLORS[corridorName];
@@ -731,7 +731,7 @@ export default function TeamsPageClient({ config, divisions }: TeamsPageClientPr
   const year = config.year || "2026";
   const [activeFilter, setActiveFilter] = useState<string>("All");
 
-  const filters = ["All", "Executive Board", "Internal Operations", "Education & Dev", "Public Relations"];
+  const filters = ["All", "Executive Board", "Internal Operations", "Education Development", "Public Relations"];
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
@@ -787,7 +787,7 @@ export default function TeamsPageClient({ config, divisions }: TeamsPageClientPr
             {activeFilter === "Internal Operations" && (
               <CorridorSection corridorName="Internal Operations" config={config} divisions={divisions} />
             )}
-            {activeFilter === "Education & Dev" && (
+            {activeFilter === "Education Development" && (
               <CorridorSection corridorName="Education and Development" config={config} divisions={divisions} />
             )}
             {activeFilter === "Public Relations" && (
