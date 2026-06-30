@@ -28,6 +28,13 @@ const CORRIDORS: Corridor[] = [
   "Public Relations",
 ];
 
+/** Display names for corridor headings (the corridor value stays the key). */
+const CORRIDOR_DISPLAY_NAMES: Record<Corridor, string> = {
+  "Internal Operations": "Internal Operations",
+  "Education and Development": "Education Development",
+  "Public Relations": "Public Relations",
+};
+
 /**
  * Divisions page (route `/divisions`).
  *
@@ -73,7 +80,7 @@ export default async function DivisionsPage() {
                 className="mb-8 text-2xl font-bold md:text-3xl"
                 style={{ color: CORRIDOR_COLORS[corridor] }}
               >
-                {corridor}
+                {CORRIDOR_DISPLAY_NAMES[corridor]}
               </h2>
 
               <div className={`grid grid-cols-1 gap-6 ${gridColumns}`}>

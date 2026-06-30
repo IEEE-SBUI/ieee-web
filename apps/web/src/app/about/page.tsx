@@ -15,26 +15,21 @@ const STATS = [
   { value: "50+", label: "Members" },
 ];
 
-const HISTORY = [
+const CORE_VALUES = [
   {
-    year: "2022",
+    title: "Involve",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae nisi non risus luctus interdum. Curabitur ut augue vel lorem dignissim tristique.",
+      "As Young Professionals entering the next phase of life, IEEE SBUI 2026 upholds the value for everyone to involve in self-development activities and humanitarian projects. Take as many experiences as possible for securing our own future by gathering together in an inclusive environment.",
   },
   {
-    year: "2023",
+    title: "Evolve",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae nisi non risus luctus interdum. Curabitur ut augue vel lorem dignissim tristique.",
+      "As Young Professionals, IEEE SBUI 2026 aims for all members at the end of the journey to have enough knowledge for themselves, and evolve to create a significant change and impact to society.",
   },
   {
-    year: "2024",
+    title: "Resolve",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae nisi non risus luctus interdum. Curabitur ut augue vel lorem dignissim tristique.",
-  },
-  {
-    year: "2025",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque vitae nisi non risus luctus interdum. Curabitur ut augue vel lorem dignissim tristique.",
+      "As Young Professionals, IEEE SBUI 2026 provides substantial tools to support the members facing the professional world, countlessly innovate and collaborate to solve real-world problems in daily life and the engineering life.",
   },
 ];
 
@@ -56,7 +51,7 @@ export default function AboutPage() {
                 <span className="text-gradient">Who We Are</span>
               </h2>
               <p className="text-base md:text-lg leading-relaxed text-[var(--color-text-muted)] font-medium">
-                IEEE Student Branch Universitas Indonesia is the first <strong className="text-white font-semibold">IEEE Student Branch</strong> in Indonesia. In the past years, we have organized programs for the developments of DTE UI students, such as: Webinar Series, Workshop, IEEE xTreme Selection, World Telecommunication Day with Telco Lab UI, IEEE Volunteers, and so much more.
+                The IEEE Student Branch at Universitas Indonesia (IEEE SBUI) is an affiliate of the Institute of Electrical and Electronics Engineers, the premier global organization for technological advancement. IEEE SBUI is committed to elevating management standards by upholding IEEE&rsquo;s core values and fostering growth within the electrical and electronics engineering sectors. Our mission focuses on cultivating strong internal ties, professionalizing our digital presence, delivering educational insights on innovation, and expanding our strategic partnerships.
               </p>
             </div>
             
@@ -178,38 +173,26 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* History */}
+        {/* Core Values */}
         <section className="relative overflow-hidden" style={{ background: "var(--theme-dark-gradient)" }}>
           <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 md:py-24 lg:px-[117px]">
             <div className="text-center">
-              <SectionHeading heading="Our Journey" />
+              <SectionHeading heading="Core Values" />
             </div>
 
-            <div className="mx-auto max-w-4xl mt-16">
-              {HISTORY.map((item, index) => (
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+              {CORE_VALUES.map((value) => (
                 <div
-                  key={item.year}
-                  className="relative flex gap-8 pb-12 last:pb-0"
+                  key={value.title}
+                  className="rounded-[20px] border-2 border-[rgba(130,128,229,0.15)] bg-[var(--color-bg-card)] p-8 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-accent-teal)]"
                 >
-                  {/* Timeline */}
-                  <div className="relative flex w-6 justify-center">
-                    <div className="z-10 h-4 w-4 rounded-full bg-[var(--color-accent-teal)] ring-4 ring-[var(--color-bg-primary)]" />
+                  <h3 className="mb-4 text-xl font-bold text-[var(--color-accent-teal)]">
+                    {value.title}
+                  </h3>
 
-                    {index !== HISTORY.length - 1 && (
-                      <div className="absolute top-4 h-full w-[2px] bg-white/10" />
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1">
-                    <h3 className="mb-2 text-2xl font-bold text-white">
-                      {item.year}
-                    </h3>
-
-                    <p className="leading-8 text-[var(--color-text-muted)]">
-                      {item.description}
-                    </p>
-                  </div>
+                  <p className="text-sm leading-7 text-[rgba(200,205,211,0.8)]">
+                    {value.description}
+                  </p>
                 </div>
               ))}
             </div>
