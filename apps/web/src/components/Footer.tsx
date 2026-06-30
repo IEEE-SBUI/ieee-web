@@ -10,7 +10,7 @@ const quickLinks = [
   { label: "Articles", href: "/articles" },
   { label: "Events", href: "/events" },
   { label: "Membership Registration", href: "/register" },
-  { label: "Our Team", href: "/team?year=2026" },
+  { label: "Our Team", href: "/teams?year=2026" },
 ];
 
 // External IEEE portal links shown under Resources
@@ -31,7 +31,7 @@ const resourceLinks = [
 const socialLinks = [
   {
     label: "Instagram",
-    href: "https://instagram.com/ieeesbui",
+    href: "https://www.instagram.com/ieee_sbui",
     icon: FaInstagram,
   },
   {

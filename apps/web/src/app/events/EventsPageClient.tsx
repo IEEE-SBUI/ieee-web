@@ -5,6 +5,7 @@ import PageHeader from "@/src/components/PageHeader";
 import EventCard from "@/src/features/events/components/EventCard";
 import DropdownFilter from "@/src/components/DropdownFilter";
 import { Search, Calendar as CalendarIcon } from "lucide-react";
+import { toEventCardProps } from "@/src/features/events/lib/toEventCardProps";
 
 interface SanityEvent {
   title: string;
@@ -78,33 +79,10 @@ export default function EventsPageClient({ events }: EventsPageClientProps) {
     .filter((e) => new Date(e.date) < new Date())
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  // Helper to map dynamic Sanity event format to exact EventCard props structure
-  const renderEventCard = (e: SanityEvent) => {
-    const dateObj = new Date(e.date);
-    const dayStr = dateObj.getDate().toString().padStart(2, "0");
-    const monthStr = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
-    const yearStr = dateObj.getFullYear().toString();
-    const dateDisplay = dateObj.toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-
-    return (
-      <EventCard
-        key={e.slug.current}
-        title={e.title}
-        slug={e.slug.current}
-        date={dateDisplay}
-        day={dayStr}
-        month={monthStr}
-        year={yearStr}
-        location={e.location || "TBA"}
-        description={e.description || ""}
-        imageUrl={e.imageUrl || "/event-placeholder.svg"}
-      />
-    );
-  };
+  // Map a Sanity event to EventCard props (shared with the homepage section).
+  const renderEventCard = (e: SanityEvent) => (
+    <EventCard key={e.slug.current} {...toEventCardProps(e)} />
+  );
 
   const hasActiveFilters =
     eventSearch ||
