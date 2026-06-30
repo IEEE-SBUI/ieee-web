@@ -1,67 +1,45 @@
+import { client } from "@/src/sanity/client";
 import SectionHeading from "@/src/components/SectionHeading";
+import Button from "@/src/components/Button";
 import EventCard from "@/src/features/events/components/EventCard";
+import {
+  toEventCardProps,
+  type SanityEvent,
+} from "@/src/features/events/lib/toEventCardProps";
 
-// TODO: swap to a Sanity query when the event schema lands.
-// Each event owns its imageUrl/imageAlt so the cards stay independent. They
-// point to a branded placeholder for now; no real event photos are committed.
-const EVENTS = [
-  {
-    title: "IEEElevate 1.0: IoT Smart Home Workshop",
-    slug: "ieeelevate-iot-smart-home",
-    date: "July 12, 2026",
-    day: "12",
-    month: "JUL",
-    year: "2026",
-    category: "Workshop",
-    location: "Faculty of Engineering, Universitas Indonesia",
-    description:
-      "Build a small smart home setup with sensors and a microcontroller, then connect it to a simple dashboard you can control from your phone.",
-    imageUrl: "/event-placeholder.svg",
-    imageAlt: "IEEElevate IoT smart home workshop",
-  },
-  {
-    title: "Technical Writing Night for Engineers",
-    slug: "technical-writing-night",
-    date: "July 26, 2026",
-    day: "26",
-    month: "JUL",
-    year: "2026",
-    category: "Seminar",
-    location: "Online via Zoom",
-    description:
-      "Learn how to write clear lab reports and project documentation that other people can actually follow and reuse.",
-    imageUrl: "/event-placeholder.svg",
-    imageAlt: "Technical writing night for engineers",
-  },
-  {
-    title: "RoboLine Competition 2026",
-    slug: "roboline-competition-2026",
-    date: "August 9, 2026",
-    day: "09",
-    month: "AUG",
-    year: "2026",
-    category: "Competition",
-    location: "Engineering Center, Universitas Indonesia",
-    description:
-      "Teams design a line-following robot and race it through a timed course for prizes and certificates.",
-    imageUrl: "/event-placeholder.svg",
-    imageAlt: "RoboLine robotics competition",
-  },
-];
+/** Upcoming events only, soonest first, capped at three for the homepage. */
+const UPCOMING_EVENTS_QUERY = `*[_type == "event" && date >= now()] | order(date asc)[0...3]{
+  title,
+  slug,
+  date,
+  location,
+  description,
+  category,
+  "imageUrl": image.asset->url
+}`;
 
 /**
  * Homepage "Upcoming Events" section.
  *
- * Renders three upcoming events through the shared EventCard. The event schema
- * does not exist yet, so the data below is realistic placeholder content.
- *
- * Purely presentational and rendered on the server (no props, no data).
+ * Fetches the next few upcoming events from Sanity (the same source as the
+ * events archive) and renders them with the shared EventCard.
  *
  * @returns The upcoming events section element.
  */
-export default function UpcomingEventsSection() {
+export default async function UpcomingEventsSection() {
+  let events: SanityEvent[] = [];
+  try {
+    events = (await client.fetch<SanityEvent[]>(UPCOMING_EVENTS_QUERY)) ?? [];
+  } catch (error) {
+    // Render the section with an empty state rather than crashing the page.
+    console.error("Failed to fetch upcoming events from Sanity:", error);
+  }
+
   return (
-    <section aria-labelledby="events-heading" className="content-visibility-auto intrinsic-events">
+    <section
+      aria-labelledby="events-heading"
+      className="content-visibility-auto intrinsic-events"
+    >
       <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 md:py-24 lg:px-[117px]">
         {/* Centered header */}
         <div className="mx-auto max-w-3xl text-center" id="events-heading">
@@ -69,10 +47,23 @@ export default function UpcomingEventsSection() {
         </div>
 
         {/* Event cards */}
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {EVENTS.map((event) => (
-            <EventCard key={event.slug} {...event} />
-          ))}
+        {events.length > 0 ? (
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {events.map((event) => (
+              <EventCard key={event.slug.current} {...toEventCardProps(event)} />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-12 text-center text-[var(--color-text-muted)]">
+            No upcoming events right now. Check back soon.
+          </p>
+        )}
+
+        {/* Link to all events */}
+        <div className="mt-12 text-center">
+          <Button variant="secondary" href="/events">
+            View All Events
+          </Button>
         </div>
       </div>
     </section>

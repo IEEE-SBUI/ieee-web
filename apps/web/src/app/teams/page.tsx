@@ -4,6 +4,11 @@ import TeamsPageClient from "./TeamsPageClient";
 // Revalidate once every 60 seconds (incremental static regeneration)
 export const revalidate = 60;
 
+export const metadata = {
+  title: "Our Team",
+  description: "Meet the executive board, officers, and division leaders of the IEEE Student Branch Universitas Indonesia.",
+};
+
 // Query for TeamConfig for year 2026
 const TEAM_CONFIG_QUERY = `*[_type == "teamConfig" && year == "2026"][0] {
   year,

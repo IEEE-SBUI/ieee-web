@@ -14,7 +14,7 @@ const CORRIDORS: { corridor: Corridor; title: string; description: string }[] = 
   },
   {
     corridor: "Education and Development",
-    title: "Education & Development",
+    title: "Education Development",
     description:
       "Helps members learn. Seminar runs talks, WnC handles workshops and competitions, and Curjour takes care of curriculum and journalism.",
   },

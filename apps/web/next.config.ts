@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: true,
     // Allow Sanity-hosted images (article mainImage, etc.) through next/image.
     remotePatterns: [
       {

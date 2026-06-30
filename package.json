@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w apps/web\" \"npm run dev -w apps/studio-ieee-sbui-website\"",
     "build": "npm run build --workspaces --if-present",
+    "start": "npm run start -w apps/web",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test:e2e": "npm run test:e2e --workspaces --if-present"

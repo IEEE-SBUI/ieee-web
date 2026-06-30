@@ -128,6 +128,28 @@ const components: PortableTextComponents = {
  * @returns The article detail page or a 404 page if the article does not exist.
  */
 
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const query = `*[_type == "article" && slug.current == $slug][0]{
+    title,
+    summary,
+    "imageUrl": mainImage.asset->url
+  }`;
+  const article = await client.fetch<{ title: string; summary: string; imageUrl?: string } | null>(query, { slug });
+  if (!article) return {};
+
+  return {
+    title: article.title,
+    description: article.summary || `Read "${article.title}" on the IEEE Student Branch Universitas Indonesia blog.`,
+    openGraph: {
+      title: article.title,
+      description: article.summary,
+      type: "article",
+      images: article.imageUrl ? [{ url: article.imageUrl }] : [],
+    },
+  };
+}
+
 export default async function ArticleDetailPage({ params }: PageProps) {
   const { slug } = await params;
 

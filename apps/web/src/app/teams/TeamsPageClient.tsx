@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { urlFor } from "@/src/sanity/client";
 import PageHeader from "@/src/components/PageHeader";
+import { Search } from "lucide-react";
 
 /* ── Types ─────────────────────────────────────────────────────── */
 interface SanityImage {
@@ -55,7 +56,7 @@ interface TeamMember {
   id: string;
   name: string;
   role: string;
-  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+  category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
   image?: SanityImage;
   order: number;
 }
@@ -69,7 +70,7 @@ type RenderItem =
       role1: string;
       member2: PersonRef;
       role2: string;
-      category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+      category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
     }
   | {
       kind: "trio";
@@ -80,7 +81,7 @@ type RenderItem =
       role2: string;
       member3: PersonRef;
       role3: string;
-      category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+      category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
     };
 
 /* ── Accent Configuration (Using Established Corridor Colors) ── */
@@ -127,7 +128,7 @@ function getInitials(name?: string): string {
  */
 function buildRenderItems(
   entries: Array<{ member: PersonRef; role: string }>,
-  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations"
+  category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations"
 ): RenderItem[] {
   const items: RenderItem[] = [];
   const processedIds = new Set<string>();
@@ -210,6 +211,24 @@ function buildRenderItems(
   return items;
 }
 
+/** True when the query is empty or any member in the item matches it. */
+function itemMatchesQuery(item: RenderItem, query: string): boolean {
+  if (!query) return true;
+  const q = query.toLowerCase();
+  if (item.kind === "solo") return item.member.name.toLowerCase().includes(q);
+  if (item.kind === "duo") {
+    return (
+      item.member1.name.toLowerCase().includes(q) ||
+      item.member2.name.toLowerCase().includes(q)
+    );
+  }
+  return (
+    item.member1.name.toLowerCase().includes(q) ||
+    item.member2.name.toLowerCase().includes(q) ||
+    item.member3.name.toLowerCase().includes(q)
+  );
+}
+
 /* ── Base Components ────────────────────────────────────────────── */
 function SectionDivider({ label, colorClass }: { label: string; colorClass?: string }) {
   return (
@@ -269,7 +288,7 @@ function DuoCard({
   role1: string;
   member2: PersonRef;
   role2: string;
-  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+  category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
 }) {
   const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Executive Board"];
 
@@ -373,7 +392,7 @@ function TrioCard({
   role2: string;
   member3: PersonRef;
   role3: string;
-  category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations";
+  category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations";
 }) {
   const accent = ACCENT_COLORS[category] || ACCENT_COLORS["Executive Board"];
 
@@ -535,7 +554,7 @@ function RenderGrid({ items }: { items: RenderItem[] }) {
 }
 
 /* ── Section Components ─────────────────────────────────────────── */
-function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
+function ExecutiveBoardSection({ config, searchQuery }: { config: TeamConfigData; searchQuery: string }) {
   const entries = [
     config.president && { member: config.president, role: "President" },
     config.vicePresident && { member: config.vicePresident, role: "Vice President" },
@@ -545,7 +564,11 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
     config.vicetreasurer && { member: config.vicetreasurer, role: "Vice Treasurer" },
   ].filter(Boolean) as Array<{ member: PersonRef; role: string }>;
 
-  const items = buildRenderItems(entries, "Executive Board");
+  const items = buildRenderItems(entries, "Executive Board").filter((item) =>
+    itemMatchesQuery(item, searchQuery)
+  );
+
+  if (items.length === 0) return null;
 
   const presVpItems = items.filter(
     (item) =>
@@ -576,7 +599,7 @@ function ExecutiveBoardSection({ config }: { config: TeamConfigData }) {
   );
 }
 
-function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
+function CorridorDirectorsSection({ config, searchQuery }: { config: TeamConfigData; searchQuery: string }) {
   const directors = [
     { name: config.directorInternalOps?.name, image: config.directorInternalOps?.image, role: "Director of Internal Operations", corridor: "Internal Operations" },
     { name: config.directorEduDev?.name, image: config.directorEduDev?.image, role: "Director of Education and Development", corridor: "Education and Development" },
@@ -584,9 +607,9 @@ function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
   ].filter((d) => d.name) as Array<{ name: string; image?: SanityImage; role: string; corridor: string }>;
 
   const items = directors.map((dir, idx) => {
-    let category: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Executive Board";
+    let category: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations" = "Executive Board";
     if (dir.corridor === "Internal Operations") category = "Internal Operations";
-    else if (dir.corridor === "Education and Development") category = "Education & Dev";
+    else if (dir.corridor === "Education and Development") category = "Education Development";
     else if (dir.corridor === "Public Relations") category = "Public Relations";
 
     return {
@@ -602,6 +625,10 @@ function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
     };
   });
 
+  const visibleItems = items.filter((item) => itemMatchesQuery(item, searchQuery));
+
+  if (visibleItems.length === 0) return null;
+
   return (
     <div className="space-y-6">
       <div className="border-l-4 border-amber-500 pl-4 py-1">
@@ -609,7 +636,7 @@ function CorridorDirectorsSection({ config }: { config: TeamConfigData }) {
           Board of Directors
         </h3>
       </div>
-      <RenderGrid items={items} />
+      <RenderGrid items={visibleItems} />
     </div>
   );
 }
@@ -618,13 +645,15 @@ function CorridorSection({
   corridorName,
   config,
   divisions,
+  searchQuery,
 }: {
   corridorName: "Internal Operations" | "Education and Development" | "Public Relations";
   config: TeamConfigData;
   divisions: DivisionData[];
+  searchQuery: string;
 }) {
-  let categoryKey: "Executive Board" | "Internal Operations" | "Education & Dev" | "Public Relations" = "Internal Operations";
-  if (corridorName === "Education and Development") categoryKey = "Education & Dev";
+  let categoryKey: "Executive Board" | "Internal Operations" | "Education Development" | "Public Relations" = "Internal Operations";
+  if (corridorName === "Education and Development") categoryKey = "Education Development";
   else if (corridorName === "Public Relations") categoryKey = "Public Relations";
 
   const accent = ACCENT_COLORS[corridorName];
@@ -634,7 +663,38 @@ function CorridorSection({
   else if (corridorName === "Education and Development") director = config.directorEduDev;
   else if (corridorName === "Public Relations") director = config.directorPublicRelations;
 
-  const corridorDivisions = divisions.filter((d) => d.corridor === corridorName);
+  const query = searchQuery.toLowerCase();
+  const directorVisible =
+    !!director && (!query || director.name.toLowerCase().includes(query));
+
+  // Build each division's cards, filtered by the search query, dropping any
+  // division that has no matching members.
+  const renderedDivisions = divisions
+    .filter((d) => d.corridor === corridorName)
+    .map((division) => {
+      const managementEntries = [
+        division.manager && { member: division.manager, role: "Manager" },
+        ...(division.viceManagers || []).map((vm) => ({ member: vm, role: "Vice Manager" })),
+      ].filter(Boolean) as Array<{ member: PersonRef; role: string }>;
+
+      const managementItems = buildRenderItems(managementEntries, categoryKey).filter(
+        (item) => itemMatchesQuery(item, searchQuery)
+      );
+
+      const staffEntries = (division.staff || []).map((staffMember) => ({
+        member: staffMember,
+        role: "Staff",
+      }));
+
+      const staffItems = buildRenderItems(staffEntries, categoryKey).filter((item) =>
+        itemMatchesQuery(item, searchQuery)
+      );
+
+      return { division, managementItems, staffItems };
+    })
+    .filter((d) => d.managementItems.length > 0 || d.staffItems.length > 0);
+
+  if (!directorVisible && renderedDivisions.length === 0) return null;
 
   return (
     <div className="space-y-10">
@@ -646,7 +706,7 @@ function CorridorSection({
       </div>
 
       {/* Director */}
-      {director && (
+      {directorVisible && director && (
         <div className="space-y-4">
           <span className="text-[10px] font-extrabold uppercase text-gray-400 block">
             Corridor Leadership
@@ -668,54 +728,38 @@ function CorridorSection({
 
       {/* Corridor Divisions */}
       <div className="space-y-12">
-        {corridorDivisions.map((division) => {
-          const managementEntries = [
-            division.manager && { member: division.manager, role: "Manager" },
-            ...(division.viceManagers || []).map((vm) => ({ member: vm, role: "Vice Manager" })),
-          ].filter(Boolean) as Array<{ member: PersonRef; role: string }>;
-
-          const managementItems = buildRenderItems(managementEntries, categoryKey);
-
-          const staffEntries = (division.staff || []).map((staffMember) => ({
-            member: staffMember,
-            role: "Staff",
-          }));
-
-          const staffItems = buildRenderItems(staffEntries, categoryKey);
-
-          return (
-            <div
-              key={division.abbreviation}
-              className="bg-white/[0.015] border border-white/5 rounded-3xl p-6 md:p-8 space-y-6"
-            >
-              {/* Division Title */}
-              <div>
-                <span className="text-[11px] font-extrabold uppercase" style={{ color: accent.raw }}>
-                  {division.abbreviation}
-                </span>
-                <h4 className="text-xl font-black text-white mt-0.5 leading-snug">
-                  {division.fullName}
-                </h4>
-              </div>
-
-              {/* Management Grid */}
-              {managementItems.length > 0 && (
-                <div className="space-y-4">
-                  <SectionDivider label="Management" />
-                  <RenderGrid items={managementItems} />
-                </div>
-              )}
-
-              {/* Staff Grid */}
-              {staffItems.length > 0 && (
-                <div className="space-y-4">
-                  <SectionDivider label="Staff" colorClass="text-gray-400/80" />
-                  <RenderGrid items={staffItems} />
-                </div>
-              )}
+        {renderedDivisions.map(({ division, managementItems, staffItems }) => (
+          <div
+            key={division.abbreviation}
+            className="bg-white/[0.015] border border-white/5 rounded-3xl p-6 md:p-8 space-y-6"
+          >
+            {/* Division Title */}
+            <div>
+              <span className="text-[11px] font-extrabold uppercase" style={{ color: accent.raw }}>
+                {division.abbreviation}
+              </span>
+              <h4 className="text-xl font-black text-white mt-0.5 leading-snug">
+                {division.fullName}
+              </h4>
             </div>
-          );
-        })}
+
+            {/* Management Grid */}
+            {managementItems.length > 0 && (
+              <div className="space-y-4">
+                <SectionDivider label="Management" />
+                <RenderGrid items={managementItems} />
+              </div>
+            )}
+
+            {/* Staff Grid */}
+            {staffItems.length > 0 && (
+              <div className="space-y-4">
+                <SectionDivider label="Staff" colorClass="text-gray-400/80" />
+                <RenderGrid items={staffItems} />
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -730,8 +774,32 @@ export interface TeamsPageClientProps {
 export default function TeamsPageClient({ config, divisions }: TeamsPageClientProps) {
   const year = config.year || "2026";
   const [activeFilter, setActiveFilter] = useState<string>("All");
+  const [search, setSearch] = useState<string>("");
 
-  const filters = ["All", "Executive Board", "Internal Operations", "Education & Dev", "Public Relations"];
+  const filters = ["All", "Executive Board", "Internal Operations", "Education Development", "Public Relations"];
+
+  // All member names across the board, used to show an empty state when a
+  // search matches nobody.
+  const allNames: string[] = [
+    config.president,
+    config.vicePresident,
+    config.secretary,
+    config.vicesecretary,
+    config.treasurer,
+    config.vicetreasurer,
+    config.directorInternalOps,
+    config.directorEduDev,
+    config.directorPublicRelations,
+  ]
+    .filter(Boolean)
+    .map((p) => (p as PersonRef).name);
+  divisions.forEach((d) => {
+    if (d.manager?.name) allNames.push(d.manager.name);
+    (d.viceManagers || []).forEach((vm) => vm?.name && allNames.push(vm.name));
+    (d.staff || []).forEach((s) => s?.name && allNames.push(s.name));
+  });
+  const hasMatches =
+    !search || allNames.some((n) => n.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)]">
@@ -747,6 +815,17 @@ export default function TeamsPageClient({ config, divisions }: TeamsPageClientPr
               <h2 className="text-3xl font-extrabold text-white mt-1">
                 Meet Our Team
               </h2>
+            </div>
+            {/* Search by name */}
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full rounded-lg border border-white/10 bg-[#121214] py-2.5 pl-9 pr-3 text-sm text-white placeholder-white/30 transition-all duration-300 focus:border-[var(--color-accent-teal)] focus:outline-none"
+              />
             </div>
             <div className="flex lg:flex-col gap-2 flex-wrap">
               {filters.map((filter) => {
@@ -772,26 +851,35 @@ export default function TeamsPageClient({ config, divisions }: TeamsPageClientPr
           <div className="lg:col-span-9 space-y-16">
             {activeFilter === "All" && (
               <>
-                <ExecutiveBoardSection config={config} />
-                <CorridorSection corridorName="Internal Operations" config={config} divisions={divisions} />
-                <CorridorSection corridorName="Education and Development" config={config} divisions={divisions} />
-                <CorridorSection corridorName="Public Relations" config={config} divisions={divisions} />
+                <ExecutiveBoardSection config={config} searchQuery={search} />
+                <CorridorSection corridorName="Internal Operations" config={config} divisions={divisions} searchQuery={search} />
+                <CorridorSection corridorName="Education and Development" config={config} divisions={divisions} searchQuery={search} />
+                <CorridorSection corridorName="Public Relations" config={config} divisions={divisions} searchQuery={search} />
               </>
             )}
             {activeFilter === "Executive Board" && (
               <>
-                <ExecutiveBoardSection config={config} />
-                <CorridorDirectorsSection config={config} />
+                <ExecutiveBoardSection config={config} searchQuery={search} />
+                <CorridorDirectorsSection config={config} searchQuery={search} />
               </>
             )}
             {activeFilter === "Internal Operations" && (
-              <CorridorSection corridorName="Internal Operations" config={config} divisions={divisions} />
+              <CorridorSection corridorName="Internal Operations" config={config} divisions={divisions} searchQuery={search} />
             )}
-            {activeFilter === "Education & Dev" && (
-              <CorridorSection corridorName="Education and Development" config={config} divisions={divisions} />
+            {activeFilter === "Education Development" && (
+              <CorridorSection corridorName="Education and Development" config={config} divisions={divisions} searchQuery={search} />
             )}
             {activeFilter === "Public Relations" && (
-              <CorridorSection corridorName="Public Relations" config={config} divisions={divisions} />
+              <CorridorSection corridorName="Public Relations" config={config} divisions={divisions} searchQuery={search} />
+            )}
+
+            {search && !hasMatches && (
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-[#0C1517] px-4 py-20 text-center">
+                <h3 className="mb-2 text-lg font-bold text-white">No members found</h3>
+                <p className="max-w-sm text-sm text-[var(--color-text-muted)]">
+                  No team members match &quot;{search}&quot;. Try a different name.
+                </p>
+              </div>
             )}
           </div>
         </div>
