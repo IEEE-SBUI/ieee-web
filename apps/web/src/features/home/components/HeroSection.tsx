@@ -62,7 +62,7 @@ export default function HeroSection() {
 
           <div className="flex flex-col gap-4 sm:flex-row items-start">
             <div className="relative w-fit">
-              <Button variant="primary" className="bg-gradient-to-r from-[var(--color-accent-teal)] to-[var(--color-accent-sky)] hover:opacity-90 !text-black border-none" href="/register">
+              <Button variant="primary" className="bg-gradient-to-r from-[var(--color-accent-teal)] to-[var(--color-accent-sky)] hover:opacity-90 !text-black" href="/register">
                 Register Now
               </Button>
             </div>
