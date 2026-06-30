@@ -6,9 +6,11 @@ import SectionHeading from "@/src/components/SectionHeading";
 import AnimatedStatItem from "@/src/features/about/components/AnimatedStatItem";
 import { Flag, Target } from "lucide-react";
 
-/**
- * About Us page (route `/about`).
- */
+export const metadata = {
+  title: "About Us",
+  description: "Learn about the history, executive vision, mission, and core values of the first IEEE Student Branch in Indonesia.",
+};
+
 const STATS = [
   { value: "1st", label: "Established in Indonesia" },
   { value: "8", label: "Divisions" },
@@ -115,7 +117,7 @@ export default function AboutPage() {
               >
                 <div className="mt-1 text-center">
                   <p className="text-sm leading-7 text-[rgba(200,205,211,0.8)] max-w-[280px] mx-auto">
-                    After the journey of igniting the spark of brilliance in IEEE SBUI, we ensure each members are driven by shared goals and ideas, gather as instruments in the electrical and electronics engineering field of community that works in harmony for the better and advancement of IKM UI and humanity.
+                    Ensure each members are driven by shared goals and ideas, gather as <strong>instruments</strong> in the electrical and electronics engineering field that works in <strong>harmony</strong> for the better and advancement of humanity.
                   </p>
                 </div>
               </Card>

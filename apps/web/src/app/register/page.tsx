@@ -8,10 +8,12 @@ import type { RegistrationSettings } from "./RegisterForm";
 // The server still renders the full HTML (ssr: true is the default).
 const RegisterForm = dynamic(() => import("./RegisterForm"), { ssr: true });
 
-// Revalidate every 5 minutes so Next.js can serve a cached response to most
-// visitors, slashing TTFB. The page is regenerated in the background when the
-// revalidation window expires.
 export const revalidate = 300;
+
+export const metadata = {
+  title: "Register for Member",
+  description: "Join the first IEEE Student Branch in Indonesia. Register to build technology projects, gain workshops/competitions credits, and network globally.",
+};
 
 async function getRegistrationSettings(): Promise<RegistrationSettings> {
   try {

@@ -9,6 +9,11 @@ import PageHeader from "@/src/components/PageHeader";
  */
 export const revalidate = 60;
 
+export const metadata = {
+  title: "Divisions",
+  description: "Explore the different operational corridors and student divisions that build projects and manage communities in IEEE SBUI.",
+};
+
 /** Shape of a division row returned by the GROQ query below. */
 interface Division {
   abbreviation: string;

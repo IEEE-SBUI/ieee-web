@@ -4,7 +4,7 @@ import EventsPageClient from "./EventsPageClient";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "Events | IEEE Student Branch Universitas Indonesia",
+  title: "Events",
   description: "Discover upcoming and past events hosted by the IEEE Student Branch Universitas Indonesia.",
 };
 

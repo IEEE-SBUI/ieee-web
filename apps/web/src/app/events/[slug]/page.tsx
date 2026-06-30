@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, MapPin } from 'lucide-react';
 import EventActionsPanel from './EventActionsPanel';
+import ShareButton from './ShareButton';
 
 interface SanityEvent {
   title: string;
@@ -117,6 +118,23 @@ const query = `*[_type == "event" && slug.current == $slug][0]{
   "imageUrl": image.asset->url
 }`;
 
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params;
+  const event = await client.fetch<SanityEvent | null>(query, { slug });
+  if (!event) return {};
+
+  return {
+    title: event.title,
+    description: event.description || `Read about the event "${event.title}" hosted by IEEE Student Branch Universitas Indonesia.`,
+    openGraph: {
+      title: event.title,
+      description: event.description,
+      type: "article",
+      images: event.imageUrl ? [{ url: event.imageUrl }] : [],
+    },
+  };
+}
+
 export default async function EventDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const event = await client.fetch<SanityEvent | null>(query, { slug });
@@ -135,14 +153,20 @@ export default async function EventDetailPage({ params }: PageProps) {
       <header className="w-full bg-gradient-to-r from-[#0A2B23] via-[#122938] to-[#1C1A36] py-16 md:py-24 border-b border-white/5">
         <div className="mx-auto max-w-3xl px-6 flex flex-col items-start">
           
-          {/* Back to Events Button */}
-          <Link
-            href="/events"
-            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-accent-teal)] hover:text-white transition-colors duration-200 mb-8 group cursor-pointer"
-          >
-            <ArrowLeft size={14} className="transition-transform duration-200 group-hover:-translate-x-1" />
-            Back to Events
-          </Link>
+          {/* Header Action Row */}
+          <div className="flex w-full items-center justify-between mb-8">
+            {/* Back to Events Button */}
+            <Link
+              href="/events"
+              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-accent-teal)] hover:text-white transition-colors duration-200 group cursor-pointer"
+            >
+              <ArrowLeft size={14} className="transition-transform duration-200 group-hover:-translate-x-1" />
+              Back to Events
+            </Link>
+
+            {/* Share Button */}
+            <ShareButton />
+          </div>
 
           {/* Category Pill */}
           {category && (
@@ -189,15 +213,12 @@ export default async function EventDetailPage({ params }: PageProps) {
           
           {/* Main Featured Image */}
           {imageUrl && (
-            <figure className="mb-12">
-              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/5 bg-black shadow-lg">
-                <Image
+            <figure className="mb-12 flex justify-center">
+              <div className="w-full overflow-hidden rounded-2xl border border-white/5 bg-black/40 shadow-lg">
+                <img
                   src={imageUrl}
                   alt={title}
-                  fill
-                  unoptimized
-                  className="object-cover"
-                  priority
+                  className="w-full h-auto max-h-[600px] object-contain mx-auto"
                 />
               </div>
             </figure>
