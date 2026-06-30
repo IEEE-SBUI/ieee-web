@@ -1,5 +1,6 @@
 import { client } from "@/src/sanity/client";
 import SectionHeading from "@/src/components/SectionHeading";
+import Button from "@/src/components/Button";
 import EventCard from "@/src/features/events/components/EventCard";
 import {
   toEventCardProps,
@@ -57,6 +58,13 @@ export default async function UpcomingEventsSection() {
             No upcoming events right now. Check back soon.
           </p>
         )}
+
+        {/* Link to all events */}
+        <div className="mt-12 text-center">
+          <Button variant="secondary" href="/events">
+            View All Events
+          </Button>
+        </div>
       </div>
     </section>
   );
