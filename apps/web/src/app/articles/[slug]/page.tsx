@@ -28,24 +28,33 @@ interface PageProps {
  * site's design system and supports custom elements such as captions,
  * code snippets, and styled blockquotes.
  */
+/** Parse pixel dimensions from a Sanity image asset ref (e.g. "...-1600x1200-png"). */
+function parseImageDimensions(
+  ref?: string
+): { width: number; height: number } | null {
+  const match = /-(\d+)x(\d+)-/.exec(ref || "");
+  if (!match) return null;
+  return { width: Number(match[1]), height: Number(match[2]) };
+}
+
 const components: PortableTextComponents = {
   types: {
     image: ({ value }) => {
       if (!value?.asset?._ref) return null;
       const imageUrl = urlFor(value);
+      const dims = parseImageDimensions(value.asset._ref);
       return (
         <figure className="my-8 flex flex-col items-center gap-3">
-          <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#0C1517] w-full aspect-video">
-            <Image
-              src={imageUrl}
-              alt={value.alt || "Article image"}
-              fill
-              unoptimized
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 720px"
-              loading="lazy"
-            />
-          </div>
+          <Image
+            src={imageUrl}
+            alt={value.alt || "Article image"}
+            width={dims?.width || 1600}
+            height={dims?.height || 900}
+            unoptimized
+            className="h-auto w-full rounded-xl border border-white/5"
+            sizes="(max-width: 768px) 100vw, 720px"
+            loading="lazy"
+          />
           {value.caption && (
             <figcaption className="text-xs md:text-sm text-center text-[var(--color-text-muted)] italic">
               {value.caption}
