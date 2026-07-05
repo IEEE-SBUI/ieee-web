@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Button from "@/src/components/Button";
+import VinylRecord from "@/src/components/VinylRecord";
 
 /**
  * Homepage hero banner.
@@ -72,9 +73,9 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Right: circular graphic with radial glow and propagating sound waves */}
+        {/* Right: circular spinning vinyl record graphic */}
         <div className="relative mx-auto aspect-square w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[460px] flex items-center justify-center">
-          {/* Sound waves propagating outwards from the logo (drum) */}
+          {/* Sound waves propagating outwards from the record */}
           <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-visible">
             <svg
               className="w-[1000px] h-[1000px] sm:w-[1500px] sm:h-[1500px] lg:w-[2000px] lg:h-[2000px] shrink-0 overflow-visible opacity-45"
@@ -165,22 +166,12 @@ export default function HeroSection() {
             style={{ background: "var(--theme-radial-gradient)" }}
           />
 
-          {/* Circle face holding the brand artwork */}
-          <div
-            className="absolute inset-0 flex items-center justify-center rounded-full z-20"
-            style={{ background: "var(--theme-radial-gradient)" }}
-          >
-            <Image
-              src="/theme-2026.png"
-              alt="IEEE SBUI 2026 'Instrumenting Harmony' theme artwork"
-              width={600}
-              height={351}
-              priority
-              className="h-auto w-[72%]"
-            />
-          </div>
+          {/* Reusable VinylRecord component */}
+          <VinylRecord className="absolute inset-0 z-20" />
         </div>
       </div>
     </section>
   );
 }
+
+
