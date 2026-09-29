@@ -32,42 +32,6 @@ export function WobblyBlob({ children, className = "", color = "bg-[#1ce1a4]" }:
   );
 }
 
-interface StarburstProps {
-  text?: string;
-  className?: string;
-  size?: string;
-}
-
-/**
- * A spiky neon pink starburst badge/sticker.
- * Includes a slowly spinning hover animation to look active and lively.
- */
-export function Starburst({ text, className = "", size = "w-20 h-20" }: StarburstProps) {
-  const id = React.useId().replace(/:/g, "");
-  const isAbsolute = className.includes("absolute") || className.includes("fixed");
-  const positionClass = isAbsolute ? "" : "relative";
-  const displayClass = isAbsolute ? "flex" : "inline-flex";
-
-  return (
-    <div className={`${positionClass} ${displayClass} items-center justify-center select-none ${size} ${className} group`}>
-      {/* Spiky polygon starburst */}
-      <svg
-        viewBox="0 0 100 100"
-        className="w-full h-full fill-[#FF007F] stroke-white stroke-[2.5] drop-shadow-[0_4px_14px_rgba(255,0,127,0.4)] animate-[spin_60s_linear_infinite] group-hover:scale-110 transition-transform duration-300 ease-out"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <polygon points="50,2 56,22 75,10 70,30 90,24 78,42 97,49 80,59 93,73 75,74 81,92 65,84 63,100 50,86 37,100 35,84 19,92 25,74 7,73 20,59 3,49 22,42 10,24 30,30 25,10 44,22" />
-      </svg>
-      {/* Starburst Text */}
-      {text && (
-        <span className="absolute text-center text-white font-black uppercase text-[11px] tracking-tight leading-none -rotate-12 max-w-[70%] select-none pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] font-sans">
-          {text}
-        </span>
-      )}
-    </div>
-  );
-}
-
 interface GradientMusicNoteProps {
   type?: "single" | "double";
   className?: string;

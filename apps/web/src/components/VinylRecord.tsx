@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 
 interface VinylRecordProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -10,8 +12,17 @@ interface VinylRecordProps extends React.HTMLAttributes<HTMLDivElement> {
  * Uses site brand color palette (Teal, Sky Blue, Dark Void) and features high-contrast logo label.
  */
 export default function VinylRecord({ className, ...props }: VinylRecordProps) {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className={`relative aspect-square w-full flex items-center justify-center group select-none ${className}`} {...props}>
+      {/* Preload the LCP logo image at high priority */}
+      <link rel="preload" href="/theme-2026.png" as="image" fetchPriority="high" suppressHydrationWarning />
+
       <svg
         className="absolute inset-0 w-full h-full drop-shadow-[0_15px_30px_rgba(0,0,0,0.65)]"
         viewBox="0 0 500 500"
@@ -34,7 +45,8 @@ export default function VinylRecord({ className, ...props }: VinylRecordProps) {
         </defs>
 
         {/* 1. Spinning Record Assembly (With outer padding within viewBox) */}
-        <g className="animate-[spin_30s_linear_infinite] origin-[250px_250px]">
+        {/* Animation is deferred until React hydration to eliminate initial LCP Render Delay */}
+        <g className={`${mounted ? 'animate-[spin_30s_linear_infinite]' : ''} origin-[250px_250px]`} suppressHydrationWarning>
           {/* The Vinyl Disc (Deep Charcoal Navy, padded radius 220) */}
           <circle cx="250" cy="250" r="220" fill="url(#vinylGloss)" stroke="#0C0B18" strokeWidth="5" />
 
@@ -64,24 +76,28 @@ export default function VinylRecord({ className, ...props }: VinylRecordProps) {
             width="240" 
             height="140" 
             clipPath="url(#labelClip)"
+            {...{ fetchPriority: "high" }}
+            suppressHydrationWarning
           />
 
           {/* Central spindle hole rim */}
           <circle cx="250" cy="250" r="6" fill="#0C0B18" />
         </g>
 
-        {/* Stationary Tonearm Assembly (Overlayed on top right) */}
+        {/* 2. Stationary Tonearm Assembly (Overlayed on top right) */}
         {/* Pivot Base Mount (Teal/Sky/Midnight) */}
         <circle cx="410" cy="90" r="24" fill="var(--color-accent-teal)" stroke="#0C0B18" strokeWidth="4.5" />
         <circle cx="410" cy="90" r="11" fill="#0C0B18" />
+        {/* Counterweight shaft */}
+        <line x1="395" y1="75" x2="425" y2="105" stroke="var(--color-accent-sky)" strokeWidth="5.5" strokeLinecap="round" />
         
-        {/* Tonearm Shaft */}
+        {/* Tonearm Shaft (Straight Sky Blue Rod playing the record) */}
         <line 
           x1="410" 
           y1="90" 
           x2="350" 
           y2="310" 
-          stroke="black" 
+          stroke="var(--color-accent-sky)" 
           strokeWidth="6" 
           strokeLinecap="round" 
         />

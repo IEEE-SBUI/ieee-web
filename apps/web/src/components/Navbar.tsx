@@ -17,6 +17,7 @@ const NAV_LINKS = [
   { label: "Divisions", href: "/divisions" },
   { label: "Articles", href: "/articles" },
   { label: "Events", href: "/events" },
+  { label: "Techtonic 3.0", href: "/techtonic" },
   { label: "Register", href: "/register" },
 ] as const;
 
@@ -106,7 +107,7 @@ export default function Navbar() {
         {/* Desktop navigation menu links */}
         <div className="hidden lg:flex items-center gap-[35px]">
           {NAV_LINKS.map(({ label, href }) => {
-            const isActive = pathname === href;
+            const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
             return (
               <div key={href} className="relative flex flex-col items-center group py-2">
                 <Link
@@ -271,7 +272,7 @@ export default function Navbar() {
               style={{
                 fontFamily: "Inter, sans-serif",
                 color:
-                  pathname === href ? "#ffffff" : "rgba(255,255,255,0.75)",
+                  (href === "/" ? pathname === "/" : pathname.startsWith(href)) ? "#ffffff" : "rgba(255,255,255,0.75)",
               }}
             >
               {label}
