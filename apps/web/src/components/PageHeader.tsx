@@ -1,5 +1,5 @@
 import React from "react";
-import { WobblyBlob, Starburst, GradientMusicNote, PlayfulTitle } from "@/src/components/DecorativeShapes";
+import { WobblyBlob, GradientMusicNote, PlayfulTitle } from "@/src/components/DecorativeShapes";
 
 interface PageHeaderProps {
   /** The primary heading text for the page. */

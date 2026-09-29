@@ -9,12 +9,14 @@ const quickLinks = [
   { label: "Divisions", href: "/divisions" },
   { label: "Articles", href: "/articles" },
   { label: "Events", href: "/events" },
+  { label: "Techtonic 3.0 Event Hub", href: "/techtonic" },
   { label: "Membership Registration", href: "/register" },
   { label: "Our Team", href: "/teams?year=2026" },
 ];
 
 // External IEEE portal links shown under Resources
 const resourceLinks = [
+  { label: "Techtonic 3.0 Archive", href: "/techtonic", external: false },
   { label: "IEEE Global Website", href: "https://www.ieee.org", external: true },
   { label: "IEEExplore", href: "https://ieeexplore.ieee.org", external: true },
   { label: "IEEE Spectrum", href: "https://spectrum.ieee.org", external: true },
