@@ -14,9 +14,6 @@ export default function TechtonicCompetitions() {
               Competition Tracks
             </h2>
           </div>
-          <p className="text-sm text-[var(--color-text-muted)] max-w-md leading-relaxed">
-            Choose your track to compete, innovate, and present your solutions to academic experts and industry judges.
-          </p>
         </div>
 
         {/* 3 Competition Cards Grid */}

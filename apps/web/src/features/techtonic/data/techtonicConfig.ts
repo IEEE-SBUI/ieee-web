@@ -38,6 +38,23 @@ export interface TimelineMilestone {
   phase: string;
   desc?: string;
 }
+export interface ContactPerson {
+  name: string;
+  phone: string;
+  role: string;
+}
+
+export interface MediaPartnerPackage {
+  feature: string;
+  gold: string;
+  silver: string;
+  bronze: string;
+}
+
+export interface MediaPartnershipData {
+  packages: MediaPartnerPackage[];
+  benefits: string[];
+}
 
 export interface TechtonicConfig {
   name: string;
@@ -57,8 +74,9 @@ export interface TechtonicConfig {
     instagram: string;
     instagramUrl: string;
     email: string;
-    contacts: { name: string; phone: string; role: string }[];
+    contacts: ContactPerson[];
   };
+  mediaPartnership: MediaPartnershipData;
   competitions: Record<"bpc" | "hackathon" | "stem", CompetitionTrack>;
   overallTimeline: TimelineMilestone[];
   whyParticipate: { title: string; desc: string }[];
@@ -110,6 +128,20 @@ export const TECHTONIC_CONFIG: TechtonicConfig = {
       { name: "Raddo", phone: "+62 821-6055-5955", role: "Contact Person" },
       { name: "James", phone: "+62 811-9554-788", role: "Contact Person" },
       { name: "Awan", phone: "+62 821-8387-1774", role: "Contact Person" },
+    ],
+  },
+  mediaPartnership: {
+    packages: [
+      { feature: "Instagram Story", gold: "5x", silver: "4x", bronze: "2x" },
+      { feature: "Broadcasting in IEEE SB UI Internal Group", gold: "5x", silver: "4x", bronze: "2x" },
+      { feature: "Partners Logo", gold: "✓", silver: "✓", bronze: "✓" },
+      { feature: "Highlight Instagram", gold: "✓", silver: "✓", bronze: "—" },
+    ],
+    benefits: [
+      "Brand Awareness",
+      "Brand Enhancement",
+      "Direct Promotion",
+      "Mutually Beneficial Partnership",
     ],
   },
 
