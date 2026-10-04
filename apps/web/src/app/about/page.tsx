@@ -1,11 +1,8 @@
 import React from "react";
 import Image from "next/image";
 import PageHeader from "@/src/components/PageHeader";
-import Card from "@/src/components/Card";
 import SectionHeading from "@/src/components/SectionHeading";
 import AnimatedStatItem from "@/src/features/about/components/AnimatedStatItem";
-import { Flag, Target } from "lucide-react";
-
 export const metadata = {
   title: "About Us",
   description: "Learn about the history, executive vision, mission, and core values of the first IEEE Student Branch in Indonesia.",
@@ -101,76 +98,51 @@ export default function AboutPage() {
         </section>
 
         {/* Vision & Mission */}
-        <section className="relative overflow-hidden">
+        <section className="relative">
           <div className="mx-auto max-w-[1440px] px-6 py-16 sm:px-12 md:py-24 lg:px-[117px]">
-            <div className="text-center">
-              <SectionHeading heading="Vision and Mission" />
+            <div className="text-center mb-12">
+              <SectionHeading heading="Vision & Mission" />
             </div>
 
-            <div className="mt-16 grid gap-12 grid-cols-1 lg:grid-cols-[3fr_7fr]">
-              {/* Vision */}
-              <Card
-                variant="icon"
-                icon={Target}
-                title="Our Vision"
-                className="h-full"
-              >
-                <div className="mt-1 text-center">
-                  <p className="text-sm leading-7 text-[rgba(200,205,211,0.8)] max-w-[280px] mx-auto">
-                    Ensure each members are driven by shared goals and ideas, gather as <strong>instruments</strong> in the electrical and electronics engineering field that works in <strong>harmony</strong> for the better and advancement of humanity.
-                  </p>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+              {/* Vision Card */}
+              <div className="lg:col-span-5 p-8 rounded-2xl bg-[#0C1517] border border-white/10 shadow-xl">
+                <span className="text-sm font-bold uppercase tracking-wider text-white block mb-4">
+                  Vision Statement
+                </span>
+                <p className="text-base sm:text-lg font-bold text-white leading-relaxed">
+                  Ensure each member is driven by shared goals and ideas, gathering as{" "}
+                  <span className="text-[var(--color-accent-teal)]">instruments</span> in the
+                  electrical and electronics engineering field that work in{" "}
+                  <span className="text-[var(--color-accent-teal)]">harmony</span> for the better
+                  and advancement of humanity.
+                </p>
+              </div>
+
+              {/* Mission List */}
+              <div className="lg:col-span-7 p-8 rounded-2xl bg-[#0C1517] border border-white/10 shadow-xl">
+                <span className="text-sm font-bold uppercase tracking-wider text-white block mb-4">
+                  Core Missions
+                </span>
+
+                <div className="space-y-4">
+                  {[
+                    "Unite collective goals and shared ideas in harmony, involve in technological advancement, resolve challenges through supportive teamwork, and evolve for the better of humanity.",
+                    "Strengthen internalization in all positions with a balanced nuance of professionalism and togetherness in a healthy work environment.",
+                    "Advancing members' passion and understanding in the field of electrical and electronic engineers and all IEEE Societies.",
+                    "Expand IEEE SBUI's influence as a passionate community and a prominent student branch in IEEE Global.",
+                  ].map((missionText, idx) => (
+                    <div key={idx} className="flex items-start gap-4 pt-4 first:pt-0 border-t border-white/10 first:border-0">
+                      <span className="text-sm font-bold text-[var(--color-accent-teal)] pt-0.5 shrink-0">
+                        0{idx + 1}.
+                      </span>
+                      <p className="text-sm sm:text-base leading-relaxed text-gray-200">
+                        {missionText}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              </Card>
-
-              {/* Mission */}
-              <Card
-                variant="icon"
-                icon={Flag}
-                title="Our Mission"
-                className="h-full"
-              >
-                <div className="mt-1 space-y-8 text-left w-full">
-                  <div className="grid grid-cols-[1.5rem_1fr] gap-3 items-start">
-                    <span className="text-lg font-bold text-[var(--color-accent-teal)] leading-7">
-                      01
-                    </span>
-
-                    <p className="text-sm leading-7 text-[rgba(200,205,211,0.8)]">
-                      Unite collective goals and shared ideas in harmony, involve in technological advancement, resolve challenges through supportive teamwork, and evolve for the better of humanity.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-[1.5rem_1fr] gap-3 items-start">
-                    <span className="text-lg font-bold text-[var(--color-accent-teal)] leading-7">
-                      02
-                    </span>
-
-                    <p className="text-sm leading-7 text-[rgba(200,205,211,0.8)]">
-                      Strengthen internalization in all positions with a balanced nuance of professionalism and togetherness in a healthy work environment.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-[1.5rem_1fr] gap-3 items-start">
-                    <span className="text-lg font-bold text-[var(--color-accent-teal)] leading-7">
-                      03
-                    </span>
-
-                    <p className="text-sm leading-7 text-[rgba(200,205,211,0.8)]">
-                      Advancing members&apos; passion and understanding in the field of electrical and electronic engineers and all IEEE Societies.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-[1.5rem_1fr] gap-3 items-start">
-                    <span className="text-lg font-bold text-[var(--color-accent-teal)] leading-7">
-                      04
-                    </span>
-
-                    <p className="text-sm leading-7 text-[rgba(200,205,211,0.8)]">
-                      Expand IEEE SBUI&apos;s influence as a passionate community and a prominent student branch in IEEE Global.
-                    </p>
-                  </div>
-                </div>
-              </Card>
+              </div>
             </div>
           </div>
         </section>

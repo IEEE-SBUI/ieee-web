@@ -66,9 +66,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${inter.variable} antialiased max-w-full overflow-x-hidden`}>
         <Navbar />
-        <main className="pt-[95px]">{children}</main>
+        <main className="pt-[95px] max-w-full overflow-x-hidden">{children}</main>
         <Footer />
       </body>
     </html>

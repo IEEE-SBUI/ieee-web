@@ -97,14 +97,14 @@ export default async function FeaturedArticlesSection() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-2">
+        <div className="mt-12 grid gap-10 lg:grid-cols-2 min-w-0 w-full max-w-full">
           {/* Left: latest articles list - placed second on mobile, first on desktop */}
-          <div className="order-2 lg:order-1">
+          <div className="order-2 lg:order-1 min-w-0 w-full max-w-full">
             <h3 className="border-l-4 border-[var(--color-accent-teal)] pl-3 text-sm font-bold uppercase tracking-[0.15em] text-[var(--color-accent-teal)]">
               Latest Articles
             </h3>
 
-            <div className="mt-4 flex flex-col divide-y divide-[color:var(--color-border)]">
+            <div className="mt-4 flex flex-col divide-y divide-[color:var(--color-border)] min-w-0 w-full max-w-full">
               {previews.map((article) => (
                 <ArticlePreview
                   key={article.slug?.current ?? article.title}
@@ -122,7 +122,7 @@ export default async function FeaturedArticlesSection() {
 
           {/* Right: featured article - placed first on mobile, second on desktop */}
           <FeaturedArticleCard
-            className="order-1 lg:order-2"
+            className="order-1 lg:order-2 min-w-0 w-full max-w-full"
             href={articleHref(featured.slug)}
             imageUrl={imageUrlFor(featured.mainImage)}
             categories={toCategories(featured.categories)}

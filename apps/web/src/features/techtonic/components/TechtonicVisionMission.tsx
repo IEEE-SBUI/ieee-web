@@ -13,7 +13,7 @@ export default function TechtonicVisionMission() {
           <h2 className="text-sm font-bold text-[#1CE1A4] uppercase mb-3">
             Vision
           </h2>
-          <p className="text-2xl sm:text-2xl font-semibold text-white leading-snug">
+          <p className="text-lg sm:text-xl md:text-2xl font-semibold text-white leading-relaxed">
             {TECHTONIC_CONFIG.vision}
           </p>
         </div>

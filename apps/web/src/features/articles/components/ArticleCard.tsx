@@ -63,7 +63,7 @@ export default function ArticleCard({
 }: ArticleCardProps) {
   return (
     <article
-      className={`group flex h-full flex-col overflow-hidden rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#0c1517] ${className}`}
+      className={`group flex h-full flex-col overflow-hidden rounded-[12px] border border-[rgba(255,255,255,0.06)] bg-[#0c1517] min-w-0 w-full max-w-full ${className}`}
     >
       <Link
         href={href}
@@ -80,7 +80,7 @@ export default function ArticleCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
       </Link>
 
-      <div className="flex flex-1 flex-col gap-3 p-6 sm:p-8">
+      <div className="flex flex-1 flex-col gap-3 p-5 sm:p-8 min-w-0">
         {categories.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {categories.map(({ label, corridor }) => {
@@ -105,7 +105,7 @@ export default function ArticleCard({
           </div>
         )}
 
-        <h3 className="text-xl font-bold leading-tight text-white sm:text-2xl">
+        <h3 className="text-xl font-bold leading-tight text-white sm:text-2xl [overflow-wrap:anywhere] break-words">
           <Link
             href={href}
             className="transition-colors hover:text-[var(--color-accent-teal)]"
@@ -117,10 +117,10 @@ export default function ArticleCard({
         <div className="flex flex-wrap items-center gap-1.5 text-[12px] text-[var(--color-text-muted)]">
           <span>{date}</span>
           <span className="opacity-50">&bull;</span>
-          <span>By {author}</span>
+          <span className="truncate max-w-full">By {author}</span>
         </div>
 
-        <p className="text-[0.9rem] leading-relaxed text-white/80">
+        <p className="text-[0.9rem] leading-relaxed text-white/80 [overflow-wrap:anywhere] break-words">
           {excerpt}
         </p>
 
