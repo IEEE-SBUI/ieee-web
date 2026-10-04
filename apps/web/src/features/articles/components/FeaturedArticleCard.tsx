@@ -63,7 +63,7 @@ export default function FeaturedArticleCard({
 
   return (
     <article
-      className={`group flex h-full flex-col overflow-hidden rounded-[12px] border border-[var(--color-border)] bg-[var(--color-bg-card)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-[var(--color-accent-teal)] ${className}`}
+      className={`group flex h-full flex-col overflow-hidden rounded-[12px] border border-[var(--color-border)] bg-[var(--color-bg-card)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-[var(--color-accent-teal)] min-w-0 w-full max-w-full ${className}`}
     >
       {/* Cover image bleeding into the content via a fade to the card color. */}
       <Link href={href} className="relative aspect-[16/10] w-full shrink-0">
@@ -81,12 +81,12 @@ export default function FeaturedArticleCard({
         />
       </Link>
 
-      <div className="flex flex-1 flex-col gap-3 p-6 sm:p-8">
-        <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--color-accent-teal)]">
+      <div className="flex flex-1 flex-col gap-3 p-5 sm:p-8 min-w-0">
+        <span className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--color-accent-teal)] truncate">
           {eyebrow}
         </span>
 
-        <h3 className="text-2xl font-bold leading-tight text-white">
+        <h3 className="text-xl sm:text-2xl font-bold leading-tight text-white [overflow-wrap:anywhere] break-words">
           <Link
             href={href}
             className="transition-colors hover:text-[var(--color-accent-teal)]"
@@ -112,25 +112,25 @@ export default function FeaturedArticleCard({
         <div className="flex flex-wrap items-center gap-1.5 text-[12px] text-[var(--color-text-muted)]">
           <span>{date}</span>
           <span className="opacity-50">&bull;</span>
-          <span>By {author}</span>
+          <span className="truncate max-w-full">By {author}</span>
         </div>
 
         {excerpt && (
-          <p className="text-[0.95rem] leading-relaxed text-white/80">
+          <p className="text-[0.95rem] leading-relaxed text-white/80 [overflow-wrap:anywhere] break-words">
             {excerpt}
           </p>
         )}
 
-        <div className="mt-auto flex items-center justify-between pt-4">
+        <div className="mt-auto flex items-center justify-between gap-2 pt-4">
           <Link
             href={href}
-            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-accent-teal)] transition-colors hover:text-white"
+            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-accent-teal)] transition-colors hover:text-white shrink-0"
           >
             Read Article
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
 
-          <span className="text-[12px] text-[var(--color-text-muted)]">
+          <span className="text-[12px] text-[var(--color-text-muted)] shrink-0">
             {readTimeMinutes} min read
           </span>
         </div>

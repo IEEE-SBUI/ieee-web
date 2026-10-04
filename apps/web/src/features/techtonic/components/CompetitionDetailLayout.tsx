@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { CompetitionTrack, isArchived, TECHTONIC_CONFIG } from '../data/techtonicConfig';
+import { ArrowLeft } from 'lucide-react';
 
 interface CompetitionDetailLayoutProps {
   track: CompetitionTrack;
@@ -29,9 +30,10 @@ export default function CompetitionDetailLayout({ track }: CompetitionDetailLayo
           {/* Larger Breadcrumb */}
           <Link
             href="/techtonic"
-            className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-[var(--color-accent-teal)] hover:text-white transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[var(--color-accent-teal)] hover:text-white transition-colors duration-200 mb-8 group"
           >
-            ← Back to Techtonic 3.0 Hub
+            <ArrowLeft size={14} className="transition-transform duration-200 group-hover:-translate-x-1" />
+            Back to Techtonic 3.0 Hub
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
@@ -427,7 +429,7 @@ export default function CompetitionDetailLayout({ track }: CompetitionDetailLayo
               {track.benefits && track.benefits.length > 0 && (
                 <div className="mt-8 pt-6 border-t border-white/10">
                   <h3 className="text-sm font-bold text-white uppercase mb-3">
-                    What You'll Gain
+                    What You&apos;ll Gain
                   </h3>
                   <ul className="space-y-2 text-xs text-gray-300">
                     {track.benefits.map((b, i) => (
@@ -451,7 +453,7 @@ export default function CompetitionDetailLayout({ track }: CompetitionDetailLayo
           <div className="max-w-3xl">
             <h2 className="text-3xl font-bold text-white">Ready to participate?</h2>
             <p className="mt-3 text-sm text-[var(--color-text-muted)]">
-              Review the official specifications in the guidebook and submit your team's registration.
+              Review the official specifications in the guidebook and submit your team&apos;s registration.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">

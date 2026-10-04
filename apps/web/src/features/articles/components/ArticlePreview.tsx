@@ -47,7 +47,7 @@ export default function ArticlePreview({
   className = "",
 }: ArticlePreviewProps) {
   return (
-    <div className={`group flex flex-row gap-4 sm:gap-5 py-5 ${className}`}>
+    <div className={`group flex flex-row gap-4 sm:gap-5 py-5 min-w-0 w-full max-w-full ${className}`}>
       <Link
         href={href}
         className="relative aspect-[16/11] w-[90px] min-[360px]:w-[110px] min-[400px]:w-[125px] sm:w-[140px] shrink-0 overflow-hidden rounded-[8px]"
@@ -62,14 +62,14 @@ export default function ArticlePreview({
         />
       </Link>
 
-      <div className="flex min-w-0 flex-col justify-center">
+      <div className="flex min-w-0 flex-1 flex-col justify-center">
         {categories.length > 0 && (
-          <span className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--color-accent-teal)]">
+          <span className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--color-accent-teal)] block truncate">
             {categories.map((c) => c.label).join(" · ")}
           </span>
         )}
 
-        <h4 className="mb-1.5 line-clamp-2 text-[0.95rem] font-bold leading-snug text-white">
+        <h4 className="mb-1.5 line-clamp-2 text-[0.95rem] font-bold leading-snug text-white [overflow-wrap:anywhere] break-words">
           <Link
             href={href}
             className="transition-colors hover:text-[var(--color-accent-teal)]"
@@ -79,7 +79,7 @@ export default function ArticlePreview({
         </h4>
 
         {summary && (
-          <p className="mb-1.5 line-clamp-1 text-xs text-[var(--color-text-muted)]">
+          <p className="mb-1.5 line-clamp-1 text-xs text-[var(--color-text-muted)] break-all [overflow-wrap:anywhere]">
             {summary}
           </p>
         )}
@@ -87,7 +87,7 @@ export default function ArticlePreview({
         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[12px] text-[var(--color-text-muted)]">
           <span>{date}</span>
           <span className="opacity-50">&bull;</span>
-          <span>By {author}</span>
+          <span className="truncate max-w-full">By {author}</span>
         </div>
       </div>
     </div>

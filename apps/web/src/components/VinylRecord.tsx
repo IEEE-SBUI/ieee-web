@@ -11,12 +11,14 @@ interface VinylRecordProps extends React.HTMLAttributes<HTMLDivElement> {
  * A premium retro-style giant spinning vinyl disc with a stationary tonearm overlay.
  * Uses site brand color palette (Teal, Sky Blue, Dark Void) and features high-contrast logo label.
  */
-export default function VinylRecord({ className, ...props }: VinylRecordProps) {
-  const [mounted, setMounted] = React.useState(false);
+const emptySubscribe = () => () => {};
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+export default function VinylRecord({ className, ...props }: VinylRecordProps) {
+  const mounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   return (
     <div className={`relative aspect-square w-full flex items-center justify-center group select-none ${className}`} {...props}>

@@ -31,10 +31,6 @@ export default function TechtonicHero() {
           
           {/* Left Column: Copy & Actions */}
           <div className="lg:col-span-7">
-            <p className="text-sm font-semibold text-[var(--color-accent-teal)] mb-3">
-              IEEE Student Branch Universitas Indonesia
-            </p>
-
             <h1 className="text-4xl sm:text-6xl font-bold text-white">
               Techtonic <span className="text-gradient">3.0</span>
             </h1>
